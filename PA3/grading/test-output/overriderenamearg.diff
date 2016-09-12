@@ -1,12 +1,16 @@
-16c16
+0a1,3
+> Método 'main' en la clase Main
+> Método 'inky' en la clase D
+> Método 'inky' en la clase E
+16c19
 <       : Int
 ---
 >       : _no_type
-35c35
+35c38
 <       : Int
 ---
 >       : _no_type
-54c54
+54c57
 <       : Int
 ---
 >       : _no_type

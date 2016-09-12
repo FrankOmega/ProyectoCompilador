@@ -1,14 +1,18 @@
-28,29c28,29
+0a1,3
+> Método 'foo' en la clase A
+> Método 'foo' en la clase B
+> Método 'main' en la clase Main
+28,29c31,32
 <             : A
 <           : A
 ---
 >             : _no_type
 >           : _no_type
-35c35
+35c38
 <             : A
 ---
 >             : _no_type
-39,41c39,41
+39,41c42,44
 <           : A
 <         : A
 <       : A
@@ -16,11 +20,11 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-56c56
+56c59
 <       : SELF_TYPE
 ---
 >       : _no_type
-71c71
+71c74
 <       : Int
 ---
 >       : _no_type

@@ -1,3 +1,14 @@
+Atributo 'population_map' en la clase CellularAutomaton
+Método 'init' en la clase CellularAutomaton
+Método 'print' en la clase CellularAutomaton
+Método 'num_cells' en la clase CellularAutomaton
+Método 'cell' en la clase CellularAutomaton
+Método 'cell_left_neighbor' en la clase CellularAutomaton
+Método 'cell_right_neighbor' en la clase CellularAutomaton
+Método 'cell_at_next_evolution' en la clase CellularAutomaton
+Método 'evolve' en la clase CellularAutomaton
+Atributo 'cells' en la clase Main
+Método 'main' en la clase Main
 
 _program
 

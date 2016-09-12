@@ -1,38 +1,44 @@
-16c16
+0a1,5
+> Método 'main' en la clase Main
+> Atributo 'x' en la clase A
+> Método 'f' en la clase A
+> Método 'g' en la clase A
+> Método 'h' en la clase A
+16c21
 <       : Int
 ---
 >       : _no_type
-42c42
+42c47
 <       : String
 ---
 >       : _no_type
-54c54
+54c59
 <       : SELF_TYPE
 ---
 >       : _no_type
-68c68
+68c73
 <           : SELF_TYPE
 ---
 >           : _no_type
-83c83
+83c88
 <               : SELF_TYPE
 ---
 >               : _no_type
-89c89
+89c94
 <               : Bool
 ---
 >               : _no_type
-91,92c91,92
+91,92c96,97
 <             : A
 <           : A
 ---
 >             : _no_type
 >           : _no_type
-94c94
+94c99
 <         : String
 ---
 >         : _no_type
-101,103c101,103
+101,103c106,108
 <           : String
 <         : String
 <       : String

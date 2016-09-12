@@ -1,8 +1,10 @@
-22c22
+0a1
+> Método 'main' en la clase Main
+22c23
 <           : Int
 ---
 >           : _no_type
-26,28c26,28
+26,28c27,29
 <           : Int
 <         : Int
 <       : Int

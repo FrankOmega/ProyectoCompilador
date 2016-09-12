@@ -1,12 +1,16 @@
-16c16
+0a1,3
+> Método 'foo' en la clase A
+> Método 'foo' en la clase B
+> Método 'main' en la clase Main
+16c19
 <       : Int
 ---
 >       : _no_type
-31c31
+31c34
 <       : Int
 ---
 >       : _no_type
-46c46
+46c49
 <       : Int
 ---
 >       : _no_type

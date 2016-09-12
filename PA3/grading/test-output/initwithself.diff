@@ -1,8 +1,11 @@
-16c16
+0a1,2
+> Atributo 'x' en la clase Main
+> Método 'main' en la clase Main
+16c18
 <       : SELF_TYPE
 ---
 >       : _no_type
-26,27c26,27
+26,27c28,29
 <         : SELF_TYPE
 <       : SELF_TYPE
 ---

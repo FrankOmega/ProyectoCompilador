@@ -1,3 +1,16 @@
+Método 'isNil' en la clase List
+Método 'head' en la clase List
+Método 'tail' en la clase List
+Método 'cons' en la clase List
+Atributo 'car' en la clase Cons
+Atributo 'cdr' en la clase Cons
+Método 'isNil' en la clase Cons
+Método 'head' en la clase Cons
+Método 'tail' en la clase Cons
+Método 'init' en la clase Cons
+Atributo 'mylist' en la clase Main
+Método 'print_list' en la clase Main
+Método 'main' en la clase Main
 
 _program
 

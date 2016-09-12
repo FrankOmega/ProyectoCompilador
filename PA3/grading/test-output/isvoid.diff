@@ -1,16 +1,19 @@
-27,28c27,28
+0a1,2
+> Atributo 'x' en la clase Main
+> Método 'main' en la clase Main
+27,28c29,30
 <           : Bool
 <         : Bool
 ---
 >           : _no_type
 >         : _no_type
-34,35c34,35
+34,35c36,37
 <           : Bool
 <         : Bool
 ---
 >           : _no_type
 >         : _no_type
-41,43c41,43
+41,43c43,45
 <           : Bool
 <         : Bool
 <       : Bool

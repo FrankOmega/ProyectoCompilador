@@ -1,4 +1,6 @@
-25,27c25,27
+0a1
+> Método 'main' en la clase Main
+25,27c26,28
 <           : Int
 <         : Int
 <       : Int

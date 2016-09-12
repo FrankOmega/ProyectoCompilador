@@ -1,68 +1,86 @@
-18c18
+0a1,17
+> Atributo 'a' en la clase Foo
+> Atributo 'b' en la clase Foo
+> Método 'doh' en la clase Foo
+> Atributo 'c' en la clase Bar
+> Atributo 'd' en la clase Bar
+> Atributo 'e' en la clase Razz
+> Atributo 'f' en la clase Razz
+> Atributo 'h' en la clase Bazz
+> Atributo 'g' en la clase Bazz
+> Atributo 'i' en la clase Bazz
+> Método 'printh' en la clase Bazz
+> Método 'doh' en la clase Bazz
+> Atributo 'a' en la clase Main
+> Atributo 'b' en la clase Main
+> Atributo 'c' en la clase Main
+> Atributo 'd' en la clase Main
+> Método 'main' en la clase Main
+18c35
 <         : SELF_TYPE
 ---
 >         : _no_type
-26c26
+26c43
 <           : Bar
 ---
 >           : _no_type
-34c34
+34c51
 <           : Razz
 ---
 >           : _no_type
-42,43c42,43
+42,43c59,60
 <           : Bar
 <       : Razz
 ---
 >           : _no_type
 >       : _no_type
-59c59
+59c76
 <               : Razz
 ---
 >               : _no_type
-63c63
+63c80
 <             : Int
 ---
 >             : _no_type
-69c69
+69c86
 <               : Foo
 ---
 >               : _no_type
-73,74c73,74
+73,74c90,91
 <             : Int
 <           : Int
 ---
 >             : _no_type
 >           : _no_type
-80c80
+80c97
 <             : SELF_TYPE
 ---
 >             : _no_type
-84,85c84,85
+84,85c101,102
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-91c91
+91c108
 <           : SELF_TYPE
 ---
 >           : _no_type
-95,96c95,96
+95,96c112,113
 <         : Int
 <       : Int
 ---
 >         : _no_type
 >       : _no_type
-108c108
+108c125
 <         : Int
 ---
 >         : _no_type
-119c119
+119c136
 <               : Int
 ---
 >               : _no_type
-123,125c123,125
+123,125c140,142
 <               : Int
 <             : Int
 <           : Int
@@ -70,7 +88,7 @@
 >               : _no_type
 >             : _no_type
 >           : _no_type
-129,131c129,131
+129,131c146,148
 <           : Int
 <         : Int
 <       : Int
@@ -78,145 +96,145 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-148c148
+148c165
 <         : SELF_TYPE
 ---
 >         : _no_type
-152c152
+152c169
 <       : Int
 ---
 >       : _no_type
-162c162
+162c179
 <         : SELF_TYPE
 ---
 >         : _no_type
-166c166
+166c183
 <       : Int
 ---
 >       : _no_type
-183c183
+183c200
 <         : SELF_TYPE
 ---
 >         : _no_type
-191c191
+191c208
 <           : Bar
 ---
 >           : _no_type
-199,200c199,200
+199,200c216,217
 <           : Bar
 <       : Bar
 ---
 >           : _no_type
 >       : _no_type
-218c218
+218c235
 <                 : Razz
 ---
 >                 : _no_type
-223c223
+223c240
 <               : Int
 ---
 >               : _no_type
-229c229
+229c246
 <                 : Foo
 ---
 >                 : _no_type
-233,234c233,234
+233,234c250,251
 <               : Int
 <             : Int
 ---
 >               : _no_type
 >             : _no_type
-240c240
+240c257
 <               : Bar
 ---
 >               : _no_type
-244,245c244,245
+244,245c261,262
 <             : Int
 <           : Int
 ---
 >             : _no_type
 >           : _no_type
-251c251
+251c268
 <             : SELF_TYPE
 ---
 >             : _no_type
-255,256c255,256
+255,256c272,273
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-262c262
+262c279
 <           : SELF_TYPE
 ---
 >           : _no_type
-266,267c266,267
+266,267c283,284
 <         : Int
 <       : Int
 ---
 >         : _no_type
 >       : _no_type
-282c282
+282c299
 <       : Int
 ---
 >       : _no_type
-292c292
+292c309
 <         : SELF_TYPE
 ---
 >         : _no_type
-300c300
+300c317
 <           : Foo
 ---
 >           : _no_type
-308c308
+308c325
 <           : Bar
 ---
 >           : _no_type
-316c316
+316c333
 <           : Razz
 ---
 >           : _no_type
-324,325c324,325
+324,325c341,342
 <           : Bar
 <       : Foo
 ---
 >           : _no_type
 >       : _no_type
-335c335
+335c352
 <         : SELF_TYPE
 ---
 >         : _no_type
-339c339
+339c356
 <       : Int
 ---
 >       : _no_type
-351c351
+351c368
 <           : SELF_TYPE
 ---
 >           : _no_type
-357c357
+357c374
 <           : Int
 ---
 >           : _no_type
-359c359
+359c376
 <         : SELF_TYPE
 ---
 >         : _no_type
-363,364c363,364
+363,364c380,381
 <         : Int
 <       : Int
 ---
 >         : _no_type
 >       : _no_type
-376c376
+376c393
 <         : Int
 ---
 >         : _no_type
-387c387
+387c404
 <               : Int
 ---
 >               : _no_type
-391,393c391,393
+391,393c408,410
 <               : Int
 <             : Int
 <           : Int
@@ -224,7 +242,7 @@
 >               : _no_type
 >             : _no_type
 >           : _no_type
-397,399c397,399
+397,399c414,416
 <           : Int
 <         : Int
 <       : Int
@@ -232,23 +250,23 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-414c414
+414c431
 <       : Bazz
 ---
 >       : _no_type
-422c422
+422c439
 <       : Foo
 ---
 >       : _no_type
-430c430
+430c447
 <       : Razz
 ---
 >       : _no_type
-438c438
+438c455
 <       : Bar
 ---
 >       : _no_type
-446c446
+446c463
 <       : String
 ---
 >       : _no_type

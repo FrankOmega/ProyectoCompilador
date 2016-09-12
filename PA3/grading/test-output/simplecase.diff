@@ -1,20 +1,24 @@
-16c16
+0a1,3
+> Método 'main' en la clase Main
+> Atributo 'moo' en la clase A
+> Método 'boo' en la clase A
+16c19
 <       : Int
 ---
 >       : _no_type
-42c42
+42c45
 <           : Object
 ---
 >           : _no_type
-50c50
+50c53
 <             : Int
 ---
 >             : _no_type
-58c58
+58c61
 <             : Bool
 ---
 >             : _no_type
-66,68c66,68
+66,68c69,71
 <             : String
 <         : Object
 <       : Object

@@ -1,14 +1,18 @@
-27,28c27,28
+0a1,3
+> Atributo 'x' en la clase Main
+> Método 'main' en la clase Main
+> Método 'foo' en la clase Main
+27,28c30,31
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-36c36
+36c39
 <             : SELF_TYPE
 ---
 >             : _no_type
-40,42c40,42
+40,42c43,45
 <           : Int
 <         : Int
 <       : Int
@@ -16,7 +20,7 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-50c50
+50c53
 <       : Int
 ---
 >       : _no_type

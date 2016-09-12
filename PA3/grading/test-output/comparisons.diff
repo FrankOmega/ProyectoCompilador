@@ -1,24 +1,27 @@
-24c24
+0a1,2
+> Método 'foo' en la clase A
+> Método 'main' en la clase Main
+24c26
 <           : Int
 ---
 >           : _no_type
-28,29c28,29
-<           : Int
-<         : Bool
----
->           : _no_type
->         : _no_type
-35c35
-<           : Int
----
->           : _no_type
-39,40c39,40
+28,29c30,31
 <           : Int
 <         : Bool
 ---
 >           : _no_type
 >         : _no_type
-46,48c46,48
+35c37
+<           : Int
+---
+>           : _no_type
+39,40c41,42
+<           : Int
+<         : Bool
+---
+>           : _no_type
+>         : _no_type
+46,48c48,50
 <           : Bool
 <         : Bool
 <       : Bool
@@ -26,7 +29,7 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-63c63
+63c65
 <       : Int
 ---
 >       : _no_type

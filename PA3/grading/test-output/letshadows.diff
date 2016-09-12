@@ -1,12 +1,15 @@
-29c29
+0a1,2
+> Atributo 'x' en la clase Main
+> Método 'main' en la clase Main
+29c31
 <           : String
 ---
 >           : _no_type
-35c35
+35c37
 <             : String
 ---
 >             : _no_type
-39,41c39,41
+39,41c41,43
 <           : Int
 <         : Int
 <       : Int

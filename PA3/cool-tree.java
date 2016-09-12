@@ -12,6 +12,12 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 
+class tablas{
+  public static Hashtable<String,String> cyh;
+  //public static Hashtable<String,String> myf;
+  //public static Hashtable<String,myf> cym;
+}
+
 /** Defines simple phylum Program */
 abstract class Program extends TreeNode {
     protected Program(int lineNumber) {
@@ -29,6 +35,7 @@ abstract class Class_ extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
+    public abstract void semant(String clactual);
 
 }
 
@@ -66,6 +73,7 @@ abstract class Feature extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
+    public abstract void semant(String clactual);
 
 }
 
@@ -264,7 +272,9 @@ class programc extends Program {
 	to test the complete compiler.
     */
     public void semant() {
-      Hashtable<String,String> cyh = new Hashtable<String,String>();
+      //-----------------Clases errorSemant--------------------------------
+      //Hashtable<String,String> cyh = new Hashtable<String,String>();
+      tablas.cyh = new Hashtable<String,String>();
       ClassTable classTable = new ClassTable(classes);
       Boolean nocycle;
 
@@ -289,18 +299,18 @@ class programc extends Program {
 
         else{
           //Se duplica?
-          if(cyh.containsKey(clasestr)){
+          if(tablas.cyh.containsKey(clasestr)){
             SemantErrors.classPreviouslyDefined(clases.name, classTable.semantError(clases));
           }
           //Llenar el hashtable
           else{
-            cyh.put(clasestr,padrestr);
+            tablas.cyh.put(clasestr,padrestr);
           }
         }
       }
 
       //Añadir el padre de IO que es Object
-      cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
+      tablas.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
 
       if (classTable.errors()) {
     	    System.err.println("Compilation halted due to static semantic errors.");
@@ -311,33 +321,38 @@ class programc extends Program {
         class_c clases = (class_c) classes.getNth(i);
         //Undefined class
         if(!clases.parent.toString().equals("Object")){
-          if(!cyh.containsKey(clases.parent.toString())){
+          if(!tablas.cyh.containsKey(clases.parent.toString())){
             SemantErrors.inheritsFromAnUndefinedClass(clases.name, clases.parent,
                                           classTable.semantError(clases));
           }
         }
         //Has cycle?
-        else if(classTable.searchCycleClasses(clases.name.toString(), cyh)){
+        else if(classTable.searchCycleClasses(clases.name.toString(), tablas.cyh)){
           SemantErrors.inheritanceCycle(clases.name, classTable.semantError(clases));
         }
         classTable.v.clear();
       }
+      if (classTable.errors()) {
+    	    System.err.println("Compilation halted due to static semantic errors.");
+    	    System.exit(1);
+    	}
 
       //Main no esta definido
-      if(!cyh.containsKey("Main")){
+      if(!tablas.cyh.containsKey("Main")){
         SemantErrors.noClassMain(classTable.semantError());
       }
 
-	/* ClassTable constructor may do some semantic analysis */
-
-
-	/* some semantic analysis code may go here */
-	if (classTable.errors()) {
+	    if (classTable.errors()) {
 	    System.err.println("Compilation halted due to static semantic errors.");
 	    System.exit(1);
-	}
-    }
+	    }
 
+      for(int i  = 0; i < classes.getLength(); i++){
+        class_c clases = (class_c) classes.getNth(i);
+        clases.semant(clases.name.toString());
+        System.out.println();
+      }
+    }
 }
 
 
@@ -373,6 +388,26 @@ class class_c extends Class_ {
         dump_AbstractSymbol(out, n+2, parent);
         features.dump(out, n+2);
         dump_AbstractSymbol(out, n+2, filename);
+    }
+
+    public void semant(String clactual){
+      System.out.println("En la clase <" + clactual + "," +
+        tablas.cyh.get(clactual) + ">");
+
+      for(int i = 0; i  < features.getLength(); i++){
+        Feature cosa = (Feature)features.getNth(i);
+
+        if(cosa instanceof attr){
+          attr atributo = (attr)features.getNth(i);
+          System.out.println("Atributo " + atributo.name.toString());
+        }
+        else{
+          method metodo = (method)features.getNth(i);
+          System.out.println("Método " + metodo.name.toString());
+          metodo.semant(clactual);
+        }
+      }
+
     }
 
 
@@ -443,6 +478,21 @@ class method extends Feature {
 	expr.dump_with_types(out, n + 2);
     }
 
+    public void semant(String clactual){
+      System.out.print("   Firmas: ");
+      if(formals.getLength() == 0){
+        System.out.print("Ninguna");
+      }
+      else{
+        for(int i = 0;i < formals.getLength(); i++){
+          formalc firmas = (formalc) formals.getNth(i);
+          System.out.print(firmas.name.toString() + "," +
+                          firmas.type_decl.toString() + " ");
+        }
+      }
+      System.out.println();
+    }
+
 }
 
 
@@ -485,6 +535,9 @@ class attr extends Feature {
 	init.dump_with_types(out, n + 2);
     }
 
+    public void semant(String clactual){
+
+    }
 }
 
 
@@ -521,7 +574,6 @@ class formalc extends Formal {
         dump_AbstractSymbol(out, n + 2, name);
         dump_AbstractSymbol(out, n + 2, type_decl);
     }
-
 }
 
 

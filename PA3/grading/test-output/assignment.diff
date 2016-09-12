@@ -1,22 +1,29 @@
-42,43c42,43
+0a1,6
+> Atributo 'x' en la clase Main
+> Atributo 'y' en la clase Main
+> Atributo 'f' en la clase Main
+> Método 'main' en la clase Main
+> Método 'foo' en la clase Main
+> Atributo 'x' en la clase Foo
+42,43c48,49
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-50,51c50,51
+50,51c56,57
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-58,59c58,59
+58,59c64,65
 <           : String
 <         : String
 ---
 >           : _no_type
 >         : _no_type
-66,68c66,68
+66,68c72,74
 <           : Foo
 <         : Foo
 <       : Foo
@@ -24,11 +31,11 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-76c76
+76c82
 <       : String
 ---
 >       : _no_type
-91c91
+91c97
 <       : Int
 ---
 >       : _no_type

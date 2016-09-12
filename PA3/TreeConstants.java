@@ -1,6 +1,7 @@
 /** For convenience, this clas defines a large number of symbols.  These
  * symbols include the primitive type and method names, as well as fixed
- * names used by the runtime system.sadfsadf  */
+ * names used by the runtime system.  
+ */
 class TreeConstants {
     public static final AbstractSymbol arg
 	= AbstractTable.idtable.addString("arg");

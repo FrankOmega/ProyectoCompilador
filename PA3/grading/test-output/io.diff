@@ -1,42 +1,46 @@
-34c34
+0a1,3
+> Atributo 'x' en la clase Main
+> Atributo 'y' en la clase Main
+> Método 'main' en la clase Main
+34c37
 <           : SELF_TYPE
 ---
 >           : _no_type
-40c40
+40c43
 <           : String
 ---
 >           : _no_type
-42c42
+42c45
 <         : SELF_TYPE
 ---
 >         : _no_type
-48c48
+48c51
 <           : SELF_TYPE
 ---
 >           : _no_type
-54c54
+54c57
 <           : Int
 ---
 >           : _no_type
-56c56
+56c59
 <         : SELF_TYPE
 ---
 >         : _no_type
-65c65
+65c68
 <             : SELF_TYPE
 ---
 >             : _no_type
-69,70c69,70
+69,70c72,73
 <           : String
 <         : String
 ---
 >           : _no_type
 >         : _no_type
-79c79
+79c82
 <             : SELF_TYPE
 ---
 >             : _no_type
-83,85c83,85
+83,85c86,88
 <           : Int
 <         : Int
 <       : Int

@@ -1,36 +1,26 @@
-16c16
+0a1,9
+> Atributo 'a' en la clase A
+> Atributo 'd' en la clase A
+> Método 'f' en la clase A
+> Atributo 'b' en la clase B
+> Método 'f' en la clase B
+> Método 'g' en la clase B
+> Atributo 'c' en la clase C
+> Método 'h' en la clase C
+> Método 'main' en la clase Main
+16c25
 <       : Int
 ---
 >       : _no_type
-24c24
+24c33
 <       : Int
 ---
 >       : _no_type
-37c37
+37c46
 <           : Int
 ---
 >           : _no_type
-41,43c41,43
-<           : Int
-<         : Int
-<       : Int
----
->           : _no_type
->         : _no_type
->       : _no_type
-58c58
-<       : Int
----
->       : _no_type
-66c66
-<       : Int
----
->       : _no_type
-79c79
-<           : Int
----
->           : _no_type
-83,85c83,85
+41,43c50,52
 <           : Int
 <         : Int
 <       : Int
@@ -38,15 +28,19 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-100c100
+58c67
 <       : Int
 ---
 >       : _no_type
-113c113
+66c75
+<       : Int
+---
+>       : _no_type
+79c88
 <           : Int
 ---
 >           : _no_type
-117,119c117,119
+83,85c92,94
 <           : Int
 <         : Int
 <       : Int
@@ -54,7 +48,23 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-134c134
+100c109
+<       : Int
+---
+>       : _no_type
+113c122
+<           : Int
+---
+>           : _no_type
+117,119c126,128
+<           : Int
+<         : Int
+<       : Int
+---
+>           : _no_type
+>         : _no_type
+>       : _no_type
+134c143
 <       : Int
 ---
 >       : _no_type

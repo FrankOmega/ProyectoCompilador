@@ -1,7 +1,10 @@
-1,2c1,76
+1,2c1,79
 < filename:line
 < Compilation halted due to static semantic errors.
 ---
+> Método 'main' en la clase Main
+> Método 'inky' en la clase D
+> Método 'inky' en la clase E
 > 
 > _program
 > 

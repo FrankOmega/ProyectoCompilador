@@ -1,20 +1,23 @@
-16c16
+0a1,2
+> Método 'main' en la clase Main
+> Método 'foo' en la clase A
+16c18
 <       : Int
 ---
 >       : _no_type
-33c33
+33c35
 <         : SELF_TYPE
 ---
 >         : _no_type
-37c37
+37c39
 <         : String
 ---
 >         : _no_type
-41c41
+41c43
 <         : Bool
 ---
 >         : _no_type
-45,46c45,46
+45,46c47,48
 <         : Int
 <       : Int
 ---

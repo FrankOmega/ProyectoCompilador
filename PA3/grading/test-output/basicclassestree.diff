@@ -1,16 +1,21 @@
-16c16
+0a1,4
+> Método 'main' en la clase Main
+> Atributo 'a' en la clase A
+> Atributo 'b' en la clase A
+> Atributo 'c' en la clase A
+16c20
 <       : Int
 ---
 >       : _no_type
-31c31
+31c35
 <       : Int
 ---
 >       : _no_type
-39c39
+39c43
 <       : String
 ---
 >       : _no_type
-47c47
+47c51
 <       : Bool
 ---
 >       : _no_type

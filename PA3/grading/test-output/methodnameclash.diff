@@ -1,16 +1,22 @@
-37c37
+0a1,5
+> Atributo 'x' en la clase A
+> Atributo 'y' en la clase A
+> Método 'foo' en la clase L
+> Método 'foo' en la clase R
+> Método 'main' en la clase Main
+37c42
 <       : Int
 ---
 >       : _no_type
-52c52
+52c57
 <       : String
 ---
 >       : _no_type
-69c69
+69c74
 <         : L
 ---
 >         : _no_type
-73c73
+73c78
 <       : Int
 ---
 >       : _no_type

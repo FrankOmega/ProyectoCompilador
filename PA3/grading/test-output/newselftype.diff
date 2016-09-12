@@ -1,22 +1,26 @@
-18c18
+0a1,3
+> Atributo 'bar' en la clase A
+> Método 'foo' en la clase A
+> Método 'main' en la clase Main
+18c21
 <         : SELF_TYPE
 ---
 >         : _no_type
-24c24
+24c27
 <         : SELF_TYPE
 ---
 >         : _no_type
-26c26
+26c29
 <       : Int
 ---
 >       : _no_type
-40,41c40,41
+40,41c43,44
 <         : Int
 <       : Int
 ---
 >         : _no_type
 >       : _no_type
-56c56
+56c59
 <       : Int
 ---
 >       : _no_type

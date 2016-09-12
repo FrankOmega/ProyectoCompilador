@@ -1,142 +1,156 @@
-16c16
+0a1,13
+> Método 'isNil' en la clase List
+> Método 'head' en la clase List
+> Método 'tail' en la clase List
+> Método 'cons' en la clase List
+> Atributo 'car' en la clase Cons
+> Atributo 'cdr' en la clase Cons
+> Método 'isNil' en la clase Cons
+> Método 'head' en la clase Cons
+> Método 'tail' en la clase Cons
+> Método 'init' en la clase Cons
+> Atributo 'mylist' en la clase Main
+> Método 'print_list' en la clase Main
+> Método 'main' en la clase Main
+16c29
 <       : Bool
 ---
 >       : _no_type
-28c28
+28c41
 <           : SELF_TYPE
 ---
 >           : _no_type
-32c32
+32c45
 <         : Object
 ---
 >         : _no_type
-36,37c36,37
+36,37c49,50
 <         : Int
 <       : Int
 ---
 >         : _no_type
 >       : _no_type
-49c49
+49c62
 <           : SELF_TYPE
 ---
 >           : _no_type
-53c53
+53c66
 <         : Object
 ---
 >         : _no_type
-57,58c57,58
+57,58c70,71
 <         : SELF_TYPE
 <       : SELF_TYPE
 ---
 >         : _no_type
 >       : _no_type
-72c72
+72c85
 <         : Cons
 ---
 >         : _no_type
-78c78
+78c91
 <         : Int
 ---
 >         : _no_type
-82c82
+82c95
 <         : SELF_TYPE
 ---
 >         : _no_type
-84c84
+84c97
 <       : List
 ---
 >       : _no_type
-113c113
+113c126
 <       : Bool
 ---
 >       : _no_type
-121c121
+121c134
 <       : Int
 ---
 >       : _no_type
-129c129
+129c142
 <       : List
 ---
 >       : _no_type
-150,151c150,151
+150,151c163,164
 <           : Int
 <         : Int
 ---
 >           : _no_type
 >         : _no_type
-158,159c158,159
+158,159c171,172
 <           : List
 <         : List
 ---
 >           : _no_type
 >         : _no_type
-163,164c163,164
+163,164c176,177
 <         : SELF_TYPE
 <       : SELF_TYPE
 ---
 >         : _no_type
 >       : _no_type
-194c194
+194c207
 <           : List
 ---
 >           : _no_type
-198c198
+198c211
 <         : Bool
 ---
 >         : _no_type
-204c204
+204c217
 <           : SELF_TYPE
 ---
 >           : _no_type
-210c210
+210c223
 <           : String
 ---
 >           : _no_type
-212c212
+212c225
 <         : SELF_TYPE
 ---
 >         : _no_type
-220c220
+220c233
 <             : SELF_TYPE
 ---
 >             : _no_type
-228c228
+228c241
 <               : List
 ---
 >               : _no_type
-232c232
+232c245
 <             : Int
 ---
 >             : _no_type
-234c234
+234c247
 <           : SELF_TYPE
 ---
 >           : _no_type
-240c240
+240c253
 <             : SELF_TYPE
 ---
 >             : _no_type
-246c246
+246c259
 <             : String
 ---
 >             : _no_type
-248c248
+248c261
 <           : SELF_TYPE
 ---
 >           : _no_type
-254c254
+254c267
 <             : SELF_TYPE
 ---
 >             : _no_type
-262c262
+262c275
 <               : List
 ---
 >               : _no_type
-266c266
+266c279
 <             : List
 ---
 >             : _no_type
-268,270c268,270
+268,270c281,283
 <           : Object
 <         : Object
 <       : Object
@@ -144,79 +158,79 @@
 >           : _no_type
 >         : _no_type
 >       : _no_type
-293c293
+293c306
 <                     : List
 ---
 >                     : _no_type
-299c299
+299c312
 <                     : Int
 ---
 >                     : _no_type
-301c301
+301c314
 <                   : List
 ---
 >                   : _no_type
-307c307
+307c320
 <                   : Int
 ---
 >                   : _no_type
-309c309
+309c322
 <                 : List
 ---
 >                 : _no_type
-315c315
+315c328
 <                 : Int
 ---
 >                 : _no_type
-317c317
+317c330
 <               : List
 ---
 >               : _no_type
-323c323
+323c336
 <               : Int
 ---
 >               : _no_type
-325c325
+325c338
 <             : List
 ---
 >             : _no_type
-331c331
+331c344
 <             : Int
 ---
 >             : _no_type
-333,334c333,334
+333,334c346,347
 <           : List
 <         : List
 ---
 >           : _no_type
 >         : _no_type
-344c344
+344c357
 <               : List
 ---
 >               : _no_type
-348,349c348,349
+348,349c361,362
 <             : Bool
 <           : Bool
 ---
 >             : _no_type
 >           : _no_type
-357c357
+357c370
 <               : SELF_TYPE
 ---
 >               : _no_type
-363c363
+363c376
 <               : List
 ---
 >               : _no_type
-365c365
+365c378
 <             : Object
 ---
 >             : _no_type
-374c374
+374c387
 <                 : List
 ---
 >                 : _no_type
-378,382c378,382
+378,382c391,395
 <               : List
 <             : List
 <           : List

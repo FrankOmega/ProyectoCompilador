@@ -1,8 +1,13 @@
-23c23
+0a1,4
+> Atributo 'foo' en la clase A
+> Método 'main' en la clase A
+> Atributo 'bar' en la clase B
+> Método 'main' en la clase Main
+23c27
 <       : Int
 ---
 >       : _no_type
-52c52
+52c56
 <       : Int
 ---
 >       : _no_type

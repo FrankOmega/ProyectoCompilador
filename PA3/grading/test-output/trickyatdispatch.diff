@@ -1,20 +1,26 @@
-16c16
+0a1,5
+> Método 'main' en la clase Main
+> Método 'inky' en la clase A
+> Método 'binky' en la clase B
+> Atributo 'b' en la clase C
+> Método 'winky' en la clase C
+16c21
 <       : Int
 ---
 >       : _no_type
-31c31
+31c36
 <       : Int
 ---
 >       : _no_type
-46c46
+46c51
 <       : String
 ---
 >       : _no_type
-70c70
+70c75
 <         : B
 ---
 >         : _no_type
-75c75
+75c80
 <       : Int
 ---
 >       : _no_type
