@@ -1,40 +1,36 @@
-0a1,3
-> Método 'main' en la clase Main
-> Método 'foo' en la clase A
-> Método 'moo' en la clase B
-16c19
+16c16
 <       : Int
 ---
 >       : _no_type
-47c50
+47c47
 <       : SELF_TYPE
 ---
 >       : _no_type
-66c69
+66c66
 <         : B
 ---
 >         : _no_type
-72c75
+72c72
 <           : SELF_TYPE
 ---
 >           : _no_type
-78c81
+78c78
 <           : Int
 ---
 >           : _no_type
-82c85
+82c82
 <           : B
 ---
 >           : _no_type
-86c89
+86c86
 <           : B
 ---
 >           : _no_type
-90c93
+90c90
 <           : B
 ---
 >           : _no_type
-92,93c95,96
+92,93c92,93
 <         : A
 <       : A
 ---

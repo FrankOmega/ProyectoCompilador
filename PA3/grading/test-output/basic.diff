@@ -1,34 +1,32 @@
-0a1
-> Método 'main' en la clase Main
-20c21
+20c20
 <           : Int
 ---
 >           : _no_type
-24c25
+24c24
 <         : Int
 ---
 >         : _no_type
-30c31
+30c30
 <           : String
 ---
 >           : _no_type
-34c35
+34c34
 <         : String
 ---
 >         : _no_type
-40c41
+40c40
 <           : Bool
 ---
 >           : _no_type
-44c45
+44c44
 <         : Bool
 ---
 >         : _no_type
-50c51
+50c50
 <           : String
 ---
 >           : _no_type
-54,55c55,56
+54,55c54,55
 <         : Int
 <       : Int
 ---

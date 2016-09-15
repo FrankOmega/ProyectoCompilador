@@ -1,272 +1,453 @@
-0a1,17
-> Atributo 'a' en la clase Foo
-> Atributo 'b' en la clase Foo
-> Método 'doh' en la clase Foo
-> Atributo 'c' en la clase Bar
-> Atributo 'd' en la clase Bar
-> Atributo 'e' en la clase Razz
-> Atributo 'f' en la clase Razz
-> Atributo 'h' en la clase Bazz
-> Atributo 'g' en la clase Bazz
-> Atributo 'i' en la clase Bazz
-> Método 'printh' en la clase Bazz
-> Método 'doh' en la clase Bazz
-> Atributo 'a' en la clase Main
-> Atributo 'b' en la clase Main
-> Atributo 'c' en la clase Main
-> Atributo 'd' en la clase Main
-> Método 'main' en la clase Main
-18c35
+1,447c1,4
+< 
+< _program
+< 
+<   _class
+<     Foo
+<     Bazz
+<     filename
+<     (
+< 
+<     _attr
+<       a
+<       Razz
+< 
+<       _typcase
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-26c43
+< 
+<         _branch
+<           n
+<           Razz
+< 
+<           _new
+<             Bar
 <           : Bar
----
->           : _no_type
-34c51
+< 
+<         _branch
+<           n
+<           Foo
+< 
+<           _new
+<             Razz
 <           : Razz
----
->           : _no_type
-42,43c59,60
+< 
+<         _branch
+<           n
+<           Bar
+< 
+<           _object
+<             n
 <           : Bar
 <       : Razz
----
->           : _no_type
->       : _no_type
-59c76
+< 
+<     _attr
+<       b
+<       Int
+< 
+<       _plus
+< 
+<         _plus
+< 
+<           _plus
+< 
+<             _dispatch
+< 
+<               _object
+<                 a
 <               : Razz
----
->               : _no_type
-63c80
+<               doh
+<               (
+<               )
 <             : Int
----
->             : _no_type
-69c86
+< 
+<             _dispatch
+< 
+<               _object
+<                 g
 <               : Foo
----
->               : _no_type
-73,74c90,91
+<               doh
+<               (
+<               )
 <             : Int
 <           : Int
----
->             : _no_type
->           : _no_type
-80c97
+< 
+<           _dispatch
+< 
+<             _object
+<               self
 <             : SELF_TYPE
----
->             : _no_type
-84,85c101,102
+<             doh
+<             (
+<             )
 <           : Int
 <         : Int
----
->           : _no_type
->         : _no_type
-91c108
+< 
+<         _dispatch
+< 
+<           _object
+<             self
 <           : SELF_TYPE
----
->           : _no_type
-95,96c112,113
+<           printh
+<           (
+<           )
 <         : Int
 <       : Int
----
->         : _no_type
->       : _no_type
-108c125
+< 
+<     _method
+<       doh
+<       Int
+< 
+<       _let
+<         i
+<         Int
+< 
+<         _object
+<           h
 <         : Int
----
->         : _no_type
-119c136
+< 
+<         _block
+< 
+<           _assign
+<             h
+< 
+<             _plus
+< 
+<               _object
+<                 h
 <               : Int
----
->               : _no_type
-123,125c140,142
+< 
+<               _int
+<                 2
 <               : Int
 <             : Int
 <           : Int
----
->               : _no_type
->             : _no_type
->           : _no_type
-129,131c146,148
+< 
+<           _object
+<             i
 <           : Int
 <         : Int
 <       : Int
----
->           : _no_type
->         : _no_type
->       : _no_type
-148c165
+<     )
+< 
+<   _class
+<     Bar
+<     Razz
+<     filename
+<     (
+< 
+<     _attr
+<       c
+<       Int
+< 
+<       _dispatch
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-152c169
+<         doh
+<         (
+<         )
 <       : Int
----
->       : _no_type
-162c179
+< 
+<     _attr
+<       d
+<       Object
+< 
+<       _dispatch
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-166c183
+<         printh
+<         (
+<         )
 <       : Int
----
->       : _no_type
-183c200
+<     )
+< 
+<   _class
+<     Razz
+<     Foo
+<     filename
+<     (
+< 
+<     _attr
+<       e
+<       Bar
+< 
+<       _typcase
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-191c208
+< 
+<         _branch
+<           n
+<           Razz
+< 
+<           _new
+<             Bar
 <           : Bar
----
->           : _no_type
-199,200c216,217
+< 
+<         _branch
+<           n
+<           Bar
+< 
+<           _object
+<             n
 <           : Bar
 <       : Bar
----
->           : _no_type
->       : _no_type
-218c235
+< 
+<     _attr
+<       f
+<       Int
+< 
+<       _plus
+< 
+<         _plus
+< 
+<           _plus
+< 
+<             _plus
+< 
+<               _static_dispatch
+< 
+<                 _object
+<                   a
 <                 : Razz
----
->                 : _no_type
-223c240
+<                 Bazz
+<                 doh
+<                 (
+<                 )
 <               : Int
----
->               : _no_type
-229c246
+< 
+<               _dispatch
+< 
+<                 _object
+<                   g
 <                 : Foo
----
->                 : _no_type
-233,234c250,251
+<                 doh
+<                 (
+<                 )
 <               : Int
 <             : Int
----
->               : _no_type
->             : _no_type
-240c257
+< 
+<             _dispatch
+< 
+<               _object
+<                 e
 <               : Bar
----
->               : _no_type
-244,245c261,262
+<               doh
+<               (
+<               )
 <             : Int
 <           : Int
----
->             : _no_type
->           : _no_type
-251c268
+< 
+<           _dispatch
+< 
+<             _object
+<               self
 <             : SELF_TYPE
----
->             : _no_type
-255,256c272,273
+<             doh
+<             (
+<             )
 <           : Int
 <         : Int
----
->           : _no_type
->         : _no_type
-262c279
+< 
+<         _dispatch
+< 
+<           _object
+<             self
 <           : SELF_TYPE
----
->           : _no_type
-266,267c283,284
+<           printh
+<           (
+<           )
 <         : Int
 <       : Int
----
->         : _no_type
->       : _no_type
-282c299
+<     )
+< 
+<   _class
+<     Bazz
+<     IO
+<     filename
+<     (
+< 
+<     _attr
+<       h
+<       Int
+< 
+<       _int
+<         1
 <       : Int
----
->       : _no_type
-292c309
+< 
+<     _attr
+<       g
+<       Foo
+< 
+<       _typcase
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-300c317
+< 
+<         _branch
+<           n
+<           Bazz
+< 
+<           _new
+<             Foo
 <           : Foo
----
->           : _no_type
-308c325
+< 
+<         _branch
+<           n
+<           Razz
+< 
+<           _new
+<             Bar
 <           : Bar
----
->           : _no_type
-316c333
+< 
+<         _branch
+<           n
+<           Foo
+< 
+<           _new
+<             Razz
 <           : Razz
----
->           : _no_type
-324,325c341,342
+< 
+<         _branch
+<           n
+<           Bar
+< 
+<           _object
+<             n
 <           : Bar
 <       : Foo
----
->           : _no_type
->       : _no_type
-335c352
+< 
+<     _attr
+<       i
+<       Object
+< 
+<       _dispatch
+< 
+<         _object
+<           self
 <         : SELF_TYPE
----
->         : _no_type
-339c356
+<         printh
+<         (
+<         )
 <       : Int
----
->       : _no_type
-351c368
+< 
+<     _method
+<       printh
+<       Int
+< 
+<       _block
+< 
+<         _dispatch
+< 
+<           _object
+<             self
 <           : SELF_TYPE
----
->           : _no_type
-357c374
+<           out_int
+<           (
+< 
+<           _object
+<             h
 <           : Int
----
->           : _no_type
-359c376
+<           )
 <         : SELF_TYPE
----
->         : _no_type
-363,364c380,381
+< 
+<         _int
+<           0
 <         : Int
 <       : Int
----
->         : _no_type
->       : _no_type
-376c393
+< 
+<     _method
+<       doh
+<       Int
+< 
+<       _let
+<         i
+<         Int
+< 
+<         _object
+<           h
 <         : Int
----
->         : _no_type
-387c404
+< 
+<         _block
+< 
+<           _assign
+<             h
+< 
+<             _plus
+< 
+<               _object
+<                 h
 <               : Int
----
->               : _no_type
-391,393c408,410
+< 
+<               _int
+<                 1
 <               : Int
 <             : Int
 <           : Int
----
->               : _no_type
->             : _no_type
->           : _no_type
-397,399c414,416
+< 
+<           _object
+<             i
 <           : Int
 <         : Int
 <       : Int
----
->           : _no_type
->         : _no_type
->       : _no_type
-414c431
+<     )
+< 
+<   _class
+<     Main
+<     Object
+<     filename
+<     (
+< 
+<     _attr
+<       a
+<       Bazz
+< 
+<       _new
+<         Bazz
 <       : Bazz
----
->       : _no_type
-422c439
+< 
+<     _attr
+<       b
+<       Foo
+< 
+<       _new
+<         Foo
 <       : Foo
----
->       : _no_type
-430c447
+< 
+<     _attr
+<       c
+<       Razz
+< 
+<       _new
+<         Razz
 <       : Razz
----
->       : _no_type
-438c455
+< 
+<     _attr
+<       d
+<       Bar
+< 
+<       _new
+<         Bar
 <       : Bar
----
->       : _no_type
-446c463
+< 
+<     _method
+<       main
+<       String
+< 
+<       _string
+<         "do nothing"
 <       : String
+<     )
 ---
->       : _no_type
+> java.lang.NullPointerException
+> 	at class_c.semant(cool-tree.java:406)
+> 	at programc.semant(cool-tree.java:347)
+> 	at Semant.main(Semant.java:36)

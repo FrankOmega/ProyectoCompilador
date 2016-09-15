@@ -1,15 +1,44 @@
-0a1,2
-> Método 'foo' en la clase A
-> Método 'main' en la clase Main
-18c20
+1,38c1,4
+< 
+< _program
+< 
+<   _class
+<     A
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       foo
+<       Object
+< 
+<       _dispatch
+< 
+<         _new
+<           Object
 <         : Object
----
->         : _no_type
-22c24
+<         abort
+<         (
+<         )
 <       : Object
----
->       : _no_type
-37c39
+<     )
+< 
+<   _class
+<     Main
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       main
+<       Int
+< 
+<       _int
+<         6
 <       : Int
+<     )
 ---
->       : _no_type
+> java.lang.NullPointerException
+> 	at class_c.semant(cool-tree.java:406)
+> 	at programc.semant(cool-tree.java:347)
+> 	at Semant.main(Semant.java:36)

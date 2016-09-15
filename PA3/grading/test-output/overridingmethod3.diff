@@ -1,16 +1,12 @@
-0a1,3
-> Método 'main' en la clase Main
-> Método 'inky' en la clase A
-> Método 'inky' en la clase B
-16c19
+16c16
 <       : Int
 ---
 >       : _no_type
-31c34
+31c31
 <       : SELF_TYPE
 ---
 >       : _no_type
-46c49
+46c46
 <       : SELF_TYPE
 ---
 >       : _no_type

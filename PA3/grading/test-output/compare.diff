@@ -1,17 +1,12 @@
-0a1,4
-> Método 'main' en la clase Main
-> Atributo 'a' en la clase C
-> Atributo 'b' en la clase C
-> Método 'compare' en la clase C
-16c20
+16c16
 <       : Int
 ---
 >       : _no_type
-61c65
+61c61
 <         : A
 ---
 >         : _no_type
-65,66c69,70
+65,66c65,66
 <         : B
 <       : Bool
 ---

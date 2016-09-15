@@ -1,16 +1,7 @@
-1,2c1,160
+1,2c1,151
 < filename:line
 < Compilation halted due to static semantic errors.
 ---
-> Método 'main' en la clase Main
-> Atributo 'a' en la clase Test
-> Atributo 'b' en la clase Test
-> Atributo 'c' en la clase Test
-> Atributo 'd' en la clase Test
-> Atributo 'z' en la clase Test
-> Método 'f' en la clase Test
-> Método 'g' en la clase Test
-> Método 'h' en la clase Test
 > 
 > _program
 > 

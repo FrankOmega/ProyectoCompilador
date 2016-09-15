@@ -11,11 +11,15 @@ import java.io.PrintStream;
 import java.util.Vector;
 import java.util.Hashtable;
 
-
+//Variables globales
 class tablas{
+  public static ClassTable classTable;
+  public static SymbolTable mapa;
+
   public static Hashtable<String,String> cyh;
-  //public static Hashtable<String,String> myf;
-  //public static Hashtable<String,myf> cym;
+  public static Hashtable<String,Hashtable<String,Vector<String>>> cym;
+  public static Hashtable<String,Vector<String>> myf;
+  public static Hashtable<String,String> cyt;
 }
 
 /** Defines simple phylum Program */
@@ -35,14 +39,12 @@ abstract class Class_ extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
-    public abstract void semant(String clactual);
+    public abstract void semant(class_c clase);
 
 }
 
 
-/** Defines list phylum Classes
-    <p>
-    See <a href="ListNode.html">ListNode</a> for full documentation. */
+/** Defines list phylum Classes*/
 class Classes extends ListNode {
     public final static Class elementClass = Class_.class;
     /** Returns class of this lists's elements */
@@ -73,14 +75,12 @@ abstract class Feature extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
-    public abstract void semant(String clactual);
+    public abstract void semant(class_c clase);
 
 }
 
 
-/** Defines list phylum Features
-    <p>
-    See <a href="ListNode.html">ListNode</a> for full documentation. */
+/** Defines list phylum Features*/
 class Features extends ListNode {
     public final static Class elementClass = Feature.class;
     /** Returns class of this lists's elements */
@@ -115,9 +115,7 @@ abstract class Formal extends TreeNode {
 }
 
 
-/** Defines list phylum Formals
-    <p>
-    See <a href="ListNode.html">ListNode</a> for full documentation. */
+/** Defines list phylum Formals */
 class Formals extends ListNode {
     public final static Class elementClass = Formal.class;
     /** Returns class of this lists's elements */
@@ -161,9 +159,7 @@ abstract class Expression extends TreeNode {
 }
 
 
-/** Defines list phylum Expressions
-    <p>
-    See <a href="ListNode.html">ListNode</a> for full documentation. */
+/** Defines list phylum Expressions */
 class Expressions extends ListNode {
     public final static Class elementClass = Expression.class;
     /** Returns class of this lists's elements */
@@ -198,9 +194,7 @@ abstract class Case extends TreeNode {
 }
 
 
-/** Defines list phylum Cases
-    <p>
-    See <a href="ListNode.html">ListNode</a> for full documentation. */
+/** Defines list phylum Cases */
 class Cases extends ListNode {
     public final static Class elementClass = Case.class;
     /** Returns class of this lists's elements */
@@ -225,9 +219,7 @@ class Cases extends ListNode {
 }
 
 
-/** Defines AST constructor 'programc'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'programc'.*/
 class programc extends Program {
     protected Classes classes;
     /** Creates "programc" AST node.
@@ -256,12 +248,7 @@ class programc extends Program {
 	    ((Class_)e.nextElement()).dump_with_types(out, n + 2);
         }
     }
-    /** This method is the entry point to the semantic checker.  You will
-        need to complete it in programming assignment 4.
-	<p>
-        Your checker should do the following two things:
-	<ol>
-	<li>Check that the program is semantically correct
+    /** Check that the program is semantically correct
 	<li>Decorate the abstract syntax tree with type information
         by setting the type field in each Expression node.
         (see tree.h)
@@ -273,10 +260,12 @@ class programc extends Program {
     */
     public void semant() {
       //-----------------Clases errorSemant--------------------------------
-      //Hashtable<String,String> cyh = new Hashtable<String,String>();
       tablas.cyh = new Hashtable<String,String>();
-      ClassTable classTable = new ClassTable(classes);
-      Boolean nocycle;
+      tablas.cym = new Hashtable<String,Hashtable<String,Vector<String>>>();
+      tablas.myf = new Hashtable<String,Vector<String>>();
+      tablas.cyt = new Hashtable<String,String>();
+      tablas.classTable = new ClassTable(classes);
+      tablas.mapa = new SymbolTable();
 
       for(int i = classes.getLength()-1; i >= 0; i--){
         class_c clases = (class_c) classes.getNth(i);
@@ -287,20 +276,25 @@ class programc extends Program {
         if(clasestr.equals("Object") | clasestr.equals("Bool")
           | clasestr.equals("Int") | clasestr.equals("String")
           | clasestr.equals("SELF_TYPE") | clasestr.equals("IO")){
-          SemantErrors.basicClassRedefined(clases.name, classTable.semantError(clases));
+          SemantErrors.basicClassRedefined(clases.name, tablas.classTable.semantError(clases));
         }
 
+        if (tablas.classTable.errors()) {
+      	    System.err.println("Compilation halted due to static semantic errors.");
+      	    System.exit(1);
+      	}
+
         //No se puede heredar de estos 3 casos
-        else if(padrestr.equals("Bool")| padrestr.equals("Int")
+        if(padrestr.equals("Bool")| padrestr.equals("Int")
                 | padrestr.equals("String")){
           SemantErrors.cannotInheritClass(clases.name, clases.parent,
-                                        classTable.semantError(clases));
+                                      tablas.classTable.semantError(clases));
         }
 
         else{
           //Se duplica?
           if(tablas.cyh.containsKey(clasestr)){
-            SemantErrors.classPreviouslyDefined(clases.name, classTable.semantError(clases));
+            SemantErrors.classPreviouslyDefined(clases.name, tablas.classTable.semantError(clases));
           }
           //Llenar el hashtable
           else{
@@ -309,13 +303,13 @@ class programc extends Program {
         }
       }
 
-      //Añadir el padre de IO que es Object
-      tablas.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
-
-      if (classTable.errors()) {
+      if (tablas.classTable.errors()) {
     	    System.err.println("Compilation halted due to static semantic errors.");
     	    System.exit(1);
     	}
+
+      //Añadir el padre de IO que es Object
+      tablas.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
 
       for(int i = classes.getLength()-1; i >= 0; i--){
         class_c clases = (class_c) classes.getNth(i);
@@ -323,42 +317,56 @@ class programc extends Program {
         if(!clases.parent.toString().equals("Object")){
           if(!tablas.cyh.containsKey(clases.parent.toString())){
             SemantErrors.inheritsFromAnUndefinedClass(clases.name, clases.parent,
-                                          classTable.semantError(clases));
+                                          tablas.classTable.semantError(clases));
           }
         }
         //Has cycle?
-        else if(classTable.searchCycleClasses(clases.name.toString(), tablas.cyh)){
-          SemantErrors.inheritanceCycle(clases.name, classTable.semantError(clases));
+        else if(tablas.classTable.searchCycleClasses(clases.name.toString(), tablas.cyh)){
+          SemantErrors.inheritanceCycle(clases.name, tablas.classTable.semantError(clases));
         }
-        classTable.v.clear();
+        tablas.classTable.v.clear();
       }
-      if (classTable.errors()) {
+
+      if (tablas.classTable.errors()) {
     	    System.err.println("Compilation halted due to static semantic errors.");
     	    System.exit(1);
     	}
 
       //Main no esta definido
       if(!tablas.cyh.containsKey("Main")){
-        SemantErrors.noClassMain(classTable.semantError());
+        SemantErrors.noClassMain(tablas.classTable.semantError());
       }
 
-	    if (classTable.errors()) {
+	    if (tablas.classTable.errors()) {
 	    System.err.println("Compilation halted due to static semantic errors.");
 	    System.exit(1);
 	    }
 
       for(int i  = 0; i < classes.getLength(); i++){
         class_c clases = (class_c) classes.getNth(i);
-        clases.semant(clases.name.toString());
-        System.out.println();
+        clases.semant(clases);
+
+        //Si la clase Main no contiene el metodo main
+        if(!tablas.cym.get("Main").containsKey("main"))
+          SemantErrors.noMainMethodInMainClass(tablas.classTable.semantError());
+
+        //Si el metodo main en la clase main tiene parametros
+        else
+          if(!tablas.cym.get("Main").get("main").isEmpty())
+            SemantErrors.mainMethodNoArgs(tablas.classTable.semantError());
+
       }
+
+      if (tablas.classTable.errors()) {
+      System.err.println("Compilation halted due to static semantic errors.");
+      System.exit(1);
+      }
+
     }
 }
 
 
-/** Defines AST constructor 'class_c'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'class_c'. */
 class class_c extends Class_ {
     protected AbstractSymbol name;
     protected AbstractSymbol parent;
@@ -390,24 +398,25 @@ class class_c extends Class_ {
         dump_AbstractSymbol(out, n+2, filename);
     }
 
-    public void semant(String clactual){
-      System.out.println("En la clase <" + clactual + "," +
-        tablas.cyh.get(clactual) + ">");
-
+    public void semant(class_c clase){
       for(int i = 0; i  < features.getLength(); i++){
         Feature cosa = (Feature)features.getNth(i);
+        cosa.semant(clase);
 
+        //Revisar errroes de Atributos
         if(cosa instanceof attr){
-          attr atributo = (attr)features.getNth(i);
-          System.out.println("Atributo " + atributo.name.toString());
+          attr atributo = (attr) cosa;
+          if(atributo.name.toString().equals("self")){
+            SemantErrors.selfCannotBeTheNameOfAttr(tablas.classTable.semantError(clase));
+          }
         }
-        else{
-          method metodo = (method)features.getNth(i);
-          System.out.println("Método " + metodo.name.toString());
-          metodo.semant(clactual);
-        }
-      }
 
+        //Revisar errres de Metodos
+        else{
+          method metodo = (method) cosa;
+        }
+
+      }
     }
 
 
@@ -432,9 +441,7 @@ class class_c extends Class_ {
 }
 
 
-/** Defines AST constructor 'method'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'method'.*/
 class method extends Feature {
     protected AbstractSymbol name;
     protected Formals formals;
@@ -478,27 +485,21 @@ class method extends Feature {
 	expr.dump_with_types(out, n + 2);
     }
 
-    public void semant(String clactual){
-      System.out.print("   Firmas: ");
-      if(formals.getLength() == 0){
-        System.out.print("Ninguna");
-      }
-      else{
-        for(int i = 0;i < formals.getLength(); i++){
-          formalc firmas = (formalc) formals.getNth(i);
-          System.out.print(firmas.name.toString() + "," +
-                          firmas.type_decl.toString() + " ");
-        }
-      }
-      System.out.println();
-    }
+    public void semant(class_c clase){
+      Vector<String> vfirmas = new Vector<String>();
 
+      for(int i = 0;i < formals.getLength(); i++){
+        formalc firma = (formalc) formals.getNth(i);
+        vfirmas.add(firma.name.toString());
+      }
+      tablas.myf.put(name.toString(), vfirmas);
+      tablas.cym.put(clase.name.toString(), tablas.myf);
+
+    }
 }
 
 
-/** Defines AST constructor 'attr'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'attr'.*/
 class attr extends Feature {
     protected AbstractSymbol name;
     protected AbstractSymbol type_decl;
@@ -535,15 +536,14 @@ class attr extends Feature {
 	init.dump_with_types(out, n + 2);
     }
 
-    public void semant(String clactual){
+    public void semant(class_c clase){
 
     }
+
 }
 
 
-/** Defines AST constructor 'formalc'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'formalc'.*/
 class formalc extends Formal {
     protected AbstractSymbol name;
     protected AbstractSymbol type_decl;
@@ -574,12 +574,11 @@ class formalc extends Formal {
         dump_AbstractSymbol(out, n + 2, name);
         dump_AbstractSymbol(out, n + 2, type_decl);
     }
+
 }
 
 
-/** Defines AST constructor 'branch'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'branch'. */
 class branch extends Case {
     protected AbstractSymbol name;
     protected AbstractSymbol type_decl;
@@ -619,9 +618,7 @@ class branch extends Case {
 }
 
 
-/** Defines AST constructor 'assign'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'assign'. */
 class assign extends Expression {
     protected AbstractSymbol name;
     protected Expression expr;
@@ -657,9 +654,7 @@ class assign extends Expression {
 }
 
 
-/** Defines AST constructor 'static_dispatch'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'static_dispatch'. */
 class static_dispatch extends Expression {
     protected Expression expr;
     protected AbstractSymbol type_name;
@@ -709,9 +704,7 @@ class static_dispatch extends Expression {
 }
 
 
-/** Defines AST constructor 'dispatch'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'dispatch'.*/
 class dispatch extends Expression {
     protected Expression expr;
     protected AbstractSymbol name;
@@ -756,9 +749,7 @@ class dispatch extends Expression {
 }
 
 
-/** Defines AST constructor 'cond'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'cond'. */
 class cond extends Expression {
     protected Expression pred;
     protected Expression then_exp;
@@ -799,9 +790,7 @@ class cond extends Expression {
 }
 
 
-/** Defines AST constructor 'loop'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'loop'.*/
 class loop extends Expression {
     protected Expression pred;
     protected Expression body;
@@ -837,9 +826,7 @@ class loop extends Expression {
 }
 
 
-/** Defines AST constructor 'typcase'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'typcase'. */
 class typcase extends Expression {
     protected Expression expr;
     protected Cases cases;
@@ -877,9 +864,7 @@ class typcase extends Expression {
 }
 
 
-/** Defines AST constructor 'block'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'block'. */
 class block extends Expression {
     protected Expressions body;
     /** Creates "block" AST node.
@@ -912,9 +897,7 @@ class block extends Expression {
 }
 
 
-/** Defines AST constructor 'let'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'let'.*/
 class let extends Expression {
     protected AbstractSymbol identifier;
     protected AbstractSymbol type_decl;
@@ -960,9 +943,7 @@ class let extends Expression {
 }
 
 
-/** Defines AST constructor 'plus'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'plus'. */
 class plus extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -998,9 +979,7 @@ class plus extends Expression {
 }
 
 
-/** Defines AST constructor 'sub'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'sub'.*/
 class sub extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1036,9 +1015,7 @@ class sub extends Expression {
 }
 
 
-/** Defines AST constructor 'mul'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'mul'.*/
 class mul extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1074,9 +1051,7 @@ class mul extends Expression {
 }
 
 
-/** Defines AST constructor 'divide'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'divide'.*/
 class divide extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1112,9 +1087,7 @@ class divide extends Expression {
 }
 
 
-/** Defines AST constructor 'neg'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'neg'.*/
 class neg extends Expression {
     protected Expression e1;
     /** Creates "neg" AST node.
@@ -1145,9 +1118,7 @@ class neg extends Expression {
 }
 
 
-/** Defines AST constructor 'lt'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'lt'.*/
 class lt extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1183,9 +1154,7 @@ class lt extends Expression {
 }
 
 
-/** Defines AST constructor 'eq'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'eq'.*/
 class eq extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1221,9 +1190,7 @@ class eq extends Expression {
 }
 
 
-/** Defines AST constructor 'leq'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'leq'.*/
 class leq extends Expression {
     protected Expression e1;
     protected Expression e2;
@@ -1259,9 +1226,7 @@ class leq extends Expression {
 }
 
 
-/** Defines AST constructor 'comp'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'comp */
 class comp extends Expression {
     protected Expression e1;
     /** Creates "comp" AST node.
@@ -1292,9 +1257,7 @@ class comp extends Expression {
 }
 
 
-/** Defines AST constructor 'int_const'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'int_const'. */
 class int_const extends Expression {
     protected AbstractSymbol token;
     /** Creates "int_const" AST node.
@@ -1325,9 +1288,7 @@ class int_const extends Expression {
 }
 
 
-/** Defines AST constructor 'bool_const'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'bool_const'.*/
 class bool_const extends Expression {
     protected Boolean val;
     /** Creates "bool_const" AST node.
@@ -1358,9 +1319,7 @@ class bool_const extends Expression {
 }
 
 
-/** Defines AST constructor 'string_const'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'string_const'.*/
 class string_const extends Expression {
     protected AbstractSymbol token;
     /** Creates "string_const" AST node.
@@ -1393,9 +1352,7 @@ class string_const extends Expression {
 }
 
 
-/** Defines AST constructor 'new_'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'new_'.*/
 class new_ extends Expression {
     protected AbstractSymbol type_name;
     /** Creates "new_" AST node.
@@ -1426,9 +1383,7 @@ class new_ extends Expression {
 }
 
 
-/** Defines AST constructor 'isvoid'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'isvoid'.*/
 class isvoid extends Expression {
     protected Expression e1;
     /** Creates "isvoid" AST node.
@@ -1459,9 +1414,7 @@ class isvoid extends Expression {
 }
 
 
-/** Defines AST constructor 'no_expr'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'no_expr'. */
 class no_expr extends Expression {
     /** Creates "no_expr" AST node.
       *
@@ -1487,9 +1440,7 @@ class no_expr extends Expression {
 }
 
 
-/** Defines AST constructor 'object'.
-    <p>
-    See <a href="TreeNode.html">TreeNode</a> for full documentation. */
+/** Defines AST constructor 'object'.*/
 class object extends Expression {
     protected AbstractSymbol name;
     /** Creates "object" AST node.

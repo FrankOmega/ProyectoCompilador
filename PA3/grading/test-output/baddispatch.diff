@@ -1,10 +1,7 @@
-1,2c1,72
+1,2c1,69
 < filename:line
 < Compilation halted due to static semantic errors.
 ---
-> Método 'main' en la clase Main
-> Método 'moo' en la clase Cow
-> Método 'foo' en la clase Blerg
 > 
 > _program
 > 

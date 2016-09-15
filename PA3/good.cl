@@ -1,19 +1,6 @@
+class Main { main(z:String) : Int {0 }; };
+
 class A {
-
-  a: Int <- 0;
-  d: Int <- 1;
-  f(): Int { a <- a + d };
-
+  self:A <- new A;
+  foo(x:String) : String {x <- "a boy named sue"};
 };
-
-class B inherits A {
-  b: Int <- 2;
-  f(): Int {a };
-  g(): Int { a <- a - b };
-};
-
-class C inherits A {
-   c: Int <- 3;
-   h(): Int { a <- a - c };
-};
-class Main { main () : Int { 6 }; };

@@ -1,12 +1,10 @@
-0a1
-> Método 'main' en la clase Main
-29,30c30,31
+29,30c29,30
 <             : SELF_TYPE
 <           : SELF_TYPE
 ---
 >             : _no_type
 >           : _no_type
-34,36c35,37
+34,36c34,36
 <           : SELF_TYPE
 <         : SELF_TYPE
 <       : SELF_TYPE
