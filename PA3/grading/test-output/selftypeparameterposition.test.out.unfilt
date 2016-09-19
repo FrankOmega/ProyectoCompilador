@@ -1,3 +1,2 @@
 Formal parameter x cannot have type SELF_TYPE.
-./selftypeparameterposition.test:1: Inferred return type SELF_TYPE of method foo does not conform to declared return type Object.
 Compilation halted due to static semantic errors.

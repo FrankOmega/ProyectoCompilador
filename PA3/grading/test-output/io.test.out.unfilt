@@ -1,2 +1,5 @@
-./io.test:1: Inferred return type null of method main does not conform to declared return type Object.
+./io.test:1: Undeclared identifier self.
+./io.test:1: Undeclared identifier self.
+./io.test:1: Undeclared identifier self.
+./io.test:1: Undeclared identifier self.
 Compilation halted due to static semantic errors.

@@ -1,17 +1,27 @@
-./hairyscary.cl.test:1: Inferred type null of initialization of attribute g does not conform to declared type Foo.
+./hairyscary.cl.test:1: Undeclared identifier self.
+./hairyscary.cl.test:1: Inferred type Object of initialization of attribute g does not conform to declared type Foo.
+./hairyscary.cl.test:1: Undeclared identifier self.
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: Inferred return type null of method doh does not conform to declared return type Int.
-./hairyscary.cl.test:1: Inferred type null of initialization of attribute a does not conform to declared type Razz.
+./hairyscary.cl.test:1: Undeclared identifier self.
+./hairyscary.cl.test:1: Inferred type Object of initialization of attribute a does not conform to declared type Razz.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
 ./hairyscary.cl.test:1: Inferred type null of initialization of attribute b does not conform to declared type Int.
-./hairyscary.cl.test:1: non-Int arguments: null + Int
 ./hairyscary.cl.test:1: Inferred return type null of method doh does not conform to declared return type Int.
-./hairyscary.cl.test:1: Inferred type null of initialization of attribute e does not conform to declared type Bar.
+./hairyscary.cl.test:1: Undeclared identifier self.
+./hairyscary.cl.test:1: Inferred type Object of initialization of attribute e does not conform to declared type Bar.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
 ./hairyscary.cl.test:1: non-Int arguments: null + null
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: non-Int arguments: null + null
 ./hairyscary.cl.test:1: Inferred type null of initialization of attribute f does not conform to declared type Int.
+./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: Inferred type null of initialization of attribute c does not conform to declared type Int.
+./hairyscary.cl.test:1: Undeclared identifier self.
 Compilation halted due to static semantic errors.

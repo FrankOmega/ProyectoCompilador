@@ -1,2 +1,0 @@
-./simplecase.test:1: Inferred return type null of method boo does not conform to declared return type Object.
-Compilation halted due to static semantic errors.

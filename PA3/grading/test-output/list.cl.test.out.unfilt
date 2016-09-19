@@ -1,8 +1,16 @@
+./list.cl.test:1: Undeclared identifier self.
+./list.cl.test:1: Undeclared identifier self.
+./list.cl.test:1: Undeclared identifier self.
 ./list.cl.test:1: Inferred return type SELF_TYPE of method tail does not conform to declared return type List.
+./list.cl.test:1: Undeclared identifier self.
 ./list.cl.test:1: Inferred return type null of method cons does not conform to declared return type List.
+./list.cl.test:1: Undeclared identifier self.
 ./list.cl.test:1: Inferred return type SELF_TYPE of method init does not conform to declared return type List.
-./list.cl.test:1: Inferred return type null of method print_list does not conform to declared return type Object.
+./list.cl.test:1: Undeclared identifier self.
+./list.cl.test:1: Undeclared identifier self.
+./list.cl.test:1: Undeclared identifier self.
+./list.cl.test:1: Undeclared identifier self.
 ./list.cl.test:1: Argument of 'not' has type null instead of Bool.
 ./list.cl.test:1: Loop condition does not have type Bool.
-./list.cl.test:1: Inferred return type null of method main does not conform to declared return type Object.
+./list.cl.test:1: Undeclared identifier self.
 Compilation halted due to static semantic errors.

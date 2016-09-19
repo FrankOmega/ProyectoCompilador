@@ -1,6 +1,0 @@
-./classes.test:1: Inferred return type null of method f does not conform to declared return type Int.
-./classes.test:1: non-Int arguments: null - Int
-./classes.test:1: Inferred return type null of method g does not conform to declared return type Int.
-./classes.test:1: non-Int arguments: null - Int
-./classes.test:1: Inferred return type null of method h does not conform to declared return type Int.
-Compilation halted due to static semantic errors.

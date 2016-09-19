@@ -1,9 +1,9 @@
 filename:line
 java.lang.NullPointerException
-	at eq.semant(cool-tree.java:1410)
-	at cond.semant(cool-tree.java:893)
-	at block.semant(cool-tree.java:1034)
-	at method.semant(cool-tree.java:561)
-	at class_c.semant(cool-tree.java:465)
-	at programc.semant(cool-tree.java:376)
+	at eq.semant(cool-tree.java:1423)
+	at cond.semant(cool-tree.java:898)
+	at block.semant(cool-tree.java:1046)
+	at method.semant(cool-tree.java:565)
+	at class_c.semant(cool-tree.java:469)
+	at programc.semant(cool-tree.java:386)
 	at Semant.main(Semant.java:36)

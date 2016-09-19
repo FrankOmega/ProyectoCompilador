@@ -38,11 +38,20 @@ str_const9:
 	.word	5
 	.word	String_dispTab
 	.word	int_const1
-	.ascii	"A"
+	.ascii	"B"
 	.byte	0	
 	.align	2
 	.word	-1
 str_const8:
+	.word	4
+	.word	5
+	.word	String_dispTab
+	.word	int_const1
+	.ascii	"A"
+	.byte	0	
+	.align	2
+	.word	-1
+str_const7:
 	.word	4
 	.word	6
 	.word	String_dispTab
@@ -51,7 +60,7 @@ str_const8:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const7:
+str_const6:
 	.word	4
 	.word	6
 	.word	String_dispTab
@@ -60,7 +69,7 @@ str_const7:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const6:
+str_const5:
 	.word	4
 	.word	6
 	.word	String_dispTab
@@ -69,7 +78,7 @@ str_const6:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const5:
+str_const4:
 	.word	4
 	.word	5
 	.word	String_dispTab
@@ -78,7 +87,7 @@ str_const5:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const4:
+str_const3:
 	.word	4
 	.word	5
 	.word	String_dispTab
@@ -87,7 +96,7 @@ str_const4:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const3:
+str_const2:
 	.word	4
 	.word	6
 	.word	String_dispTab
@@ -96,21 +105,12 @@ str_const3:
 	.byte	0	
 	.align	2
 	.word	-1
-str_const2:
+str_const1:
 	.word	4
 	.word	8
 	.word	String_dispTab
 	.word	int_const6
 	.ascii	"<basic class>"
-	.byte	0	
-	.align	2
-	.word	-1
-str_const1:
-	.word	4
-	.word	6
-	.word	String_dispTab
-	.word	int_const2
-	.ascii	"test"
 	.byte	0	
 	.align	2
 	.word	-1
@@ -183,6 +183,7 @@ bool_const1:
 	.word	Bool_dispTab
 	.word	1
 class_nameTab:
+	.word	str_const2
 	.word	str_const3
 	.word	str_const4
 	.word	str_const5
@@ -205,6 +206,8 @@ class_objTab:
 	.word	Main_init
 	.word	A_protObj
 	.word	A_init
+	.word	B_protObj
+	.word	B_init
 Object_dispTab:
 	.word	Object.abort
 	.word	Object.type_name
@@ -213,7 +216,10 @@ A_dispTab:
 	.word	Object.abort
 	.word	Object.type_name
 	.word	Object.copy
-	.word	A.foo
+B_dispTab:
+	.word	Object.abort
+	.word	Object.type_name
+	.word	Object.copy
 Main_dispTab:
 	.word	Object.abort
 	.word	Object.type_name
@@ -250,14 +256,20 @@ Object_protObj:
 	.word	-1
 A_protObj:
 	.word	6
-	.word	4
+	.word	3
 	.word	A_dispTab
-	.word	str_const10
+	.word	-1
+B_protObj:
+	.word	7
+	.word	3
+	.word	B_dispTab
 	.word	-1
 Main_protObj:
 	.word	5
-	.word	3
+	.word	5
 	.word	Main_dispTab
+	.word	0
+	.word	str_const10
 	.word	-1
 String_protObj:
 	.word	4
@@ -312,6 +324,20 @@ A_init:
 	addiu	$fp $sp 4
 	move	$s0 $a0
 	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 12($sp)
+	lw	$s0 8($sp)
+	lw	$ra 4($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+B_init:
+	addiu	$sp $sp -12
+	sw	$fp 12($sp)
+	sw	$s0 8($sp)
+	sw	$ra 4($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	A_init
 	move	$a0 $s0
 	lw	$fp 12($sp)
 	lw	$s0 8($sp)
@@ -388,26 +414,6 @@ IO_init:
 	lw	$ra 4($sp)
 	addiu	$sp $sp 12
 	jr	$ra	
-A.foo:
-	addiu	$sp $sp -16
-	sw	$fp 16($sp)
-	sw	$s0 12($sp)
-	sw	$ra 8($sp)
-	addiu	$fp $sp 4
-	move	$s0 $a0
-	lw	$s1 12($s0)
-	la	$t2 str_const1
-	move	$t1 $s1
-	la	$a0 bool_const1
-	beq	$t1 $t2 label0
-	la	$a1 bool_const0
-	jal	equality_test
-label0:
-	lw	$fp 16($sp)
-	lw	$s0 12($sp)
-	lw	$ra 8($sp)
-	addiu	$sp $sp 16
-	jr	$ra	
 Main.main:
 	addiu	$sp $sp -12
 	sw	$fp 12($sp)
@@ -415,7 +421,10 @@ Main.main:
 	sw	$ra 4($sp)
 	addiu	$fp $sp 4
 	move	$s0 $a0
-	la	$a0 int_const0
+	la	$a0 String_protObj
+	jal	Object.copy
+	jal	String_init
+	sw	$a0 16($s0)
 	lw	$fp 12($sp)
 	lw	$s0 8($sp)
 	lw	$ra 4($sp)

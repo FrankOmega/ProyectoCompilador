@@ -1,4 +1,2 @@
-./methodnameclash.test:1: Inferred return type null of method foo does not conform to declared return type Int.
-./methodnameclash.test:1: Inferred return type null of method foo does not conform to declared return type String.
 ./methodnameclash.test:1: Inferred return type null of method main does not conform to declared return type Int.
 Compilation halted due to static semantic errors.

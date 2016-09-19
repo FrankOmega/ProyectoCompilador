@@ -370,19 +370,23 @@ class programc extends Program {
           mainclase = (class_c) clase;
       }
 
+      tbl.mapa.enterScope();
+      class_c a_io = tbl.cT.IO_class;
+      class_c a_int = tbl.cT.Int_class;
+      class_c a_bool = tbl.cT.Bool_class;
+      class_c a_str = tbl.cT.Str_class;
+
+      tbl.mapa.addId(a_io.name, TreeConstants.Object_);
+      tbl.mapa.addId(a_int.name, TreeConstants.Object_);
+      tbl.mapa.addId(a_bool.name, TreeConstants.Object_);
+      tbl.mapa.addId(a_str.name, TreeConstants.Object_);
+
       for(int i = 1; i < tbl.cT.v.size(); i++){
-        tbl.mapa.enterScope();
         class_c clase = clord.get(i);
         clase.semant(clase);
-        tbl.mapa.exitScope();
       }
 
-      /*for(int i  = 0; i < classes.getLength(); i++){
-        class_c clase = (class_c) classes.getNth(i);
-        if(clase.name.toString().equals("Main"))
-          mainclase = (class_c) clase;
-        clase.semant(clase);
-      }*/
+      tbl.mapa.exitScope();
 
       //Si la clase Main no contiene el metodo main
       if(!tbl.cym.get("Main").containsKey("main"))
@@ -560,7 +564,7 @@ class method extends Feature {
       tbl.mapa.enterScope();
       expr.semant(clase);
       AbstractSymbol t = expr.get_type();
-      if(!return_type.equals(t))
+      if(!return_type.equals(t) && !TreeConstants.Object_.equals(return_type))
         SemantErrors.diffReturnType(t,name,return_type,tbl.cT.semantError(clase));
       tbl.mapa.exitScope();
       tbl.mapa.exitScope();
@@ -694,6 +698,7 @@ class branch extends Case {
     }
 
     public void semant(class_c clase){
+      tbl.mapa.addId(name,type_decl);
       expr.semant(clase);
     }
 
@@ -944,6 +949,7 @@ class loop extends Expression {
       else
         SemantErrors.whileNoBoolCondition(tbl.cT.semantError(clase));
       body.semant(clase);
+      set_type(TreeConstants.Object_);
     }
 
 }
@@ -996,6 +1002,7 @@ class typcase extends Expression {
         vbranch.add(branchstr) ;
         caso.semant(clase);
       }
+      set_type(TreeConstants.Object_);
       tbl.mapa.exitScope();
     }
 
@@ -1090,6 +1097,7 @@ class let extends Expression {
     public void semant(class_c clase){
       init.semant(clase);
       body.semant(clase);
+      //set_type(body.get_type());
     }
 
 }
@@ -1678,6 +1686,7 @@ class isvoid extends Expression {
 
     public void semant(class_c clase){
       e1.semant(clase);
+      set_type(TreeConstants.Bool);
     }
 
 }
@@ -1742,7 +1751,13 @@ class object extends Expression {
     }
 
     public void semant(class_c clase){
-      set_type((AbstractSymbol)tbl.mapa.lookup(name));
+      Object var = tbl.mapa.lookup(name);
+
+      if(var == null)
+        SemantErrors.undeclaredIdentifiers(name, tbl.cT.semantError(clase));
+      else
+        set_type((AbstractSymbol)tbl.mapa.lookup(name));
+
       if(name.toString().equals("self")){
         set_type(TreeConstants.SELF_TYPE);
       }

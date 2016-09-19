@@ -1,2 +1,56 @@
-./basic.test:1: Inferred return type null of method main does not conform to declared return type Object.
-Compilation halted due to static semantic errors.
+#1
+_program
+  #1
+  _class
+    Main
+    Object
+    "./basic.test"
+    (
+    #1
+    _method
+      main
+      Object
+      #1
+      _block
+        #1
+        _dispatch
+          #1
+          _int
+            5
+          : Int
+          copy
+          (
+          )
+        : _no_type
+        #1
+        _dispatch
+          #1
+          _string
+            "test"
+          : String
+          copy
+          (
+          )
+        : _no_type
+        #1
+        _dispatch
+          #1
+          _bool
+            1
+          : Bool
+          copy
+          (
+          )
+        : _no_type
+        #1
+        _dispatch
+          #1
+          _string
+            "test"
+          : String
+          length
+          (
+          )
+        : _no_type
+      : _no_type
+    )

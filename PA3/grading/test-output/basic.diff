@@ -1,60 +1,18 @@
-1,56c1,2
-< 
-< _program
-< 
-<   _class
-<     Main
-<     Object
-<     filename
-<     (
-< 
-<     _method
-<       main
-<       Object
-< 
-<       _block
-< 
-<         _dispatch
-< 
-<           _int
-<             5
-<           : Int
-<           copy
-<           (
-<           )
+24c24
 <         : Int
-< 
-<         _dispatch
-< 
-<           _string
-<             "test"
-<           : String
-<           copy
-<           (
-<           )
+---
+>         : _no_type
+34c34
 <         : String
-< 
-<         _dispatch
-< 
-<           _bool
-<             1
-<           : Bool
-<           copy
-<           (
-<           )
+---
+>         : _no_type
+44c44
 <         : Bool
-< 
-<         _dispatch
-< 
-<           _string
-<             "test"
-<           : String
-<           length
-<           (
-<           )
+---
+>         : _no_type
+54,55c54,55
 <         : Int
 <       : Int
-<     )
 ---
-> filename:line
-> Compilation halted due to static semantic errors.
+>         : _no_type
+>       : _no_type

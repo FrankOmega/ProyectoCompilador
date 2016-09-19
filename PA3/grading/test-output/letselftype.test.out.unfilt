@@ -1,2 +1,3 @@
-./letselftype.test:1: Inferred return type null of method main does not conform to declared return type Object.
+./letselftype.test:1: Undeclared identifier x.
+./letselftype.test:1: Undeclared identifier y.
 Compilation halted due to static semantic errors.

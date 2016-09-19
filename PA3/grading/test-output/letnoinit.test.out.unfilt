@@ -1,2 +1,2 @@
-./letnoinit.test:1: Inferred return type null of method main does not conform to declared return type Object.
+./letnoinit.test:1: Undeclared identifier x.
 Compilation halted due to static semantic errors.

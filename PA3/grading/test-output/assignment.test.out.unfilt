@@ -1,2 +1,0 @@
-./assignment.test:1: Inferred return type Foo of method main does not conform to declared return type Object.
-Compilation halted due to static semantic errors.

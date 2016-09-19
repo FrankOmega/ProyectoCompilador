@@ -1,4 +1,13 @@
+./methodcallsitself.test:1: Undeclared identifier self.
 ./methodcallsitself.test:1: Inferred return type null of method f does not conform to declared return type Int.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
 ./methodcallsitself.test:1: Inferred return type null of method g does not conform to declared return type Int.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
+./methodcallsitself.test:1: Undeclared identifier self.
 ./methodcallsitself.test:1: Inferred return type null of method h does not conform to declared return type Int.
 Compilation halted due to static semantic errors.

@@ -1,4 +1,8 @@
-./dispatch.test:1: Inferred return type Int of method main does not conform to declared return type Object.
+./dispatch.test:1: Undeclared identifier self.
 ./dispatch.test:1: Inferred return type SELF_TYPE of method foo does not conform to declared return type A.
+./dispatch.test:1: Undeclared identifier self.
+./dispatch.test:1: Undeclared identifier b.
+./dispatch.test:1: Undeclared identifier b.
+./dispatch.test:1: Undeclared identifier b.
 ./dispatch.test:1: Inferred return type null of method moo does not conform to declared return type A.
 Compilation halted due to static semantic errors.

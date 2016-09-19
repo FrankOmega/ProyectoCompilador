@@ -1,5 +1,9 @@
 class Main { main() : Int {0 }; };
 
 class A {
-  foo(x:Int) : Object {case x of a:Int => a; b:Int => b; esac};
+	moo:Object;
+	boo():Object {{ case moo of i:Int => i;
+			        b:Bool => b;
+			        s:String => s;
+		     esac; }};
 };

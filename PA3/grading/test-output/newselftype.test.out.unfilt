@@ -1,2 +1,3 @@
+./newselftype.test:1: Undeclared identifier self.
 ./newselftype.test:1: Inferred type null of initialization of attribute bar does not conform to declared type Int.
 Compilation halted due to static semantic errors.

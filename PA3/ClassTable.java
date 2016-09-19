@@ -14,7 +14,7 @@ class ClassTable {
      * do anything useful; you will need to edit it to make if do what
      * you want.
      * */
-    private void installBasicClasses() {
+    //private void installBasicClasses() {
 	AbstractSymbol filename
 	    = AbstractTable.stringtable.addString("<basic class>");
 
@@ -169,16 +169,17 @@ class ClassTable {
 	/* Do somethind with Object_class, IO_class, Int_class,
            Bool_class, and Str_class here */
 
-    }
+    //}
 
 
-    Vector<String> v;
+    Vector<String> v = new Vector<String>();
     public ClassTable(Classes cls) {
 	    semantErrors = 0;
 	    errorStream = System.err;
-      v = new Vector<String>();
+
 	/* fill this in */
     }
+
 
     String papa;
     public boolean searchCycleClasses(String name, Hashtable<String,String> hsh){
@@ -213,7 +214,6 @@ class ClassTable {
 
       if(!papa.equals("Object"))
         ordenarClases(papa,hsh);
-
       if(!v.contains(name))
         if(!name.equals("IO"))
           v.add(name);
