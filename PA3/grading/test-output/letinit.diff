@@ -1,12 +1,33 @@
-22c22
+1,29c1,2
+< 
+< _program
+< 
+<   _class
+<     Main
+<     IO
+<     filename
+<     (
+< 
+<     _method
+<       main
+<       Object
+< 
+<       _block
+< 
+<         _let
+<           x
+<           Int
+< 
+<           _int
+<             5
 <           : Int
----
->           : _no_type
-26,28c26,28
+< 
+<           _object
+<             x
 <           : Int
 <         : Int
 <       : Int
+<     )
 ---
->           : _no_type
->         : _no_type
->       : _no_type
+> filename:line
+> Compilation halted due to static semantic errors.

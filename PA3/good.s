@@ -107,10 +107,10 @@ str_const2:
 	.word	-1
 str_const1:
 	.word	4
-	.word	8
+	.word	6
 	.word	String_dispTab
-	.word	int_const7
-	.ascii	"a boy named sue"
+	.word	int_const2
+	.ascii	"test"
 	.byte	0	
 	.align	2
 	.word	-1
@@ -118,22 +118,16 @@ str_const0:
 	.word	4
 	.word	6
 	.word	String_dispTab
-	.word	int_const8
+	.word	int_const7
 	.ascii	"good.cl"
 	.byte	0	
 	.align	2
-	.word	-1
-int_const8:
-	.word	2
-	.word	4
-	.word	Int_dispTab
-	.word	7
 	.word	-1
 int_const7:
 	.word	2
 	.word	4
 	.word	Int_dispTab
-	.word	15
+	.word	7
 	.word	-1
 int_const6:
 	.word	2
@@ -258,7 +252,7 @@ A_protObj:
 	.word	6
 	.word	4
 	.word	A_dispTab
-	.word	0
+	.word	str_const10
 	.word	-1
 Main_protObj:
 	.word	5
@@ -318,10 +312,6 @@ A_init:
 	addiu	$fp $sp 4
 	move	$s0 $a0
 	jal	Object_init
-	la	$a0 A_protObj
-	jal	Object.copy
-	jal	A_init
-	sw	$a0 12($s0)
 	move	$a0 $s0
 	lw	$fp 12($sp)
 	lw	$s0 8($sp)
@@ -399,17 +389,23 @@ IO_init:
 	addiu	$sp $sp 12
 	jr	$ra	
 A.foo:
-	addiu	$sp $sp -12
-	sw	$fp 12($sp)
-	sw	$s0 8($sp)
-	sw	$ra 4($sp)
+	addiu	$sp $sp -16
+	sw	$fp 16($sp)
+	sw	$s0 12($sp)
+	sw	$ra 8($sp)
 	addiu	$fp $sp 4
 	move	$s0 $a0
-	la	$a0 str_const1
-	sw	$a0 12($fp)
-	lw	$fp 12($sp)
-	lw	$s0 8($sp)
-	lw	$ra 4($sp)
+	lw	$s1 12($s0)
+	la	$t2 str_const1
+	move	$t1 $s1
+	la	$a0 bool_const1
+	beq	$t1 $t2 label0
+	la	$a1 bool_const0
+	jal	equality_test
+label0:
+	lw	$fp 16($sp)
+	lw	$s0 12($sp)
+	lw	$ra 8($sp)
 	addiu	$sp $sp 16
 	jr	$ra	
 Main.main:

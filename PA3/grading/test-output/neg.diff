@@ -1,22 +1,55 @@
-27,28c27,28
+1,51c1,2
+< 
+< _program
+< 
+<   _class
+<     Main
+<     IO
+<     filename
+<     (
+< 
+<     _attr
+<       x
+<       Bool
+< 
+<       _no_expr
+<       : _no_type
+< 
+<     _method
+<       main
+<       Object
+< 
+<       _block
+< 
+<         _neg
+< 
+<           _int
+<             7
 <           : Int
 <         : Int
----
->           : _no_type
->         : _no_type
-36c36
+< 
+<         _neg
+< 
+<           _dispatch
+< 
+<             _object
+<               self
 <             : SELF_TYPE
----
->             : _no_type
-40,42c40,42
+<             foo
+<             (
+<             )
 <           : Int
 <         : Int
 <       : Int
----
->           : _no_type
->         : _no_type
->       : _no_type
-50c50
+< 
+<     _method
+<       foo
+<       Int
+< 
+<       _int
+<         4
 <       : Int
+<     )
 ---
->       : _no_type
+> filename:line
+> Compilation halted due to static semantic errors.

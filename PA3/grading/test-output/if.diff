@@ -1,48 +1,93 @@
-35c35
+1,82c1,9
+< 
+< _program
+< 
+<   _class
+<     Main
+<     IO
+<     filename
+<     (
+< 
+<     _attr
+<       x
+<       Int
+< 
+<       _no_expr
+<       : _no_type
+< 
+<     _method
+<       main
+<       Object
+< 
+<       _block
+< 
+<         _cond
+< 
+<           _eq
+< 
+<             _plus
+< 
+<               _let
+<                 x
+<                 Int
+< 
+<                 _int
+<                   5
 <                 : Int
----
->                 : _no_type
-41c41
+< 
+<                 _plus
+< 
+<                   _object
+<                     x
 <                   : Int
----
->                   : _no_type
-45,47c45,47
+< 
+<                   _int
+<                     3
 <                   : Int
 <                 : Int
 <               : Int
----
->                   : _no_type
->                 : _no_type
->               : _no_type
-51,52c51,52
+< 
+<               _int
+<                 3
 <               : Int
 <             : Int
----
->               : _no_type
->             : _no_type
-56,57c56,57
+< 
+<             _int
+<               9
 <             : Int
 <           : Bool
----
->             : _no_type
->           : _no_type
-61c61
+< 
+<           _int
+<             3
 <           : Int
----
->           : _no_type
-67c67
+< 
+<           _dispatch
+< 
+<             _object
+<               self
 <             : SELF_TYPE
----
->             : _no_type
-71,73c71,73
+<             foo
+<             (
+<             )
 <           : String
 <         : Object
 <       : Object
----
->           : _no_type
->         : _no_type
->       : _no_type
-81c81
+< 
+<     _method
+<       foo
+<       String
+< 
+<       _string
+<         "test"
 <       : String
+<     )
 ---
->       : _no_type
+> filename:line
+> java.lang.NullPointerException
+> 	at eq.semant(cool-tree.java:1410)
+> 	at cond.semant(cool-tree.java:893)
+> 	at block.semant(cool-tree.java:1034)
+> 	at method.semant(cool-tree.java:561)
+> 	at class_c.semant(cool-tree.java:465)
+> 	at programc.semant(cool-tree.java:376)
+> 	at Semant.main(Semant.java:36)

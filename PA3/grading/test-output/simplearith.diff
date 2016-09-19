@@ -1,42 +1,64 @@
-20c20
+1,60c1,2
+< 
+< _program
+< 
+<   _class
+<     Main
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       main
+<       Object
+< 
+<       _block
+< 
+<         _plus
+< 
+<           _int
+<             5
 <           : Int
----
->           : _no_type
-24,25c24,25
+< 
+<           _int
+<             4
 <           : Int
 <         : Int
----
->           : _no_type
->         : _no_type
-31c31
+< 
+<         _sub
+< 
+<           _int
+<             5
 <           : Int
----
->           : _no_type
-35,36c35,36
-<           : Int
-<         : Int
----
->           : _no_type
->         : _no_type
-42c42
-<           : Int
----
->           : _no_type
-46,47c46,47
+< 
+<           _int
+<             4
 <           : Int
 <         : Int
----
->           : _no_type
->         : _no_type
-53c53
+< 
+<         _mul
+< 
+<           _int
+<             3
 <           : Int
----
->           : _no_type
-57,59c57,59
+< 
+<           _int
+<             2
+<           : Int
+<         : Int
+< 
+<         _divide
+< 
+<           _int
+<             3
+<           : Int
+< 
+<           _int
+<             2
 <           : Int
 <         : Int
 <       : Int
+<     )
 ---
->           : _no_type
->         : _no_type
->       : _no_type
+> filename:line
+> Compilation halted due to static semantic errors.

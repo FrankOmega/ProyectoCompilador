@@ -1,4 +1,0 @@
-java.lang.NullPointerException
-	at class_c.semant(cool-tree.java:406)
-	at programc.semant(cool-tree.java:347)
-	at Semant.main(Semant.java:36)

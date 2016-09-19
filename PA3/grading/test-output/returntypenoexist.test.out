@@ -13,5 +13,5 @@ _program
 
       _new
         PinkElephant
-      : _no_type
+      : PinkElephant
     )

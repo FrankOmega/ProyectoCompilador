@@ -1,36 +1,114 @@
-16c16
+1,110c1,2
+< 
+< _program
+< 
+<   _class
+<     Main
+<     Object
+<     filename
+<     (
+< 
+<     _attr
+<       b
+<       B
+< 
+<       _new
+<         B
 <       : B
----
->       : _no_type
-26c26
+< 
+<     _method
+<       main
+<       Object
+< 
+<       _static_dispatch
+< 
+<         _object
+<           b
 <         : B
----
->         : _no_type
-33c33
+<         A
+<         foo
+<         (
+< 
+<         _int
+<           5
 <         : Int
----
->         : _no_type
-37c37
+< 
+<         _object
+<           b
 <         : B
----
->         : _no_type
-41c41
+< 
+<         _object
+<           b
 <         : B
----
->         : _no_type
-45c45
+< 
+<         _object
+<           b
 <         : B
----
->         : _no_type
-47c47
+<         )
 <       : Int
----
->       : _no_type
-78c78
+<     )
+< 
+<   _class
+<     A
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       foo
+< 
+<       _formal
+<         a
+<         Int
+< 
+<       _formal
+<         b
+<         B
+< 
+<       _formal
+<         c
+<         A
+< 
+<       _formal
+<         d
+<         B
+<       Int
+< 
+<       _int
+<         5
 <       : Int
----
->       : _no_type
-109c109
+<     )
+< 
+<   _class
+<     B
+<     A
+<     filename
+<     (
+< 
+<     _method
+<       foo
+< 
+<       _formal
+<         a
+<         Int
+< 
+<       _formal
+<         b
+<         B
+< 
+<       _formal
+<         c
+<         A
+< 
+<       _formal
+<         d
+<         B
+<       Int
+< 
+<       _int
+<         6
 <       : Int
+<     )
 ---
->       : _no_type
+> filename:line
+> Compilation halted due to static semantic errors.

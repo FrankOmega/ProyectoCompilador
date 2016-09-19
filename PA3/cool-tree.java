@@ -12,14 +12,15 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 //Variables globales
-class tablas{
-  public static ClassTable classTable;
+class tbl{
+  public static ClassTable cT;
   public static SymbolTable mapa;
 
   public static Hashtable<String,String> cyh;
   public static Hashtable<String,Hashtable<String,Vector<String>>> cym;
   public static Hashtable<String,Vector<String>> myf;
-  public static Hashtable<String,String> cyt;
+  public static Hashtable<String,Hashtable<String,AbstractSymbol>> cyo;
+  public static Hashtable<String,AbstractSymbol>oyt;
 }
 
 /** Defines simple phylum Program */
@@ -155,6 +156,7 @@ abstract class Expression extends TreeNode {
         else
             { out.println(Utilities.pad(n) + ": _no_type"); }
     }
+    public abstract void semant(class_c clase);
 
 }
 
@@ -190,6 +192,7 @@ abstract class Case extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
+    public abstract void semant(class_c clase);
 
 }
 
@@ -259,27 +262,30 @@ class programc extends Program {
 	to test the complete compiler.
     */
     public void semant() {
-      //-----------------Clases errorSemant--------------------------------
-      tablas.cyh = new Hashtable<String,String>();
-      tablas.cym = new Hashtable<String,Hashtable<String,Vector<String>>>();
-      tablas.myf = new Hashtable<String,Vector<String>>();
-      tablas.cyt = new Hashtable<String,String>();
-      tablas.classTable = new ClassTable(classes);
-      tablas.mapa = new SymbolTable();
+      //Inicializar las variables globales
+      tbl.cyh = new Hashtable<String,String>();
+      tbl.cym = new Hashtable<String,Hashtable<String,Vector<String>>>();
+      tbl.myf = new Hashtable<String,Vector<String>>();
+      tbl.cyo = new Hashtable<String,Hashtable<String,AbstractSymbol>>();
+      tbl.oyt = new Hashtable<String,AbstractSymbol>();
+      tbl.cT = new ClassTable(classes);
+      tbl.mapa = new SymbolTable();
 
+      //----------PRIMER RECORRIDO CLASES-----------
       for(int i = classes.getLength()-1; i >= 0; i--){
-        class_c clases = (class_c) classes.getNth(i);
-        String clasestr = clases.name.toString();
-        String padrestr = clases.parent.toString();
+        class_c clase = (class_c) classes.getNth(i);
+        String clasestr = clase.name.toString();
+        String padrestr = clase.parent.toString();
 
         //No se puede redefinir clases bases
         if(clasestr.equals("Object") | clasestr.equals("Bool")
           | clasestr.equals("Int") | clasestr.equals("String")
           | clasestr.equals("SELF_TYPE") | clasestr.equals("IO")){
-          SemantErrors.basicClassRedefined(clases.name, tablas.classTable.semantError(clases));
+          SemantErrors.basicClassRedefined(clase.name,
+            tbl.cT.semantError(clase));
         }
 
-        if (tablas.classTable.errors()) {
+        if (tbl.cT.errors()) {
       	    System.err.println("Compilation halted due to static semantic errors.");
       	    System.exit(1);
       	}
@@ -287,77 +293,107 @@ class programc extends Program {
         //No se puede heredar de estos 3 casos
         if(padrestr.equals("Bool")| padrestr.equals("Int")
                 | padrestr.equals("String")){
-          SemantErrors.cannotInheritClass(clases.name, clases.parent,
-                                      tablas.classTable.semantError(clases));
+          SemantErrors.cannotInheritClass(clase.name,
+                clase.parent, tbl.cT.semantError(clase));
         }
 
         else{
           //Se duplica?
-          if(tablas.cyh.containsKey(clasestr)){
-            SemantErrors.classPreviouslyDefined(clases.name, tablas.classTable.semantError(clases));
+          if(tbl.cyh.containsKey(clasestr)){
+            SemantErrors.classPreviouslyDefined(clase.name,
+                    tbl.cT.semantError(clase));
           }
           //Llenar el hashtable
           else{
-            tablas.cyh.put(clasestr,padrestr);
+            tbl.cyh.put(clasestr,padrestr);
           }
         }
       }
+      //------------------------------------------------
 
-      if (tablas.classTable.errors()) {
-    	    System.err.println("Compilation halted due to static semantic errors.");
-    	    System.exit(1);
-    	}
+      if (tbl.cT.errors()) {
+          System.err.println("Compilation halted due to static semantic errors.");
+          System.exit(1);
+      }
 
       //Añadir el padre de IO que es Object
-      tablas.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
+      tbl.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
+
+      //------------- SEGUNDO RECORRIDO CLASES---------------
 
       for(int i = classes.getLength()-1; i >= 0; i--){
-        class_c clases = (class_c) classes.getNth(i);
+        class_c clase = (class_c) classes.getNth(i);
         //Undefined class
-        if(!clases.parent.toString().equals("Object")){
-          if(!tablas.cyh.containsKey(clases.parent.toString())){
-            SemantErrors.inheritsFromAnUndefinedClass(clases.name, clases.parent,
-                                          tablas.classTable.semantError(clases));
+        if(!clase.parent.toString().equals("Object")){
+          if(!tbl.cyh.containsKey(clase.parent.toString())){
+            SemantErrors.inheritsFromAnUndefinedClass(clase.name,
+            clase.parent,  tbl.cT.semantError(clase));
           }
         }
         //Has cycle?
-        else if(tablas.classTable.searchCycleClasses(clases.name.toString(), tablas.cyh)){
-          SemantErrors.inheritanceCycle(clases.name, tablas.classTable.semantError(clases));
+        else if(tbl.cT.searchCycleClasses(clase.name.toString(), tbl.cyh)){
+          SemantErrors.inheritanceCycle(clase.name,
+              tbl.cT.semantError(clase));
         }
-        tablas.classTable.v.clear();
+        tbl.cT.v.clear();
       }
 
-      if (tablas.classTable.errors()) {
+      //---------------------------------------------------------
+
+      if (tbl.cT.errors()) {
     	    System.err.println("Compilation halted due to static semantic errors.");
     	    System.exit(1);
     	}
 
       //Main no esta definido
-      if(!tablas.cyh.containsKey("Main")){
-        SemantErrors.noClassMain(tablas.classTable.semantError());
+      if(!tbl.cyh.containsKey("Main")){
+        SemantErrors.noClassMain(tbl.cT.semantError());
       }
 
-	    if (tablas.classTable.errors()) {
+	    if (tbl.cT.errors()) {
 	    System.err.println("Compilation halted due to static semantic errors.");
 	    System.exit(1);
 	    }
 
-      for(int i  = 0; i < classes.getLength(); i++){
-        class_c clases = (class_c) classes.getNth(i);
-        clases.semant(clases);
 
-        //Si la clase Main no contiene el metodo main
-        if(!tablas.cym.get("Main").containsKey("main"))
-          SemantErrors.noMainMethodInMainClass(tablas.classTable.semantError());
+      //----------------RECORRER EL ARBOL---------------------------
+      class_c mainclase = null;
+      tbl.cT.v.add("Object");
+      Hashtable<Integer,class_c> clord = new Hashtable<Integer,class_c>();
 
-        //Si el metodo main en la clase main tiene parametros
-        else
-          if(!tablas.cym.get("Main").get("main").isEmpty())
-            SemantErrors.mainMethodNoArgs(tablas.classTable.semantError());
-
+      for(int i = 0; i < classes.getLength(); i++){
+        class_c clase = (class_c) classes.getNth(i);
+        String namestr = clase.name.toString();
+        tbl.cT.ordenarClases(namestr, tbl.cyh);
+        clord.put(tbl.cT.v.indexOf(namestr), clase);
+        if(namestr.equals("Main"))
+          mainclase = (class_c) clase;
       }
 
-      if (tablas.classTable.errors()) {
+      for(int i = 1; i < tbl.cT.v.size(); i++){
+        tbl.mapa.enterScope();
+        class_c clase = clord.get(i);
+        clase.semant(clase);
+        tbl.mapa.exitScope();
+      }
+
+      /*for(int i  = 0; i < classes.getLength(); i++){
+        class_c clase = (class_c) classes.getNth(i);
+        if(clase.name.toString().equals("Main"))
+          mainclase = (class_c) clase;
+        clase.semant(clase);
+      }*/
+
+      //Si la clase Main no contiene el metodo main
+      if(!tbl.cym.get("Main").containsKey("main"))
+        SemantErrors.noMainMethodInMainClass(tbl.cT.semantError());
+
+      //Si el metodo main en la clase main tiene parametros
+      else
+        if(!tbl.cym.get("Main").get("main").isEmpty())
+          SemantErrors.mainMethodNoArgs(tbl.cT.semantError(mainclase));
+
+      if (tbl.cT.errors()) {
       System.err.println("Compilation halted due to static semantic errors.");
       System.exit(1);
       }
@@ -399,23 +435,34 @@ class class_c extends Class_ {
     }
 
     public void semant(class_c clase){
+      Vector<attr> vattr = new Vector<attr>();
+      Vector<method> vmethod = new Vector<method>();
+
       for(int i = 0; i  < features.getLength(); i++){
         Feature cosa = (Feature)features.getNth(i);
-        cosa.semant(clase);
 
-        //Revisar errroes de Atributos
         if(cosa instanceof attr){
           attr atributo = (attr) cosa;
+          if(vattr.contains(atributo.name.toString()))
+            SemantErrors.attrMultiplyDefined(atributo.name,tbl.cT.semantError(clase));
+          vattr.add(atributo);
           if(atributo.name.toString().equals("self")){
-            SemantErrors.selfCannotBeTheNameOfAttr(tablas.classTable.semantError(clase));
+            SemantErrors.selfCannotBeTheNameOfAttr(tbl.cT.semantError(clase));
           }
         }
 
-        //Revisar errres de Metodos
         else{
           method metodo = (method) cosa;
+          vmethod.add(metodo);
         }
+      }
 
+      for(int i = 0; i < vattr.size(); i++){
+        vattr.get(i).semant(clase);
+      }
+
+      for(int i = 0; i < vmethod.size(); i++){
+        vmethod.get(i).semant(clase);
       }
     }
 
@@ -488,12 +535,35 @@ class method extends Feature {
     public void semant(class_c clase){
       Vector<String> vfirmas = new Vector<String>();
 
+      tbl.mapa.enterScope();
       for(int i = 0;i < formals.getLength(); i++){
         formalc firma = (formalc) formals.getNth(i);
-        vfirmas.add(firma.name.toString());
+
+        if(TreeConstants.self.equals(firma.name))
+          SemantErrors.formalCannotBeSelf(tbl.cT.semantError(clase));
+
+        if(TreeConstants.SELF_TYPE.equals(firma.type_decl))
+          SemantErrors.formalParamCannotHaveTypeSELF_TYPE(
+            firma.name,tbl.cT.semantError());
+
+        if(vfirmas.contains(firma.name.toString()))
+          SemantErrors.formalMultiplyDefined(firma.name, tbl.cT.semantError(clase));
+
+        else{
+          vfirmas.add(firma.name.toString());
+          tbl.mapa.addId(firma.name,firma.type_decl);
+        }
       }
-      tablas.myf.put(name.toString(), vfirmas);
-      tablas.cym.put(clase.name.toString(), tablas.myf);
+
+      tbl.myf.put(name.toString(), vfirmas);
+      tbl.cym.put(clase.name.toString(), tbl.myf);
+      tbl.mapa.enterScope();
+      expr.semant(clase);
+      AbstractSymbol t = expr.get_type();
+      if(!return_type.equals(t))
+        SemantErrors.diffReturnType(t,name,return_type,tbl.cT.semantError(clase));
+      tbl.mapa.exitScope();
+      tbl.mapa.exitScope();
 
     }
 }
@@ -537,7 +607,16 @@ class attr extends Feature {
     }
 
     public void semant(class_c clase){
+      tbl.mapa.addId(name, type_decl);
+      tbl.mapa.enterScope();
+      init.semant(clase);
+      tbl.mapa.exitScope();
 
+      AbstractSymbol t = init.get_type();;
+      if((!TreeConstants.No_type.equals(t)) &&
+      (!TreeConstants.Object_.equals(type_decl)))
+        if(!type_decl.equals(t))
+          SemantErrors.diffInitType(t,name,type_decl,tbl.cT.semantError(clase));
     }
 
 }
@@ -606,13 +685,16 @@ class branch extends Case {
         expr.dump(out, n+2);
     }
 
-
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_branch");
         dump_AbstractSymbol(out, n + 2, name);
         dump_AbstractSymbol(out, n + 2, type_decl);
 	expr.dump_with_types(out, n + 2);
+    }
+
+    public void semant(class_c clase){
+      expr.semant(clase);
     }
 
 }
@@ -642,13 +724,17 @@ class assign extends Expression {
         expr.dump(out, n+2);
     }
 
-
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_assign");
         dump_AbstractSymbol(out, n + 2, name);
 	expr.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      expr.semant(clase);
+      set_type(expr.get_type());
     }
 
 }
@@ -701,6 +787,14 @@ class static_dispatch extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      expr.semant(clase);
+      for(int i = 0; i < actual.getLength(); i++){
+        Expression expresion = (Expression) actual.getNth(i);
+        expresion.semant(clase);
+      }
+    }
+
 }
 
 
@@ -746,6 +840,14 @@ class dispatch extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      expr.semant(clase);
+      for(int i = 0; i < actual.getLength();i++){
+        Expression expresion = (Expression) actual.getNth(i);
+        expresion.semant(clase);
+      }
+    }
+
 }
 
 
@@ -787,6 +889,18 @@ class cond extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      pred.semant(clase);
+      if(TreeConstants.Bool.equals(pred.get_type()))
+        SemantErrors.ifNoBoolPredicate(tbl.cT.semantError(clase));
+
+      then_exp.semant(clase);
+      else_exp.semant(clase);
+      AbstractSymbol t1 = then_exp.get_type();
+      AbstractSymbol t2 = else_exp.get_type();
+
+
+    }
 }
 
 
@@ -821,6 +935,15 @@ class loop extends Expression {
 	pred.dump_with_types(out, n + 2);
 	body.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      pred.semant(clase);
+      if(TreeConstants.Bool.equals(pred.get_type()))
+        pred.set_type(TreeConstants.Bool);
+      else
+        SemantErrors.whileNoBoolCondition(tbl.cT.semantError(clase));
+      body.semant(clase);
     }
 
 }
@@ -861,6 +984,21 @@ class typcase extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      Vector<String> vbranch = new Vector<String>();
+      expr.semant(clase);
+      tbl.mapa.enterScope();
+      for(int i = 0; i < cases.getLength(); i++){
+        branch caso = (branch) cases.getNth(i);
+        String branchstr = caso.type_decl.toString();
+        if(vbranch.contains(branchstr))
+          SemantErrors.duplicateBranch(caso.type_decl,tbl.cT.semantError(clase));
+        vbranch.add(branchstr) ;
+        caso.semant(clase);
+      }
+      tbl.mapa.exitScope();
+    }
+
 }
 
 
@@ -892,6 +1030,15 @@ class block extends Expression {
 	    ((Expression)e.nextElement()).dump_with_types(out, n + 2);
         }
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      Expression expr = (Expression) body.getNth(0);
+      for(int i = 0; i < body.getLength();i++){
+        expr = (Expression) body.getNth(i);
+        expr.semant(clase);
+      }
+      set_type(expr.get_type());
     }
 
 }
@@ -940,6 +1087,11 @@ class let extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      init.semant(clase);
+      body.semant(clase);
+    }
+
 }
 
 
@@ -967,13 +1119,25 @@ class plus extends Expression {
         e2.dump(out, n+2);
     }
 
-
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_plus");
 	e1.dump_with_types(out, n + 2);
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      AbstractSymbol t1 = e1.get_type();
+      AbstractSymbol t2 = e2.get_type();
+
+      if(TreeConstants.Int.equals(t1) && TreeConstants.Int.equals(t2))
+        set_type(TreeConstants.Int);
+
+      else
+        SemantErrors.noIntArguments(t1,t2,"+",tbl.cT.semantError(clase));
     }
 
 }
@@ -1012,6 +1176,19 @@ class sub extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      AbstractSymbol t1 = e1.get_type();
+      AbstractSymbol t2 = e2.get_type();
+
+      if(TreeConstants.Int.equals(t1) && TreeConstants.Int.equals(t2))
+        set_type(TreeConstants.Int);
+
+      else
+        SemantErrors.noIntArguments(t1,t2,"-",tbl.cT.semantError(clase));
+    }
+
 }
 
 
@@ -1046,6 +1223,19 @@ class mul extends Expression {
 	e1.dump_with_types(out, n + 2);
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      AbstractSymbol t1 = e1.get_type();
+      AbstractSymbol t2 = e2.get_type();
+
+      if(TreeConstants.Int.equals(t1) && TreeConstants.Int.equals(t2))
+        set_type(TreeConstants.Int);
+
+      else
+        SemantErrors.noIntArguments(t1,t2,"*",tbl.cT.semantError(clase));
     }
 
 }
@@ -1084,6 +1274,19 @@ class divide extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      AbstractSymbol t1 = e1.get_type();
+      AbstractSymbol t2 = e2.get_type();
+
+      if(TreeConstants.Int.equals(t1) && TreeConstants.Int.equals(t2))
+        set_type(TreeConstants.Int);
+
+      else
+        SemantErrors.noIntArguments(t1,t2,"/",tbl.cT.semantError(clase));
+    }
+
 }
 
 
@@ -1113,6 +1316,16 @@ class neg extends Expression {
         out.println(Utilities.pad(n) + "_neg");
 	e1.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      e1.semant(clase);
+      AbstractSymbol t = e1.get_type();
+
+      if(TreeConstants.Int.equals(t))
+        set_type(TreeConstants.Int);
+      else
+        SemantErrors.argumentOfNegNoIntType(t,tbl.cT.semantError(clase));
     }
 
 }
@@ -1151,6 +1364,15 @@ class lt extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      if(e1.get_type().equals(e2.get_type()))
+        set_type(TreeConstants.Bool);
+      else
+        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
+    }
+
 }
 
 
@@ -1185,6 +1407,15 @@ class eq extends Expression {
 	e1.dump_with_types(out, n + 2);
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      if(e1.get_type().equals(e2.get_type()))
+        set_type(TreeConstants.Bool);
+      else
+        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
     }
 
 }
@@ -1223,6 +1454,15 @@ class leq extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      e1.semant(clase);
+      e2.semant(clase);
+      if(e1.get_type().equals(e2.get_type()))
+        set_type(TreeConstants.Bool);
+      else
+        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
+    }
+
 }
 
 
@@ -1252,6 +1492,15 @@ class comp extends Expression {
         out.println(Utilities.pad(n) + "_comp");
 	e1.dump_with_types(out, n + 2);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      e1.semant(clase);
+      AbstractSymbol t = e1.get_type();
+      if(TreeConstants.Bool.equals(t))
+        set_type(TreeConstants.Bool);
+      else
+        SemantErrors.notNotBoolType(t, tbl.cT.semantError(clase));
     }
 
 }
@@ -1285,6 +1534,10 @@ class int_const extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      set_type(TreeConstants.Int);
+    }
+
 }
 
 
@@ -1314,6 +1567,10 @@ class bool_const extends Expression {
         out.println(Utilities.pad(n) + "_bool");
 	dump_Boolean(out, n + 2, val);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      set_type(TreeConstants.Bool);
     }
 
 }
@@ -1349,6 +1606,10 @@ class string_const extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      set_type(TreeConstants.Str);
+    }
+
 }
 
 
@@ -1378,6 +1639,10 @@ class new_ extends Expression {
         out.println(Utilities.pad(n) + "_new");
 	dump_AbstractSymbol(out, n + 2, type_name);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      set_type(type_name);
     }
 
 }
@@ -1411,6 +1676,10 @@ class isvoid extends Expression {
 	dump_type(out, n);
     }
 
+    public void semant(class_c clase){
+      e1.semant(clase);
+    }
+
 }
 
 
@@ -1435,6 +1704,10 @@ class no_expr extends Expression {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_no_expr");
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      set_type(TreeConstants.No_type);
     }
 
 }
@@ -1466,6 +1739,13 @@ class object extends Expression {
         out.println(Utilities.pad(n) + "_object");
 	dump_AbstractSymbol(out, n + 2, name);
 	dump_type(out, n);
+    }
+
+    public void semant(class_c clase){
+      set_type((AbstractSymbol)tbl.mapa.lookup(name));
+      if(name.toString().equals("self")){
+        set_type(TreeConstants.SELF_TYPE);
+      }
     }
 
 }

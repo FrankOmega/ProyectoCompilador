@@ -4,7 +4,7 @@ public final class SemantErrors {
 
     // Cuando una clase ha sido declarada previamente
     public static void classPreviouslyDefined(AbstractSymbol name, PrintStream p) {
-        p.println("Class " + name + " was previously defined.");
+        p.println("Class " + name + "was previously defined.");
     }
 
     // Cuando una clase basica es redefinida
@@ -67,6 +67,21 @@ public final class SemantErrors {
         p.println("Formal parameter "+name+" cannot have type SELF_TYPE.");
     }
 
+    // Cuando un parametro es definido multiples veces
+    public static void formalMultiplyDefined(AbstractSymbol name, PrintStream p) {
+        p.println("Formal parameter "+name+" is multiply defined.");
+    }
+
+    // Cuando un metodo es heredado tiene diferente numero de formals parameters
+    public static void diffNumOfFormalsRedefinedMethod(AbstractSymbol name, PrintStream p) {
+        p.println("Incompatible number of formal parameters in redefined method "+name+".");
+    }
+
+    // Cuando un metodo es heredado y sus formals tienen diferente tipo al original
+    public static void diffTypeFormalRedefinedMethod(AbstractSymbol name, AbstractSymbol t1, AbstractSymbol t2, PrintStream p) {
+        p.println("In redefined method "+name+", parameter type "+t1+" is different from original type "+t2);
+    }
+
     // Cuando el tipo declarado de un metodo no es igual al retornado
     public static void diffReturnType(AbstractSymbol type, AbstractSymbol name, AbstractSymbol returnt, PrintStream p) {
         p.println("Inferred return type "+type+" of method "+name+" does not conform to declared return type "+returnt+".");
@@ -100,6 +115,11 @@ public final class SemantErrors {
     // Cuando se trata de llamar a un staticdispatch con expr diferente tipo
     public static void exprNotConformToDeclaredSDType(AbstractSymbol et, AbstractSymbol sdt, PrintStream p) {
         p.println("Expression type "+et+" does not conform to declared static dispatch type "+sdt+".");
+    }
+
+    // Cuando se hace un new con una clase no definida
+    public static void newUndefinedClass(AbstractSymbol type_name, PrintStream p) {
+        p.println("'new' used with undefined class "+type_name+".");
     }
 
     // Cuando se llama a un static dispatch no definido

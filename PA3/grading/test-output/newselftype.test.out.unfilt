@@ -1,4 +1,2 @@
-java.lang.NullPointerException
-	at class_c.semant(cool-tree.java:406)
-	at programc.semant(cool-tree.java:347)
-	at Semant.main(Semant.java:36)
+./newselftype.test:1: Inferred type null of initialization of attribute bar does not conform to declared type Int.
+Compilation halted due to static semantic errors.

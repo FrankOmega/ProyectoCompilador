@@ -1,6 +1,5 @@
-class Main { main(z:String) : Int {0 }; };
+class Main { main() : Int {0 }; };
 
 class A {
-  self:A <- new A;
-  foo(x:String) : String {x <- "a boy named sue"};
+  foo(x:Int) : Object {case x of a:Int => a; b:Int => b; esac};
 };

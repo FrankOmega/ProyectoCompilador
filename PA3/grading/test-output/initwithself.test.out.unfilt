@@ -1,28 +1,3 @@
-#1
-_program
-  #1
-  _class
-    Main
-    IO
-    "./initwithself.test"
-    (
-    #1
-    _attr
-      x
-      Main
-      #1
-      _object
-        self
-      : _no_type
-    #1
-    _method
-      main
-      Object
-      #1
-      _block
-        #1
-        _object
-          self
-        : _no_type
-      : _no_type
-    )
+./initwithself.test:1: Inferred type SELF_TYPE of initialization of attribute x does not conform to declared type Main.
+./initwithself.test:1: Inferred return type SELF_TYPE of method main does not conform to declared return type Object.
+Compilation halted due to static semantic errors.

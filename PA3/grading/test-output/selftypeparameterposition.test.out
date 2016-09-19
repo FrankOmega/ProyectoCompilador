@@ -1,36 +1,3 @@
-
-_program
-
-  _class
-    Main
-    Object
-    filename
-    (
-
-    _method
-      main
-      Int
-
-      _int
-        0
-      : _no_type
-    )
-
-  _class
-    A
-    Object
-    filename
-    (
-
-    _method
-      foo
-
-      _formal
-        x
-        SELF_TYPE
-      Object
-
-      _object
-        x
-      : _no_type
-    )
+Formal parameter x cannot have type SELF_TYPE.
+filename:line
+Compilation halted due to static semantic errors.

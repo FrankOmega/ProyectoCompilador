@@ -1,12 +1,59 @@
-16c16
+1,55c1,2
+< 
+< _program
+< 
+<   _class
+<     Main
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       main
+<       Int
+< 
+<       _int
+<         0
 <       : Int
----
->       : _no_type
-35c35
+<     )
+< 
+<   _class
+<     D
+<     Object
+<     filename
+<     (
+< 
+<     _method
+<       inky
+< 
+<       _formal
+<         b
+<         Int
+<       Object
+< 
+<       _int
+<         1
 <       : Int
----
->       : _no_type
-54c54
+<     )
+< 
+<   _class
+<     E
+<     D
+<     filename
+<     (
+< 
+<     _method
+<       inky
+< 
+<       _formal
+<         c
+<         Int
+<       Object
+< 
+<       _int
+<         1
 <       : Int
+<     )
 ---
->       : _no_type
+> filename:line
+> Compilation halted due to static semantic errors.

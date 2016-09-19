@@ -207,6 +207,18 @@ class ClassTable {
      * to be printed.
      *
      * */
+
+    public void ordenarClases(String name, Hashtable<String,String> hsh){
+      papa = hsh.get(name).toString();
+
+      if(!papa.equals("Object"))
+        ordenarClases(papa,hsh);
+
+      if(!v.contains(name))
+        if(!name.equals("IO"))
+          v.add(name);
+    }
+
     public PrintStream semantError(class_c c) {
 	return semantError(c.getFilename(), c);
     }
@@ -233,6 +245,7 @@ class ClassTable {
      * to be printed.
      *
      * */
+
     public PrintStream semantError() {
 	semantErrors++;
 	return errorStream;

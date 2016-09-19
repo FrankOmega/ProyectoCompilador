@@ -1,4 +1,3 @@
-java.lang.NullPointerException
-	at class_c.semant(cool-tree.java:406)
-	at programc.semant(cool-tree.java:347)
-	at Semant.main(Semant.java:36)
+./subtypemethodreturn.test:1: Inferred return type null of method foo does not conform to declared return type A.
+./subtypemethodreturn.test:1: Inferred return type SELF_TYPE of method foo does not conform to declared return type A.
+Compilation halted due to static semantic errors.
