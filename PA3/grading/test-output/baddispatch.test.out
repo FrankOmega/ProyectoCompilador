@@ -1,7 +1,8 @@
+filename:line
 java.lang.NullPointerException
+	at java.util.Hashtable.get(Hashtable.java:363)
 	at dispatch.semant(cool-tree.java:947)
 	at let.semant(cool-tree.java:1193)
-	at block.semant(cool-tree.java:1140)
 	at method.semant(cool-tree.java:657)
 	at class_c.semant(cool-tree.java:563)
 	at programc.semant(cool-tree.java:443)

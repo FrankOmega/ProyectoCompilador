@@ -1,3 +1,0 @@
-./compare.test:1: Illegal comparison with a basic type.
-./compare.test:1: Inferred return type null of method compare does not conform to declared return type Bool.
-Compilation halted due to static semantic errors.

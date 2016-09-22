@@ -1,2 +1,9 @@
-./trickyatdispatch.test:1: Inferred return type null of method winky does not conform to declared return type Int.
-Compilation halted due to static semantic errors.
+java.lang.ArrayIndexOutOfBoundsException: -1
+	at java.util.Vector.elementData(Vector.java:734)
+	at java.util.Vector.elementAt(Vector.java:477)
+	at ListNode.getNth(ListNode.java:123)
+	at static_dispatch.semant(cool-tree.java:888)
+	at method.semant(cool-tree.java:657)
+	at class_c.semant(cool-tree.java:563)
+	at programc.semant(cool-tree.java:443)
+	at Semant.main(Semant.java:36)

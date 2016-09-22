@@ -1,3 +1,7 @@
 ./newselftype.test:1: Undeclared identifier self.
-./newselftype.test:1: Inferred type null of initialization of attribute bar does not conform to declared type Int.
-Compilation halted due to static semantic errors.
+java.lang.NullPointerException
+	at dispatch.semant(cool-tree.java:947)
+	at attr.semant(cool-tree.java:705)
+	at class_c.semant(cool-tree.java:555)
+	at programc.semant(cool-tree.java:443)
+	at Semant.main(Semant.java:36)

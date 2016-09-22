@@ -1,18 +1,12 @@
 24c24
 <         : Int
 ---
->         : _no_type
+>         : SELF_TYPE
 34c34
 <         : String
 ---
->         : _no_type
+>         : SELF_TYPE
 44c44
 <         : Bool
 ---
->         : _no_type
-54,55c54,55
-<         : Int
-<       : Int
----
->         : _no_type
->       : _no_type
+>         : SELF_TYPE

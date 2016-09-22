@@ -171,31 +171,37 @@ class ClassTable {
 
     //}
 
-
+    Vector<class_c> bases = new Vector<class_c>();
     Vector<String> v = new Vector<String>();
+    Vector<AbstractSymbol> vAS = new Vector<AbstractSymbol>();
     public ClassTable(Classes cls) {
 	    semantErrors = 0;
 	    errorStream = System.err;
-
+      bases.add(Object_class);
+      bases.add(IO_class);
+      bases.add(Int_class);
+      bases.add(Str_class);
+      bases.add(Bool_class);
 	/* fill this in */
     }
 
-
     String papa;
-    public boolean searchCycleClasses(String name, Hashtable<String,String> hsh){
-      papa = hsh.get(name).toString();
-      //System.out.println("h ");
-      v.add(name);
+    AbstractSymbol padre;
+    public boolean searchCycleClasses(AbstractSymbol name,
+                                Hashtable<AbstractSymbol,AbstractSymbol> hsh)
+      {
+      padre = hsh.get(name);
+      vAS.add(name);
 
-      if(name.equals(papa))
+      if(name.equals(padre))
         return true;
-      else if(papa.equals("Object"))
+      else if(TreeConstants.Object_.equals(padre))
         return false;
       else{
-        if(v.contains(papa))
+        if(v.contains(padre))
           return true;
         else
-          return searchCycleClasses(papa, hsh);
+          return searchCycleClasses(padre, hsh);
       }
     }
 
@@ -209,15 +215,41 @@ class ClassTable {
      *
      * */
 
-    public void ordenarClases(String name, Hashtable<String,String> hsh){
-      papa = hsh.get(name).toString();
+     public boolean pertenece(AbstractSymbol var_type, AbstractSymbol type,
+                            Hashtable<AbstractSymbol,AbstractSymbol> hsh){
+        if(var_type.equals(type))
+          return true;
+        else if (type.equals(TreeConstants.Object_))
+          return false;
+        else
+          return pertenece(var_type, hsh.get(type), hsh);
+     }
 
-      if(!papa.equals("Object"))
-        ordenarClases(papa,hsh);
-      if(!v.contains(name))
-        if(!name.equals("IO"))
-          v.add(name);
+     public boolean attr_tieneherncia(AbstractSymbol clase, Hashtable<AbstractSymbol,AbstractSymbol> hsh){
+      if(hsh.get(clase).equals(TreeConstants.Object_) |
+                hsh.get(clase).equals(TreeConstants.IO))
+        return false;
+      else
+        return true;
+     }
+
+    public void ordenarClases(AbstractSymbol name, Hashtable<AbstractSymbol,AbstractSymbol> hsh){
+      padre = hsh.get(name);
+
+      if(!TreeConstants.Object_.equals(padre))
+        ordenarClases(padre,hsh);
+      if(!vAS.contains(name))
+        if(!TreeConstants.IO.equals(name))
+          vAS.add(name);
     }
+
+    /*public AbstractSymbol union(){
+
+    }
+
+    public boolean newLessOrEqual(){
+
+    }*/
 
     public PrintStream semantError(class_c c) {
 	return semantError(c.getFilename(), c);

@@ -1,4 +1,4 @@
-1,86c1,2
+1,86c1,8
 < 
 < _program
 < 
@@ -87,4 +87,10 @@
 <     )
 ---
 > filename:line
-> Compilation halted due to static semantic errors.
+> java.lang.NullPointerException
+> 	at dispatch.semant(cool-tree.java:947)
+> 	at block.semant(cool-tree.java:1140)
+> 	at method.semant(cool-tree.java:657)
+> 	at class_c.semant(cool-tree.java:563)
+> 	at programc.semant(cool-tree.java:443)
+> 	at Semant.main(Semant.java:36)

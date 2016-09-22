@@ -12,15 +12,15 @@ import java.util.Vector;
 import java.util.Hashtable;
 
 //Variables globales
-class tbl{
+class OMC{
   public static ClassTable cT;
-  public static SymbolTable mapa;
+  public static Hashtable<AbstractSymbol, Vector<AbstractSymbol>> vmeth;
+  public static Hashtable<AbstractSymbol, Vector<AbstractSymbol>> vattr;
+  public static Hashtable<AbstractSymbol,Hashtable<AbstractSymbol,AbstractSymbol>> attr;
+  public static Hashtable<AbstractSymbol,AbstractSymbol> C;
+  public static Hashtable<AbstractSymbol,Hashtable<AbstractSymbol,method>> M;
+  public static Hashtable<AbstractSymbol,SymbolTable> O;
 
-  public static Hashtable<String,String> cyh;
-  public static Hashtable<String,Hashtable<String,Vector<String>>> cym;
-  public static Hashtable<String,Vector<String>> myf;
-  public static Hashtable<String,Hashtable<String,AbstractSymbol>> cyo;
-  public static Hashtable<String,AbstractSymbol>oyt;
 }
 
 /** Defines simple phylum Program */
@@ -263,13 +263,13 @@ class programc extends Program {
     */
     public void semant() {
       //Inicializar las variables globales
-      tbl.cyh = new Hashtable<String,String>();
-      tbl.cym = new Hashtable<String,Hashtable<String,Vector<String>>>();
-      tbl.myf = new Hashtable<String,Vector<String>>();
-      tbl.cyo = new Hashtable<String,Hashtable<String,AbstractSymbol>>();
-      tbl.oyt = new Hashtable<String,AbstractSymbol>();
-      tbl.cT = new ClassTable(classes);
-      tbl.mapa = new SymbolTable();
+      OMC.C = new Hashtable<AbstractSymbol,AbstractSymbol>();
+      OMC.M = new Hashtable<AbstractSymbol,Hashtable<AbstractSymbol,method>>();
+      OMC.O = new Hashtable<AbstractSymbol,SymbolTable>();
+      OMC.vmeth = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
+      OMC.vattr = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
+      OMC.attr = new Hashtable<AbstractSymbol,Hashtable<AbstractSymbol,AbstractSymbol>>();
+      OMC.cT = new ClassTable(classes);
 
       //----------PRIMER RECORRIDO CLASES-----------
       for(int i = classes.getLength()-1; i >= 0; i--){
@@ -280,44 +280,39 @@ class programc extends Program {
         //No se puede redefinir clases bases
         if(clasestr.equals("Object") | clasestr.equals("Bool")
           | clasestr.equals("Int") | clasestr.equals("String")
-          | clasestr.equals("SELF_TYPE") | clasestr.equals("IO")){
+          | clasestr.equals("SELF_TYPE") | clasestr.equals("IO"))
           SemantErrors.basicClassRedefined(clase.name,
-            tbl.cT.semantError(clase));
-        }
+            OMC.cT.semantError(clase));
 
-        if (tbl.cT.errors()) {
+        if (OMC.cT.errors()) {
       	    System.err.println("Compilation halted due to static semantic errors.");
       	    System.exit(1);
       	}
 
         //No se puede heredar de estos 3 casos
         if(padrestr.equals("Bool")| padrestr.equals("Int")
-                | padrestr.equals("String")){
+                | padrestr.equals("String"))
           SemantErrors.cannotInheritClass(clase.name,
-                clase.parent, tbl.cT.semantError(clase));
-        }
+                clase.parent, OMC.cT.semantError(clase));
 
         else{
           //Se duplica?
-          if(tbl.cyh.containsKey(clasestr)){
+          if(OMC.C.containsKey(clase.name))
             SemantErrors.classPreviouslyDefined(clase.name,
-                    tbl.cT.semantError(clase));
-          }
+                    OMC.cT.semantError(clase));
           //Llenar el hashtable
-          else{
-            tbl.cyh.put(clasestr,padrestr);
-          }
+          else
+            OMC.C.put(clase.name,clase.parent);
         }
       }
       //------------------------------------------------
 
-      if (tbl.cT.errors()) {
+      if (OMC.cT.errors()) {
           System.err.println("Compilation halted due to static semantic errors.");
           System.exit(1);
       }
-
       //Añadir el padre de IO que es Object
-      tbl.cyh.put(TreeConstants.IO.toString(),TreeConstants.Object_.toString());
+      OMC.C.put(TreeConstants.IO,TreeConstants.Object_);
 
       //------------- SEGUNDO RECORRIDO CLASES---------------
 
@@ -325,79 +320,151 @@ class programc extends Program {
         class_c clase = (class_c) classes.getNth(i);
         //Undefined class
         if(!clase.parent.toString().equals("Object")){
-          if(!tbl.cyh.containsKey(clase.parent.toString())){
+          if(!OMC.C.containsKey(clase.parent)){
             SemantErrors.inheritsFromAnUndefinedClass(clase.name,
-            clase.parent,  tbl.cT.semantError(clase));
+            clase.parent,  OMC.cT.semantError(clase));
           }
         }
         //Has cycle?
-        else if(tbl.cT.searchCycleClasses(clase.name.toString(), tbl.cyh)){
+        else if(OMC.cT.searchCycleClasses(clase.name, OMC.C))
           SemantErrors.inheritanceCycle(clase.name,
-              tbl.cT.semantError(clase));
-        }
-        tbl.cT.v.clear();
+              OMC.cT.semantError(clase));
+        OMC.cT.vAS.clear();
       }
 
-      //---------------------------------------------------------
+      //------------------Revisar si encontro errores------------------
 
-      if (tbl.cT.errors()) {
+      if (OMC.cT.errors()) {
     	    System.err.println("Compilation halted due to static semantic errors.");
     	    System.exit(1);
     	}
 
-      //Main no esta definido
-      if(!tbl.cyh.containsKey("Main")){
-        SemantErrors.noClassMain(tbl.cT.semantError());
+      //Clase Main no esta definido
+      if(!OMC.C.containsKey(TreeConstants.Main)){
+        SemantErrors.noClassMain(OMC.cT.semantError());
       }
 
-	    if (tbl.cT.errors()) {
+	    if (OMC.cT.errors()) {
 	    System.err.println("Compilation halted due to static semantic errors.");
 	    System.exit(1);
 	    }
 
 
-      //----------------RECORRER EL ARBOL---------------------------
+      //---Ordenar el recorrido de las clases--
       class_c mainclase = null;
-      tbl.cT.v.add("Object");
+      OMC.cT.vAS.add(TreeConstants.Object_);
       Hashtable<Integer,class_c> clord = new Hashtable<Integer,class_c>();
 
       for(int i = 0; i < classes.getLength(); i++){
         class_c clase = (class_c) classes.getNth(i);
         String namestr = clase.name.toString();
-        tbl.cT.ordenarClases(namestr, tbl.cyh);
-        clord.put(tbl.cT.v.indexOf(namestr), clase);
+        OMC.cT.ordenarClases(clase.name, OMC.C);
+        clord.put(OMC.cT.vAS.indexOf(clase.name), clase);
         if(namestr.equals("Main"))
           mainclase = (class_c) clase;
       }
 
-      tbl.mapa.enterScope();
-      class_c a_io = tbl.cT.IO_class;
-      class_c a_int = tbl.cT.Int_class;
-      class_c a_bool = tbl.cT.Bool_class;
-      class_c a_str = tbl.cT.Str_class;
+      //---Agregar las clases y herencias que faltan---
+      OMC.C.put(TreeConstants.Int, TreeConstants.Object_);
+      OMC.C.put(TreeConstants.Bool, TreeConstants.Object_);
+      OMC.C.put(TreeConstants.Str, TreeConstants.Object_);
 
-      tbl.mapa.addId(a_io.name, TreeConstants.Object_);
-      tbl.mapa.addId(a_int.name, TreeConstants.Object_);
-      tbl.mapa.addId(a_bool.name, TreeConstants.Object_);
-      tbl.mapa.addId(a_str.name, TreeConstants.Object_);
+      //System.out.println("Clases: " + OMC.C);
 
-      for(int i = 1; i < tbl.cT.v.size(); i++){
+      //---Agregar los metodos y atributos de las clases basicas---
+      for(int i = 0; i < OMC.cT.bases.size(); i++){
+        class_c clase = (class_c) OMC.cT.bases.get(i);
+        Hashtable<AbstractSymbol,method> nm;
+        nm = new Hashtable<AbstractSymbol,method>();
+        Vector<AbstractSymbol> nombrem = new Vector<AbstractSymbol>();
+        for(int j = 0; j < clase.features.getLength(); j++){
+          Feature feature = (Feature) clase.features.getNth(j);
+          if(feature instanceof method){
+            method basico = (method) feature;
+            nm.put(basico.name, basico);
+            OMC.M.put(clase.name, nm);
+            nombrem.add(basico.name);
+          }
+        }
+        OMC.vmeth.put(clase.name,new Vector<AbstractSymbol>());
+        OMC.vmeth.put(clase.name,nombrem);
+      }
+
+      Vector<AbstractSymbol> cosos = new Vector<AbstractSymbol>();
+      cosos.add(TreeConstants.IO);
+      cosos.add(TreeConstants.Str);
+      cosos.add(TreeConstants.Int);
+      cosos.add(TreeConstants.Bool);
+
+      method brt = (method)OMC.cT.Object_class.features.getNth(0);
+      method tpnm = (method)OMC.cT.Object_class.features.getNth(1);
+      method cp = (method)OMC.cT.Object_class.features.getNth(2);
+
+      OMC.M.put(TreeConstants.Int,new Hashtable<AbstractSymbol,method>());
+      OMC.M.put(TreeConstants.Bool,new Hashtable<AbstractSymbol,method>());
+
+      for(int i = 0; i < cosos.size(); i++){
+        AbstractSymbol cl = cosos.get(i);
+        OMC.M.get(cl).put(brt.name,brt);
+        OMC.M.get(cl).put(tpnm.name,tpnm);
+        OMC.M.get(cl).put(cp.name,cp);
+      }
+
+      //---------Agregar los metodos de todas las clases------------
+      for(int i = 1; i < OMC.cT.vAS.size(); i++){
+        class_c clase = (class_c) clord.get(i);
+        Hashtable<AbstractSymbol,method> nm;
+        nm = new Hashtable<AbstractSymbol,method>();
+        Vector<AbstractSymbol> nuevos = new Vector<AbstractSymbol>();
+        for(int j = 0; j < OMC.vmeth.get(clase.parent).size(); j++){
+
+          AbstractSymbol nombrem = OMC.vmeth.get(clase.parent).get(j);
+          nuevos.add(nombrem);
+          nm.put(nombrem, OMC.M.get(clase.parent).get(nombrem));
+        }
+        OMC.vmeth.put(clase.name,nuevos);
+        for(int j = 0; j < clase.features.getLength(); j++){
+          Feature feature = (Feature) clase.features.getNth(j);
+          if(feature instanceof method){
+            method basico = (method) feature;
+            nm.put(basico.name, basico);
+          }
+        }
+      OMC.M.put(clase.name, nm);
+      }
+
+      //----------------------------------------------------------------
+
+      //----------------------RECORRER EL ARBOL-------------------------
+      for(int i = 1; i < OMC.cT.vAS.size(); i++){
+        SymbolTable actual = new SymbolTable();
         class_c clase = clord.get(i);
+        OMC.O.put(clase.name,actual);
         clase.semant(clase);
       }
 
-      tbl.mapa.exitScope();
+      if (OMC.cT.errors()) {
+      System.err.println("Compilation halted due to static semantic errors.");
+      System.exit(1);
+      }
 
+      //--------Revisar mas errores-------
       //Si la clase Main no contiene el metodo main
-      if(!tbl.cym.get("Main").containsKey("main"))
-        SemantErrors.noMainMethodInMainClass(tbl.cT.semantError());
+      if(OMC.M.containsKey(TreeConstants.Main)){
+        if(!OMC.M.get(TreeConstants.Main).containsKey(TreeConstants.main_meth))
+          SemantErrors.noMainMethodInMainClass(OMC.cT.semantError());
 
-      //Si el metodo main en la clase main tiene parametros
+        method m_main = OMC.M.get(TreeConstants.Main).get(TreeConstants.main_meth);
+        if((m_main.formals.getLength()) > 0){
+          SemantErrors.mainMethodNoArgs(OMC.cT.semantError(mainclase));
+        }
+      }
+
       else
-        if(!tbl.cym.get("Main").get("main").isEmpty())
-          SemantErrors.mainMethodNoArgs(tbl.cT.semantError(mainclase));
+        SemantErrors.noMainMethodInMainClass(OMC.cT.semantError());
 
-      if (tbl.cT.errors()) {
+
+      if (OMC.cT.errors()) {
       System.err.println("Compilation halted due to static semantic errors.");
       System.exit(1);
       }
@@ -441,18 +508,38 @@ class class_c extends Class_ {
     public void semant(class_c clase){
       Vector<attr> vattr = new Vector<attr>();
       Vector<method> vmethod = new Vector<method>();
+      OMC.O.get(clase.name).enterScope();
+
+      //-----SI HEREDA OBTENER LOS ATRIBUTOS DEL QUE HEREDO-------
+
+      Hashtable<AbstractSymbol,AbstractSymbol> coso;
+      coso = new Hashtable<AbstractSymbol,AbstractSymbol>();
+      Vector<AbstractSymbol> v = new Vector<AbstractSymbol>();
+
+      if(OMC.cT.attr_tieneherncia(clase.name, OMC.C)){
+        for(int i = 0; i < OMC.vattr.get(clase.parent).size(); i++){
+          AbstractSymbol nombre = OMC.vattr.get(clase.parent).get(i);
+          AbstractSymbol tipo = OMC.attr.get(clase.parent).get(nombre);
+          OMC.O.get(clase.name).addId(nombre,tipo);
+          v.add(nombre);
+          coso.put(nombre,tipo);
+        }
+      }
+      //------------------------------------------------------------
 
       for(int i = 0; i  < features.getLength(); i++){
         Feature cosa = (Feature)features.getNth(i);
 
         if(cosa instanceof attr){
           attr atributo = (attr) cosa;
-          if(vattr.contains(atributo.name.toString()))
-            SemantErrors.attrMultiplyDefined(atributo.name,tbl.cT.semantError(clase));
+          if(vattr.contains(atributo))
+            SemantErrors.attrMultiplyDefined(atributo.name,OMC.cT.semantError(clase));
           vattr.add(atributo);
           if(atributo.name.toString().equals("self")){
-            SemantErrors.selfCannotBeTheNameOfAttr(tbl.cT.semantError(clase));
+            SemantErrors.selfCannotBeTheNameOfAttr(OMC.cT.semantError(clase));
           }
+          if(OMC.O.get(clase.name).probe(atributo.name) != null)
+            SemantErrors.attrOfAnInheritedClass(atributo.name,OMC.cT.semantError(clase));
         }
 
         else{
@@ -462,12 +549,21 @@ class class_c extends Class_ {
       }
 
       for(int i = 0; i < vattr.size(); i++){
-        vattr.get(i).semant(clase);
+        attr atributo = (attr) vattr.get(i);
+        coso.put(atributo.name, atributo.type_decl);
+        v.add(atributo.name);
+        atributo.semant(clase);
+      }
+      OMC.attr.put(clase.name, coso);
+      OMC.vattr.put(clase.name, v);
+
+      OMC.O.get(clase.name).enterScope();
+      for(int i = 0; i < vmethod.size(); i++){
+        method metodo = vmethod.get(i);
+        metodo.semant(clase);
       }
 
-      for(int i = 0; i < vmethod.size(); i++){
-        vmethod.get(i).semant(clase);
-      }
+      OMC.O.get(clase.name).exitScope();
     }
 
 
@@ -539,35 +635,29 @@ class method extends Feature {
     public void semant(class_c clase){
       Vector<String> vfirmas = new Vector<String>();
 
-      tbl.mapa.enterScope();
       for(int i = 0;i < formals.getLength(); i++){
         formalc firma = (formalc) formals.getNth(i);
 
         if(TreeConstants.self.equals(firma.name))
-          SemantErrors.formalCannotBeSelf(tbl.cT.semantError(clase));
+          SemantErrors.formalCannotBeSelf(OMC.cT.semantError(clase));
 
         if(TreeConstants.SELF_TYPE.equals(firma.type_decl))
           SemantErrors.formalParamCannotHaveTypeSELF_TYPE(
-            firma.name,tbl.cT.semantError());
+            firma.name,OMC.cT.semantError());
 
         if(vfirmas.contains(firma.name.toString()))
-          SemantErrors.formalMultiplyDefined(firma.name, tbl.cT.semantError(clase));
+          SemantErrors.formalMultiplyDefined(firma.name, OMC.cT.semantError(clase));
 
         else{
           vfirmas.add(firma.name.toString());
-          tbl.mapa.addId(firma.name,firma.type_decl);
+          OMC.O.get(clase.name).addId(firma.name,firma.type_decl);
         }
       }
 
-      tbl.myf.put(name.toString(), vfirmas);
-      tbl.cym.put(clase.name.toString(), tbl.myf);
-      tbl.mapa.enterScope();
       expr.semant(clase);
       AbstractSymbol t = expr.get_type();
       if(!return_type.equals(t) && !TreeConstants.Object_.equals(return_type))
-        SemantErrors.diffReturnType(t,name,return_type,tbl.cT.semantError(clase));
-      tbl.mapa.exitScope();
-      tbl.mapa.exitScope();
+        SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
 
     }
 }
@@ -611,16 +701,14 @@ class attr extends Feature {
     }
 
     public void semant(class_c clase){
-      tbl.mapa.addId(name, type_decl);
-      tbl.mapa.enterScope();
+      OMC.O.get(clase.name).addId(name,type_decl);
       init.semant(clase);
-      tbl.mapa.exitScope();
 
       AbstractSymbol t = init.get_type();;
       if((!TreeConstants.No_type.equals(t)) &&
       (!TreeConstants.Object_.equals(type_decl)))
         if(!type_decl.equals(t))
-          SemantErrors.diffInitType(t,name,type_decl,tbl.cT.semantError(clase));
+          SemantErrors.diffInitType(t,name,type_decl,OMC.cT.semantError(clase));
     }
 
 }
@@ -698,7 +786,6 @@ class branch extends Case {
     }
 
     public void semant(class_c clase){
-      tbl.mapa.addId(name,type_decl);
       expr.semant(clase);
     }
 
@@ -739,7 +826,11 @@ class assign extends Expression {
 
     public void semant(class_c clase){
       expr.semant(clase);
-      set_type(expr.get_type());
+      AbstractSymbol tipo = expr.get_type();
+      AbstractSymbol var = (AbstractSymbol) OMC.O.get(clase.name).lookup(name);
+      if(!OMC.cT.pertenece(var,tipo,OMC.C))
+        SemantErrors.diffAssignType(tipo,var,name,OMC.cT.semantError(clase));
+      set_type(tipo);
     }
 
 }
@@ -794,10 +885,12 @@ class static_dispatch extends Expression {
 
     public void semant(class_c clase){
       expr.semant(clase);
+      Expression ultimo = (Expression) actual.getNth(actual.getLength() - 1);
       for(int i = 0; i < actual.getLength(); i++){
         Expression expresion = (Expression) actual.getNth(i);
         expresion.semant(clase);
       }
+      set_type(OMC.M.get(type_name).get(name).return_type);
     }
 
 }
@@ -851,6 +944,7 @@ class dispatch extends Expression {
         Expression expresion = (Expression) actual.getNth(i);
         expresion.semant(clase);
       }
+      set_type(OMC.M.get(expr.get_type()).get(name).return_type);
     }
 
 }
@@ -897,7 +991,7 @@ class cond extends Expression {
     public void semant(class_c clase){
       pred.semant(clase);
       if(TreeConstants.Bool.equals(pred.get_type()))
-        SemantErrors.ifNoBoolPredicate(tbl.cT.semantError(clase));
+        SemantErrors.ifNoBoolPredicate(OMC.cT.semantError(clase));
 
       then_exp.semant(clase);
       else_exp.semant(clase);
@@ -947,7 +1041,7 @@ class loop extends Expression {
       if(TreeConstants.Bool.equals(pred.get_type()))
         pred.set_type(TreeConstants.Bool);
       else
-        SemantErrors.whileNoBoolCondition(tbl.cT.semantError(clase));
+        SemantErrors.whileNoBoolCondition(OMC.cT.semantError(clase));
       body.semant(clase);
       set_type(TreeConstants.Object_);
     }
@@ -993,17 +1087,17 @@ class typcase extends Expression {
     public void semant(class_c clase){
       Vector<String> vbranch = new Vector<String>();
       expr.semant(clase);
-      tbl.mapa.enterScope();
+      OMC.O.get(clase.name).enterScope();
       for(int i = 0; i < cases.getLength(); i++){
         branch caso = (branch) cases.getNth(i);
         String branchstr = caso.type_decl.toString();
         if(vbranch.contains(branchstr))
-          SemantErrors.duplicateBranch(caso.type_decl,tbl.cT.semantError(clase));
+          SemantErrors.duplicateBranch(caso.type_decl,OMC.cT.semantError(clase));
         vbranch.add(branchstr) ;
         caso.semant(clase);
       }
       set_type(TreeConstants.Object_);
-      tbl.mapa.exitScope();
+      OMC.O.get(clase.name).exitScope();
     }
 
 }
@@ -1145,7 +1239,7 @@ class plus extends Expression {
         set_type(TreeConstants.Int);
 
       else
-        SemantErrors.noIntArguments(t1,t2,"+",tbl.cT.semantError(clase));
+        SemantErrors.noIntArguments(t1,t2,"+",OMC.cT.semantError(clase));
     }
 
 }
@@ -1194,7 +1288,7 @@ class sub extends Expression {
         set_type(TreeConstants.Int);
 
       else
-        SemantErrors.noIntArguments(t1,t2,"-",tbl.cT.semantError(clase));
+        SemantErrors.noIntArguments(t1,t2,"-",OMC.cT.semantError(clase));
     }
 
 }
@@ -1243,7 +1337,7 @@ class mul extends Expression {
         set_type(TreeConstants.Int);
 
       else
-        SemantErrors.noIntArguments(t1,t2,"*",tbl.cT.semantError(clase));
+        SemantErrors.noIntArguments(t1,t2,"*",OMC.cT.semantError(clase));
     }
 
 }
@@ -1292,7 +1386,7 @@ class divide extends Expression {
         set_type(TreeConstants.Int);
 
       else
-        SemantErrors.noIntArguments(t1,t2,"/",tbl.cT.semantError(clase));
+        SemantErrors.noIntArguments(t1,t2,"/",OMC.cT.semantError(clase));
     }
 
 }
@@ -1333,7 +1427,7 @@ class neg extends Expression {
       if(TreeConstants.Int.equals(t))
         set_type(TreeConstants.Int);
       else
-        SemantErrors.argumentOfNegNoIntType(t,tbl.cT.semantError(clase));
+        SemantErrors.argumentOfNegNoIntType(t,OMC.cT.semantError(clase));
     }
 
 }
@@ -1375,10 +1469,7 @@ class lt extends Expression {
     public void semant(class_c clase){
       e1.semant(clase);
       e2.semant(clase);
-      if(e1.get_type().equals(e2.get_type()))
-        set_type(TreeConstants.Bool);
-      else
-        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
+      set_type(TreeConstants.Bool);
     }
 
 }
@@ -1420,10 +1511,15 @@ class eq extends Expression {
     public void semant(class_c clase){
       e1.semant(clase);
       e2.semant(clase);
-      if(e1.get_type().equals(e2.get_type()))
-        set_type(TreeConstants.Bool);
-      else
-        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
+      set_type(TreeConstants.Bool);
+      AbstractSymbol t1 = e1.get_type();
+      AbstractSymbol t2 = e2.get_type();
+      if( (TreeConstants.Int.equals(t1) | TreeConstants.Bool.equals(t1)
+      | TreeConstants.Str.equals(t2)) && (TreeConstants.Int.equals(t2)
+      | TreeConstants.Bool.equals(t2) | TreeConstants.Str.equals(t2)) ){
+        if(!t1.equals(t2))
+        SemantErrors.illegalCompWithABasicType(OMC.cT.semantError(clase));
+      }
     }
 
 }
@@ -1465,10 +1561,7 @@ class leq extends Expression {
     public void semant(class_c clase){
       e1.semant(clase);
       e2.semant(clase);
-      if(e1.get_type().equals(e2.get_type()))
-        set_type(TreeConstants.Bool);
-      else
-        SemantErrors.illegalCompWithABasicType(tbl.cT.semantError(clase));
+      set_type(TreeConstants.Bool);
     }
 
 }
@@ -1508,7 +1601,7 @@ class comp extends Expression {
       if(TreeConstants.Bool.equals(t))
         set_type(TreeConstants.Bool);
       else
-        SemantErrors.notNotBoolType(t, tbl.cT.semantError(clase));
+        SemantErrors.notNotBoolType(t, OMC.cT.semantError(clase));
     }
 
 }
@@ -1650,7 +1743,10 @@ class new_ extends Expression {
     }
 
     public void semant(class_c clase){
-      set_type(type_name);
+      if(TreeConstants.SELF_TYPE.equals(type_name))
+        set_type(clase.name);
+      else
+        set_type(type_name);
     }
 
 }
@@ -1751,12 +1847,11 @@ class object extends Expression {
     }
 
     public void semant(class_c clase){
-      Object var = tbl.mapa.lookup(name);
-
+      Object var = OMC.O.get(clase.name).lookup(name);
       if(var == null)
-        SemantErrors.undeclaredIdentifiers(name, tbl.cT.semantError(clase));
+        SemantErrors.undeclaredIdentifiers(name, OMC.cT.semantError(clase));
       else
-        set_type((AbstractSymbol)tbl.mapa.lookup(name));
+        set_type((AbstractSymbol)OMC.O.get(clase.name).lookup(name));
 
       if(name.toString().equals("self")){
         set_type(TreeConstants.SELF_TYPE);

@@ -1,9 +1,17 @@
-class Main { main() : Int {0 }; };
+class Main {
+ main(): Object {42 };
+};
 
 class A {
-	moo:Object;
-	boo():Object {{ case moo of i:Int => i;
-			        b:Bool => b;
-			        s:String => s;
-		     esac; }};
+    b:B <- new B;
+    moo():Int{
+      b.comer()
+    };
+
+};
+
+class B inherits A {
+    comer():Int{
+      8
+    };
 };

@@ -1,3 +1,4 @@
+./badstaticdispatch.test:1: Undeclared identifier self.
 java.lang.ArrayIndexOutOfBoundsException: -1
 	at java.util.Vector.elementData(Vector.java:734)
 	at java.util.Vector.elementAt(Vector.java:477)
