@@ -3,15 +3,16 @@ class Main {
 };
 
 class A {
-    b:B <- new B;
-    moo():Int{
-      b.comer()
+    foo(a:Int, b: B, c:A, d:B) : A {
+       self
     };
 
 };
 
 class B inherits A {
-    comer():Int{
-      8
+
+    moo() : A {
+       let b:B <- new B in
+       foo(4, b, b, b)
     };
 };

@@ -1,3 +1,0 @@
-./overridingmethod3.test:1: Undeclared identifier self.
-./overridingmethod3.test:1: Inferred return type B of method inky does not conform to declared return type SELF_TYPE.
-Compilation halted due to static semantic errors.

@@ -1,10 +1,19 @@
-./hairyscary.cl.test:1: Undeclared identifier self.
 ./hairyscary.cl.test:1: Undeclared identifier n.
 ./hairyscary.cl.test:1: Inferred type Object of initialization of attribute g does not conform to declared type Foo.
-./hairyscary.cl.test:1: Undeclared identifier self.
-java.lang.NullPointerException
-	at dispatch.semant(cool-tree.java:947)
-	at attr.semant(cool-tree.java:705)
-	at class_c.semant(cool-tree.java:555)
-	at programc.semant(cool-tree.java:443)
+./hairyscary.cl.test:1: Undeclared identifier n.
+./hairyscary.cl.test:1: Inferred type Object of initialization of attribute a does not conform to declared type Razz.
+./hairyscary.cl.test:1: Undeclared identifier n.
+./hairyscary.cl.test:1: Inferred type Object of initialization of attribute e does not conform to declared type Bar.
+java.lang.ArrayIndexOutOfBoundsException: -1
+	at java.util.Vector.elementData(Vector.java:734)
+	at java.util.Vector.elementAt(Vector.java:477)
+	at ListNode.getNth(ListNode.java:123)
+	at static_dispatch.semant(cool-tree.java:891)
+	at plus.semant(cool-tree.java:1284)
+	at plus.semant(cool-tree.java:1284)
+	at plus.semant(cool-tree.java:1284)
+	at plus.semant(cool-tree.java:1284)
+	at attr.semant(cool-tree.java:708)
+	at class_c.semant(cool-tree.java:557)
+	at programc.semant(cool-tree.java:444)
 	at Semant.main(Semant.java:36)

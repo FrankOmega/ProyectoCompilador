@@ -1,8 +1,0 @@
-filename:line
-java.lang.NullPointerException
-	at dispatch.semant(cool-tree.java:947)
-	at dispatch.semant(cool-tree.java:945)
-	at method.semant(cool-tree.java:657)
-	at class_c.semant(cool-tree.java:563)
-	at programc.semant(cool-tree.java:443)
-	at Semant.main(Semant.java:36)

@@ -1,10 +1,8 @@
-./self-assignment.test:1: Undeclared identifier self.
 ./self-assignment.test:1: Inferred type SELF_TYPE of initialization of attribute x does not conform to declared type A.
-./self-assignment.test:1: Undeclared identifier self.
 java.lang.NullPointerException
-	at dispatch.semant(cool-tree.java:947)
-	at assign.semant(cool-tree.java:828)
-	at method.semant(cool-tree.java:657)
-	at class_c.semant(cool-tree.java:563)
-	at programc.semant(cool-tree.java:443)
+	at ClassTable.pertenece(ClassTable.java:220)
+	at assign.semant(cool-tree.java:834)
+	at method.semant(cool-tree.java:659)
+	at class_c.semant(cool-tree.java:565)
+	at programc.semant(cool-tree.java:444)
 	at Semant.main(Semant.java:36)

@@ -21,7 +21,7 @@ _program
           copy
           (
           )
-        : SELF_TYPE
+        : Main
 
         _dispatch
 
@@ -31,7 +31,7 @@ _program
           copy
           (
           )
-        : SELF_TYPE
+        : Main
 
         _dispatch
 
@@ -41,7 +41,7 @@ _program
           copy
           (
           )
-        : SELF_TYPE
+        : Main
 
         _dispatch
 

@@ -417,20 +417,21 @@ class programc extends Program {
         nm = new Hashtable<AbstractSymbol,method>();
         Vector<AbstractSymbol> nuevos = new Vector<AbstractSymbol>();
         for(int j = 0; j < OMC.vmeth.get(clase.parent).size(); j++){
-
           AbstractSymbol nombrem = OMC.vmeth.get(clase.parent).get(j);
           nuevos.add(nombrem);
           nm.put(nombrem, OMC.M.get(clase.parent).get(nombrem));
         }
-        OMC.vmeth.put(clase.name,nuevos);
+
         for(int j = 0; j < clase.features.getLength(); j++){
           Feature feature = (Feature) clase.features.getNth(j);
           if(feature instanceof method){
             method basico = (method) feature;
             nm.put(basico.name, basico);
+            nuevos.add(basico.name);
           }
         }
-      OMC.M.put(clase.name, nm);
+        OMC.vmeth.put(clase.name,nuevos);
+        OMC.M.put(clase.name, nm);
       }
 
       //----------------------------------------------------------------
@@ -527,6 +528,7 @@ class class_c extends Class_ {
       }
       //------------------------------------------------------------
 
+      //------Se buscan errores en metodos y atirbutos---------
       for(int i = 0; i  < features.getLength(); i++){
         Feature cosa = (Feature)features.getNth(i);
 
@@ -657,8 +659,9 @@ class method extends Feature {
       expr.semant(clase);
       AbstractSymbol t = expr.get_type();
       if(!return_type.equals(t) && !TreeConstants.Object_.equals(return_type))
-        SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
-
+        if(TreeConstants.SELF_TYPE.equals(t))
+          if(!clase.name.equals(return_type))
+            SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
     }
 }
 
@@ -890,7 +893,11 @@ class static_dispatch extends Expression {
         Expression expresion = (Expression) actual.getNth(i);
         expresion.semant(clase);
       }
-      set_type(OMC.M.get(type_name).get(name).return_type);
+      AbstractSymbol retorno = OMC.M.get(expr.get_type()).get(name).return_type;
+      if(TreeConstants.SELF_TYPE.equals(retorno))
+        set_type(clase.name);
+      else
+        set_type(retorno);
     }
 
 }
@@ -940,11 +947,52 @@ class dispatch extends Expression {
 
     public void semant(class_c clase){
       expr.semant(clase);
-      for(int i = 0; i < actual.getLength();i++){
-        Expression expresion = (Expression) actual.getNth(i);
-        expresion.semant(clase);
+      AbstractSymbol type_noexpr = expr.get_type();
+      AbstractSymbol retorno = TreeConstants.No_type;
+
+      if(TreeConstants.SELF_TYPE.equals(type_noexpr))
+        type_noexpr = clase.name;
+
+      if(!OMC.M.get(type_noexpr).containsKey(name)){
+        SemantErrors.dispatchToUndefinedMethod(name,OMC.cT.semantError(clase));
+        for(int i = 0; i < (actual.getLength());i++){
+          Expression expresion = (Expression) actual.getNth(i);
+          expresion.semant(clase);
+        }
       }
-      set_type(OMC.M.get(expr.get_type()).get(name).return_type);
+
+      else{
+        retorno = OMC.M.get(type_noexpr).get(name).return_type;
+        int size_firma = OMC.M.get(type_noexpr).get(name).formals.getLength();
+        if(actual.getLength() == size_firma){
+          for(int i = 0; i < (actual.getLength());i++){
+            formalc firma;
+            firma = (formalc)OMC.M.get(type_noexpr).get(name).formals.getNth(i);
+            Expression expresion = (Expression) actual.getNth(i);
+            expresion.semant(clase);
+
+            AbstractSymbol tfirma = expresion.get_type();
+            if(TreeConstants.SELF_TYPE.equals(tfirma))
+              tfirma = clase.name;
+
+            if(!tfirma.equals(firma.type_decl))
+              SemantErrors.parameterDiffType(name,firma.name,expresion.get_type(),
+                            firma.type_decl,OMC.cT.semantError(clase));
+          }
+        }
+        else{
+          SemantErrors.methodCalledWithWrongNbofArgs(name,OMC.cT.semantError(clase));
+          for(int i = 0; i < (actual.getLength());i++){
+            Expression expresion = (Expression) actual.getNth(i);
+            expresion.semant(clase);
+          }
+        }
+      }
+
+      if(TreeConstants.SELF_TYPE.equals(retorno))
+        set_type(clase.name);
+      else
+        set_type(retorno);
     }
 
 }
@@ -1189,9 +1237,12 @@ class let extends Expression {
     }
 
     public void semant(class_c clase){
+      OMC.O.get(clase.name).enterScope();
+      OMC.O.get(clase.name).addId(identifier, type_decl);
       init.semant(clase);
       body.semant(clase);
-      //set_type(body.get_type());
+      set_type(body.get_type());
+      OMC.O.get(clase.name).exitScope();
     }
 
 }
@@ -1744,7 +1795,7 @@ class new_ extends Expression {
 
     public void semant(class_c clase){
       if(TreeConstants.SELF_TYPE.equals(type_name))
-        set_type(clase.name);
+        set_type(TreeConstants.SELF_TYPE);
       else
         set_type(type_name);
     }
@@ -1847,15 +1898,17 @@ class object extends Expression {
     }
 
     public void semant(class_c clase){
-      Object var = OMC.O.get(clase.name).lookup(name);
-      if(var == null)
-        SemantErrors.undeclaredIdentifiers(name, OMC.cT.semantError(clase));
-      else
-        set_type((AbstractSymbol)OMC.O.get(clase.name).lookup(name));
-
       if(name.toString().equals("self")){
         set_type(TreeConstants.SELF_TYPE);
       }
+
+      else{
+        Object var = OMC.O.get(clase.name).lookup(name);
+        if(var == null)
+          SemantErrors.undeclaredIdentifiers(name, OMC.cT.semantError(clase));
+        else
+          set_type((AbstractSymbol)OMC.O.get(clase.name).lookup(name));
+        }
     }
 
 }

@@ -1,12 +1,12 @@
 24c24
 <         : Int
 ---
->         : SELF_TYPE
+>         : Main
 34c34
 <         : String
 ---
->         : SELF_TYPE
+>         : Main
 44c44
 <         : Bool
 ---
->         : SELF_TYPE
+>         : Main

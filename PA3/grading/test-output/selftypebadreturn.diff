@@ -1,4 +1,4 @@
-1,2c1,47
+1,2c1,36
 < filename:line
 < Compilation halted due to static semantic errors.
 ---
@@ -13,19 +13,10 @@
 > 
 >     _method
 >       main
->       Object
+>       Int
 > 
->       _let
->         x
->         B
-> 
->         _new
->           A
->         : A
-> 
->         _int
->           10
->         : Int
+>       _int
+>         0
 >       : Int
 >     )
 > 
@@ -34,18 +25,16 @@
 >     Object
 >     filename
 >     (
->     )
 > 
->   _class
->     B
->     A
->     filename
->     (
->     )
+>     _method
+>       foo
 > 
->   _class
->     C
->     B
->     filename
->     (
+>       _formal
+>         x
+>         Object
+>       SELF_TYPE
+> 
+>       _new
+>         A
+>       : A
 >     )
