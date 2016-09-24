@@ -1,7 +1,0 @@
-./hairyscary.cl.test:1: Undeclared identifier n.
-./hairyscary.cl.test:1: Inferred type Object of initialization of attribute g does not conform to declared type Foo.
-./hairyscary.cl.test:1: Undeclared identifier n.
-./hairyscary.cl.test:1: Inferred type Object of initialization of attribute a does not conform to declared type Razz.
-./hairyscary.cl.test:1: Undeclared identifier n.
-./hairyscary.cl.test:1: Inferred type Object of initialization of attribute e does not conform to declared type Bar.
-Compilation halted due to static semantic errors.

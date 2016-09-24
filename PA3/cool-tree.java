@@ -737,7 +737,7 @@ class attr extends Feature {
 				t = clase.name;
       if((!TreeConstants.No_type.equals(t)) &&
       (!TreeConstants.Object_.equals(type_decl)))
-        if(!type_decl.equals(t))
+        if(!OMC.cT.pertenece(type_decl,t,OMC.C))
           SemantErrors.diffInitType(t,name,type_decl,OMC.cT.semantError(clase));
     }
 
@@ -1095,7 +1095,11 @@ class cond extends Expression {
       else_exp.semant(clase);
       AbstractSymbol t1 = then_exp.get_type();
       AbstractSymbol t2 = else_exp.get_type();
-      set_type(OMC.cT.union(t1,t2,OMC.C));
+      if(TreeConstants.SELF_TYPE.equals(t1))
+        t1 = clase.name;
+        if(TreeConstants.SELF_TYPE.equals(t1))
+        t2 = clase.name;
+      set_type(OMC.cT.union(t1,t2,t2,OMC.C));
     }
 }
 
@@ -1183,6 +1187,7 @@ class typcase extends Expression {
 
     public void semant(class_c clase){
       Vector<String> vbranch = new Vector<String>();
+      Vector<AbstractSymbol> vtypes = new Vector<AbstractSymbol>();
       expr.semant(clase);
       OMC.O.get(clase.name).enterScope();
       for(int i = 0; i < cases.getLength(); i++){
@@ -1190,10 +1195,13 @@ class typcase extends Expression {
         String branchstr = caso.type_decl.toString();
         if(vbranch.contains(branchstr))
           SemantErrors.duplicateBranch(caso.type_decl,OMC.cT.semantError(clase));
-        vbranch.add(branchstr) ;
+        vbranch.add(branchstr);
         caso.semant(clase);
+        vtypes.add(caso.expr.get_type());
       }
-      set_type(TreeConstants.Object_);
+
+      set_type(OMC.cT.caseUnion(vtypes, OMC.C));
+
       OMC.O.get(clase.name).exitScope();
     }
 }

@@ -225,22 +225,52 @@ class ClassTable {
           return pertenece(var_type, hsh.get(type), hsh);
      }
 
-     public AbstractSymbol union(AbstractSymbol a1, AbstractSymbol a2,
-                          Hashtable<AbstractSymbol,AbstractSymbol>hsh)
-      {
-        if(TreeConstants.Object_.equals(a1)){
-          return TreeConstants.Object_;
-        }
-        else if(pertenece(a1,a2,hsh))
-          return a1;
-        else{
-          if(TreeConstants.Object_.equals(a2)){
-            return TreeConstants.Object_;
+    public AbstractSymbol union(AbstractSymbol a1, AbstractSymbol a2,
+        AbstractSymbol c, Hashtable<AbstractSymbol,AbstractSymbol>hsh)
+    {
+      /*Vector<AbstractSymbol> v = new Vector<AbstractSymbol>();
+      v = vectorizarHerencia(a1, v, hsh);
+      Vector<AbstractSymbol> v2 = new Vector<AbstractSymbol>();
+      v2 = vectorizarHerencia(a2, v2, hsh);
+      //System.out.println(v + "\n2" + v2);
+      for(int i = 0; i < v.size(); i++){
+        for(int j = 0; j < v2.size(); j++){
+          if(v2.get(j).equals(v.get(i))){
+            return v2.get(j);
           }
-          else
-            return union(a1,hsh.get(a2),hsh);
         }
+      }*/
+      if(TreeConstants.Object_.equals(a1)){
+        return TreeConstants.Object_;
       }
+      else if(pertenece(a1,a2,hsh))
+        return a1;
+      else{
+        if(TreeConstants.Object_.equals(a2)){
+          return union(hsh.get(a1),c,c,hsh);
+        }
+        else
+          return union(a1,hsh.get(a2),c,hsh);
+      }
+    }
+
+
+    Vector<AbstractSymbol> caset = new Vector<AbstractSymbol>();
+    public AbstractSymbol caseUnion(Vector<AbstractSymbol> vt,
+                      Hashtable<AbstractSymbol,AbstractSymbol> hsh)
+      {
+      if(vt.size() == 1)
+        return vt.get(0);
+      else if(vt.size() == 2)
+        return union(vt.get(0),vt.get(1),vt.get(1),hsh);
+      else{
+        AbstractSymbol s1 = vt.get(0);
+        AbstractSymbol s2 = vt.get(1);
+        vt.remove(0);
+        vt.remove(0);
+        return union(union(s1,s2,s2,hsh), caseUnion(vt,hsh),caseUnion(vt,hsh), hsh);
+      }
+    }
 
      public boolean attr_tieneherncia(AbstractSymbol clase, Hashtable<AbstractSymbol,AbstractSymbol> hsh){
       if(hsh.get(clase).equals(TreeConstants.Object_) |
