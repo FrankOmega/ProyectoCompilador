@@ -17,6 +17,10 @@ public final class SemantErrors {
         p.println("Class " + name + " inherits from an undefined class " + parent + ".");
     }
 
+		public static void undefinedReturnType(AbstractSymbol rtype, AbstractSymbol mname, PrintStream p){
+				p.println("Undefined return type " + rtype + " in method " + mname + ".");
+		}
+
     // Cuando una clase hereda de una clase basica
     public static void cannotInheritClass(AbstractSymbol name, AbstractSymbol parent, PrintStream p) {
         p.println("Class " + name + " cannot inherit class " + parent + ".");
@@ -36,6 +40,10 @@ public final class SemantErrors {
     public static void attrMultiplyDefined(AbstractSymbol name, PrintStream p) {
         p.println("Attribute " + name + " is multiply defined in class.");
     }
+
+		public static void notassignself(PrintStream p){
+			p.println("Cannot assign to 'self'.");
+		}
 
     // Cuando un atributo se redefine porque se heredo de alguna clase padre
     public static void attrOfAnInheritedClass(AbstractSymbol name, PrintStream p) {

@@ -1,2 +1,0 @@
-./initwithself.test:1: Inferred type SELF_TYPE of initialization of attribute x does not conform to declared type Main.
-Compilation halted due to static semantic errors.

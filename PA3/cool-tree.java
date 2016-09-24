@@ -435,7 +435,7 @@ class programc extends Program {
       }
 
       //----------------------------------------------------------------
-
+			OMC.C.put(TreeConstants.Object_,TreeConstants.No_type);
       //----------------------RECORRER EL ARBOL-------------------------
       for(int i = 1; i < OMC.cT.vAS.size(); i++){
         SymbolTable actual = new SymbolTable();
@@ -636,16 +636,34 @@ class method extends Feature {
 
     public void semant(class_c clase){
       Vector<String> vfirmas = new Vector<String>();
+      int oldsize = 0;
+      if(OMC.M.get(clase.parent).containsKey(name)){
+        oldsize = OMC.M.get(clase.parent).get(name).formals.getLength();
+        if(formals.getLength() != oldsize)
+          SemantErrors.diffNumOfFormalsRedefinedMethod(name,OMC.cT.semantError(clase));
+      }
 
       for(int i = 0;i < formals.getLength(); i++){
         formalc firma = (formalc) formals.getNth(i);
+
+        if(OMC.M.get(clase.parent).containsKey(name)){
+          formalc oldformal;
+          method oldmethod = OMC.M.get(clase.parent).get(name);
+
+          if(oldsize > 0 && formals.getLength() == oldsize){
+            oldformal = (formalc)oldmethod.formals.getNth(i);
+            if(!firma.type_decl.equals(oldformal.type_decl))
+              SemantErrors.diffTypeFormalRedefinedMethod(name, firma.type_decl,
+                              oldformal.type_decl, OMC.cT.semantError(clase));
+          }
+        }
 
         if(TreeConstants.self.equals(firma.name))
           SemantErrors.formalCannotBeSelf(OMC.cT.semantError(clase));
 
         if(TreeConstants.SELF_TYPE.equals(firma.type_decl))
           SemantErrors.formalParamCannotHaveTypeSELF_TYPE(
-            firma.name,OMC.cT.semantError());
+            firma.name,OMC.cT.semantError(clase));
 
         if(vfirmas.contains(firma.name.toString()))
           SemantErrors.formalMultiplyDefined(firma.name, OMC.cT.semantError(clase));
@@ -656,12 +674,20 @@ class method extends Feature {
         }
       }
 
+			if(!OMC.C.containsKey(return_type) && !TreeConstants.SELF_TYPE.equals(return_type))
+				SemantErrors.undefinedReturnType(return_type, name, OMC.cT.semantError(clase));
       expr.semant(clase);
-      AbstractSymbol t = expr.get_type();
-      if(!return_type.equals(t) && !TreeConstants.Object_.equals(return_type))
-        if(TreeConstants.SELF_TYPE.equals(t))
-          if(!clase.name.equals(return_type))
-            SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
+
+      AbstractSymbol rt  = return_type;
+			AbstractSymbol t = expr.get_type();
+      if(TreeConstants.SELF_TYPE.equals(rt) && TreeConstants.SELF_TYPE.equals(t))
+          t = rt = clase.name;
+
+      if(!TreeConstants.SELF_TYPE.equals(rt) && TreeConstants.SELF_TYPE.equals(t))
+          t = rt;
+
+      if(!rt.equals(t) && !TreeConstants.Object_.equals(rt))
+				SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
     }
 }
 
@@ -706,8 +732,9 @@ class attr extends Feature {
     public void semant(class_c clase){
       OMC.O.get(clase.name).addId(name,type_decl);
       init.semant(clase);
-
-      AbstractSymbol t = init.get_type();;
+      AbstractSymbol t = init.get_type();
+			if(TreeConstants.SELF_TYPE.equals(t))
+				t = clase.name;
       if((!TreeConstants.No_type.equals(t)) &&
       (!TreeConstants.Object_.equals(type_decl)))
         if(!type_decl.equals(t))
@@ -789,6 +816,7 @@ class branch extends Case {
     }
 
     public void semant(class_c clase){
+      OMC.O.get(clase.name).addId(name,type_decl);
       expr.semant(clase);
     }
 
@@ -830,9 +858,15 @@ class assign extends Expression {
     public void semant(class_c clase){
       expr.semant(clase);
       AbstractSymbol tipo = expr.get_type();
-      AbstractSymbol var = (AbstractSymbol) OMC.O.get(clase.name).lookup(name);
-      if(!OMC.cT.pertenece(var,tipo,OMC.C))
-        SemantErrors.diffAssignType(tipo,var,name,OMC.cT.semantError(clase));
+			if(TreeConstants.self.equals(name))
+				SemantErrors.notassignself(OMC.cT.semantError(clase));
+			else{
+      	AbstractSymbol var = (AbstractSymbol) OMC.O.get(clase.name).lookup(name);
+      	if(!OMC.cT.pertenece(var,tipo,OMC.C))
+        	SemantErrors.diffAssignType(tipo,var,name,OMC.cT.semantError(clase));
+			}
+			if(TreeConstants.SELF_TYPE.equals(tipo))
+				tipo = clase.name;
       set_type(tipo);
     }
 
@@ -888,12 +922,29 @@ class static_dispatch extends Expression {
 
     public void semant(class_c clase){
       expr.semant(clase);
-      Expression ultimo = (Expression) actual.getNth(actual.getLength() - 1);
-      for(int i = 0; i < actual.getLength(); i++){
-        Expression expresion = (Expression) actual.getNth(i);
-        expresion.semant(clase);
+      AbstractSymbol type_noexpr = expr.get_type();
+
+      if(TreeConstants.SELF_TYPE.equals(type_noexpr))
+        type_noexpr = clase.name;
+
+      if(!OMC.cT.pertenece(type_name,type_noexpr,OMC.C))
+        SemantErrors.exprNotConformToDeclaredSDType(expr.get_type(),
+                              type_name,OMC.cT.semantError(clase));
+
+      if(actual.getLength() > 0){
+        for(int i = 0; i < actual.getLength(); i++){
+          Expression expresion = (Expression) actual.getNth(i);
+          expresion.semant(clase);
+        }
       }
-      AbstractSymbol retorno = OMC.M.get(expr.get_type()).get(name).return_type;
+      else{
+        for(int i = 0; i < actual.getLength(); i++){
+          Expression expresion = (Expression) actual.getNth(i);
+          expresion.semant(clase);
+        }
+      }
+
+      AbstractSymbol retorno = OMC.M.get(type_name).get(name).return_type;
       if(TreeConstants.SELF_TYPE.equals(retorno))
         set_type(clase.name);
       else
@@ -970,12 +1021,12 @@ class dispatch extends Expression {
             firma = (formalc)OMC.M.get(type_noexpr).get(name).formals.getNth(i);
             Expression expresion = (Expression) actual.getNth(i);
             expresion.semant(clase);
-
             AbstractSymbol tfirma = expresion.get_type();
+
             if(TreeConstants.SELF_TYPE.equals(tfirma))
               tfirma = clase.name;
 
-            if(!tfirma.equals(firma.type_decl))
+            if(!OMC.cT.pertenece(firma.type_decl,tfirma,OMC.C))
               SemantErrors.parameterDiffType(name,firma.name,expresion.get_type(),
                             firma.type_decl,OMC.cT.semantError(clase));
           }
@@ -988,9 +1039,8 @@ class dispatch extends Expression {
           }
         }
       }
-
       if(TreeConstants.SELF_TYPE.equals(retorno))
-        set_type(clase.name);
+        set_type(expr.get_type());
       else
         set_type(retorno);
     }
@@ -1038,15 +1088,14 @@ class cond extends Expression {
 
     public void semant(class_c clase){
       pred.semant(clase);
-      if(TreeConstants.Bool.equals(pred.get_type()))
+      if(!TreeConstants.Bool.equals(pred.get_type()))
         SemantErrors.ifNoBoolPredicate(OMC.cT.semantError(clase));
 
       then_exp.semant(clase);
       else_exp.semant(clase);
       AbstractSymbol t1 = then_exp.get_type();
       AbstractSymbol t2 = else_exp.get_type();
-
-
+      set_type(OMC.cT.union(t1,t2,OMC.C));
     }
 }
 
@@ -1147,7 +1196,6 @@ class typcase extends Expression {
       set_type(TreeConstants.Object_);
       OMC.O.get(clase.name).exitScope();
     }
-
 }
 
 
@@ -1242,6 +1290,22 @@ class let extends Expression {
       init.semant(clase);
       body.semant(clase);
       set_type(body.get_type());
+
+      if(TreeConstants.self.equals(identifier))
+        SemantErrors.selfCannotBeBoundInALet(OMC.cT.semantError(clase));
+
+      AbstractSymbol tinit = init.get_type();
+      AbstractSymbol t = type_decl;
+      if(TreeConstants.SELF_TYPE.equals(type_decl))
+        t = clase.name;
+
+      if(!TreeConstants.No_type.equals(tinit)){
+        if(TreeConstants.SELF_TYPE.equals(tinit))
+          tinit = clase.name;
+        if(!OMC.cT.pertenece(t,tinit,OMC.C))
+          SemantErrors.letDiffInitType(tinit,identifier,t,OMC.cT.semantError(clase));
+      }
+
       OMC.O.get(clase.name).exitScope();
     }
 
@@ -1796,10 +1860,12 @@ class new_ extends Expression {
     public void semant(class_c clase){
       if(TreeConstants.SELF_TYPE.equals(type_name))
         set_type(TreeConstants.SELF_TYPE);
-      else
+      else{
         set_type(type_name);
+        if(!OMC.C.containsKey(type_name))
+  				SemantErrors.newUndefinedClass(type_name,OMC.cT.semantError(clase));
+      }
     }
-
 }
 
 

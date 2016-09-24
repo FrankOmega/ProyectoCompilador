@@ -1,2 +1,0 @@
-./if.test:1: Predicate of 'if' does not have type Bool.
-Compilation halted due to static semantic errors.

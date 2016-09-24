@@ -1,4 +1,0 @@
-1c1
-< filename:line
----
-> Formal parameter x cannot have type SELF_TYPE.

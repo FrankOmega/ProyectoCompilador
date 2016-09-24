@@ -225,6 +225,23 @@ class ClassTable {
           return pertenece(var_type, hsh.get(type), hsh);
      }
 
+     public AbstractSymbol union(AbstractSymbol a1, AbstractSymbol a2,
+                          Hashtable<AbstractSymbol,AbstractSymbol>hsh)
+      {
+        if(TreeConstants.Object_.equals(a1)){
+          return TreeConstants.Object_;
+        }
+        else if(pertenece(a1,a2,hsh))
+          return a1;
+        else{
+          if(TreeConstants.Object_.equals(a2)){
+            return TreeConstants.Object_;
+          }
+          else
+            return union(a1,hsh.get(a2),hsh);
+        }
+      }
+
      public boolean attr_tieneherncia(AbstractSymbol clase, Hashtable<AbstractSymbol,AbstractSymbol> hsh){
       if(hsh.get(clase).equals(TreeConstants.Object_) |
                 hsh.get(clase).equals(TreeConstants.IO))
