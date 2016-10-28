@@ -245,17 +245,39 @@ Main_dispTab:
 	.word	Object.copy
 	.word	Main.main
 	.word	-1
-ObjectObject_protObj:
+Object_protObj:
+	.word	0
+	.word	3
+	.word	Object_dispTab
 	.word	-1
-IOObject_protObj:
+IO_protObj:
+	.word	1
+	.word	3
+	.word	IO_dispTab
 	.word	-1
-IntObject_protObj:
+Int_protObj:
+	.word	2
+	.word	4
+	.word	Int_dispTab
+	.word	0
 	.word	-1
-BoolObject_protObj:
+Bool_protObj:
+	.word	3
+	.word	4
+	.word	Bool_dispTab
+	.word	0
 	.word	-1
-StringObject_protObj:
+String_protObj:
+	.word	4
+	.word	5
+	.word	String_dispTab
+	.word	int_const0
+	.word	0
 	.word	-1
-MainObject_protObj:
+Main_protObj:
+	.word	5
+	.word	3
+	.word	Main_dispTab
 	.globl	heap_start
 heap_start:
 	.word	0
@@ -265,5 +287,88 @@ heap_start:
 	.globl	String_init
 	.globl	Bool_init
 	.globl	Main.main
+Object_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+IO_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+Int_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+Bool_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+String_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+Main_init:
+	addiu	$sp $sp -12
+	sw	$fp 48($sp)
+	sw	$s0 32($sp)
+	sw	$ra 16($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	jal	Object_init
+	move	$a0 $s0
+	lw	$fp 48($sp)
+	lw	$s0 32($sp)
+	lw	$ra 16($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
 
 # end of generated code

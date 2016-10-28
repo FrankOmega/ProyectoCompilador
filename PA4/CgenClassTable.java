@@ -436,6 +436,9 @@ class CgenClassTable extends SymbolTable {
   Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hstotal;
   hstotal = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
 
+	Hashtable<AbstractSymbol,Vector<attr>> attrhs;
+	attrhs = new Hashtable<AbstractSymbol,Vector<attr>>();
+
 
   Vector<AbstractSymbol> metodos;
   //Llenar hs de herencia
@@ -458,18 +461,25 @@ class CgenClassTable extends SymbolTable {
     inhtotal.put(clase.name, padres);
   }
 
+
   //Llenar hs de metodo actuales
   for(int i = 0; i < nds.size(); i++){
     class_ clase = (class_)nds.get(i);
     metodos = new Vector<AbstractSymbol>();
+		Vector atributos = new Vector<attr>();
     for(int j = 0; j < clase.features.getLength(); j++){
       Feature f = (Feature)clase.features.getNth(j);
       if(f instanceof method){
         method mth = (method) f;
         metodos.add(mth.name);
       }
+			else{
+				attr attradd = (attr) f;
+				atributos.add(attradd);
+			}
     }
     hs.put(clase.name, metodos);
+		attrhs.put(clase.name, atributos);
   }
 
   Vector<AbstractSymbol> hstv;
@@ -515,8 +525,28 @@ class CgenClassTable extends SymbolTable {
   for(int i = 0; i < nds.size(); i++){
     class_ clase = (class_)nds.get(i);
     str.println(CgenSupport.WORD + "-1");
-    str.print(clase.name + CgenSupport.OBJECTPROTOBJ + CgenSupport.LABEL);
-    System.out.println(clase.name);
+    str.print(clase.name + CgenSupport.PROTOBJ_SUFFIX + CgenSupport.LABEL);
+		Vector<attr> atributos;
+		atributos = attrhs.get(clase.name);
+		str.print(CgenSupport.WORD + i + "\n");
+		str.print(CgenSupport.WORD + (CgenSupport.DEFAULT_OBJFIELDS + atributos.size()) + "\n");
+		str.print(CgenSupport.WORD + clase.name + CgenSupport.DISPTAB_SUFFIX + "\n");
+		for(int j = 0; j < atributos.size(); j++){
+			System.out.println(atributos.get(j).type_decl + "---" + clase.name);
+			if(atributos.get(j).type_decl.equals(TreeConstants.Int)){
+				IntSymbol numero;
+				numero = (IntSymbol)AbstractTable.inttable.lookup("0");
+				str.print(CgenSupport.WORD); numero.codeRef(str);	str.println();
+			}
+			else if(atributos.get(j).type_decl.equals(TreeConstants.Str)){
+				StringSymbol palabra;
+				palabra = (StringSymbol)AbstractTable.stringtable.lookup("");
+				str.print(CgenSupport.WORD); palabra.codeRef(str); str.println();
+			}
+			else{
+				str.println(CgenSupport.WORD + "0");
+			}
+		}
   }
 
 	//                 Add your code to emit
@@ -527,8 +557,41 @@ class CgenClassTable extends SymbolTable {
 	if (Flags.cgen_debug) System.out.println("coding global text");
 	codeGlobalText();
 
+  //objects inits
+  for(int i = 0; i < nds.size(); i++){
+    class_ clase = (class_)nds.get(i);
+    str.print(clase.name + CgenSupport.CLASSINIT_SUFFIX + CgenSupport.LABEL);
+    CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -12, str);
+    CgenSupport.emitStore(CgenSupport.FP, 12, CgenSupport.SP, str);
+    CgenSupport.emitStore(CgenSupport.SELF, 8, CgenSupport.SP, str);
+    CgenSupport.emitStore(CgenSupport.RA, 4, CgenSupport.SP, str);
+    CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
+    CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
+    if(!clase.name.equals(TreeConstants.Object_))
+      CgenSupport.emitJal(inh.get(clase.name) + CgenSupport.CLASSINIT_SUFFIX, str);
+    CgenSupport.emitMove(CgenSupport.ACC, CgenSupport.SELF, str);
+    CgenSupport.emitLoad(CgenSupport.FP, 12, CgenSupport.SP, str);
+    CgenSupport.emitLoad(CgenSupport.SELF, 8, CgenSupport.SP, str);
+    CgenSupport.emitLoad(CgenSupport.RA, 4, CgenSupport.SP, str);
+    CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 12, str);
+    str.println(CgenSupport.RET);
+  }
+
 	//                 Add your code to emit
 	//                   - object initializer
+  /*addiu	$sp $sp -12
+  sw	$fp 12($sp)
+  sw	$s0 8($sp)
+  sw	$ra 4($sp)
+  addiu	$fp $sp 4
+  move	$s0 $a0
+  jal padre_init
+  move	$a0 $s0
+  lw	$fp 12($sp)
+  lw	$s0 8($sp)
+  lw	$ra 4($sp)
+  addiu	$sp $sp 12
+  jr	$ra	*/
 	//                   - the class methods
 	//                   - etc...
     }
