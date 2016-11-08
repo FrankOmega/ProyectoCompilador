@@ -424,20 +424,29 @@ class CgenClassTable extends SymbolTable {
   }
 
   //-------------------DATOS IMPORTANTES-----------------------
+  //<clase,padre>
   Hashtable<AbstractSymbol,AbstractSymbol> inh;
   inh = new Hashtable<AbstractSymbol,AbstractSymbol>();
 
+  //<clase,<nombre metodos actuales>>
   Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hs;
   hs = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
 
+  //<clase,<padres>>
   Hashtable<AbstractSymbol,Vector<AbstractSymbol>> inhtotal;
   inhtotal = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
 
+  //<clase,<nombre todos metodos>>
   Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hstotal;
   hstotal = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
 
+  //<clase,<atributos>>
 	Hashtable<AbstractSymbol,Vector<attr>> attrhs;
 	attrhs = new Hashtable<AbstractSymbol,Vector<attr>>();
+
+  //<clase, numero de atributos>
+  Hashtable<AbstractSymbol,Integer> cantattr;
+  cantattr = new Hashtable<AbstractSymbol,Integer>();
 
 
   Vector<AbstractSymbol> metodos;
@@ -472,6 +481,7 @@ class CgenClassTable extends SymbolTable {
       if(f instanceof method){
         method mth = (method) f;
         metodos.add(mth.name);
+        //System.out.println(mth.expr.contador(0) + " " + mth.name + " in " + clase.name);
       }
 			else{
 				attr attradd = (attr) f;
@@ -483,118 +493,205 @@ class CgenClassTable extends SymbolTable {
   }
 
   Vector<AbstractSymbol> hstv;
-  //Llenar hs de metodos heredados
+  //Llenar hstv de metodos heredados
   for(int i = 0; i < nds.size(); i++){
     class_ clase = (class_)nds.get(i);
     hstv = (Vector<AbstractSymbol>)hs.get(clase.name).clone();
+    Vector<AbstractSymbol> hstv1 = new Vector<AbstractSymbol>();
+    for(int j = hstv.size() - 1; j >= 0; j--){
+      hstv1.add(hstv.get(j));
+    }
     if(!clase.name.equals(TreeConstants.Object_)){
-      for(int j = 0; j < inhtotal.get(clase.name).size(); j++){
-        Vector<AbstractSymbol> cosos1 = inhtotal.get(clase.name);
-        for(int k = 0; k < cosos1.size(); k++){
-          Vector<AbstractSymbol> cosos2 = hs.get(cosos1.get(k));
-          for(int l = 0; l < cosos2.size(); l++){
-            hstv.add(cosos2.get(l));
+      Vector<AbstractSymbol> cosos1 = inhtotal.get(clase.name);
+      for(int j = 0; j < cosos1.size(); j++){
+        Vector<AbstractSymbol> cosos2 = hs.get(cosos1.get(j));
+        for(int k = cosos2.size() - 1 ; k >= 0; k--){
+          AbstractSymbol mn = cosos2.get(k);
+          if(!hstv1.contains(mn))
+            hstv1.add(cosos2.get(k));
+          else{
+            hstv1.remove(mn);
+            hstv1.add(mn);
           }
         }
       }
     }
-    hstotal.put(clase.name,hstv);
+    hstotal.put(clase.name,hstv1);
   }
+  Aux.hs_metodos = hstotal;
+
+  //Llenar cuantos atributos tiene una clase(incluyendo a sus padres)
+  for(int i = 0; i < nds.size(); i++){
+    class_ clase = (class_)nds.get(i);
+    int ncantattr = 0;
+    asAux = clase.name;
+    while(!asAux.equals(TreeConstants.Object_)){
+      AbstractSymbol padre = inh.get(asAux);
+      Vector atributos = attrhs.get(asAux);
+      ncantattr = ncantattr + atributos.size();
+      asAux = padre;
+    }
+    cantattr.put(clase.name, ncantattr);
+  }
+
+
   //-------------------------------------------------------------------
 
+  Boolean b = false;
   //Imprimir los dipTab
   for(int i = 0; i < nds.size(); i++){
     class_ clase = (class_)nds.get(i);
     str.print(clase.name + CgenSupport.DISPTAB_SUFFIX + CgenSupport.LABEL);
-
-    for(int j = inhtotal.get(clase.name).size() - 1; j >= 0; j--){
-      Vector<AbstractSymbol> v = inhtotal.get(clase.name);
-      Vector<AbstractSymbol> v2  = hs.get(v.get(j));
-      for(int k = 0; k < v2.size(); k++){
-        str.println(CgenSupport.WORD + v.get(j) + "." + v2.get(k));
+    Vector<AbstractSymbol> vm = hstotal.get(clase.name);
+    Vector<AbstractSymbol> vc = inhtotal.get(clase.name);
+    for(int j = vm.size() - 1; j >= 0; j--){
+      AbstractSymbol m = vm.get(j);
+      for(int k = -1; !b && k < vc.size(); k++){
+        AbstractSymbol c;
+        if(k == -1)
+          c = clase.name;
+        else
+          c = vc.get(k);
+        Vector<AbstractSymbol> actuales = hs.get(c);
+        if(actuales.contains(m)){
+          b = true;
+          str.println(CgenSupport.WORD + c + "." + m);
+        }
       }
-    }
-
-    for(int j = 0; j < hs.get(clase.name).size(); j++){
-      AbstractSymbol asprint = hs.get(clase.name).get(j);
-      str.println(CgenSupport.WORD + clase.name + "." + asprint);
+      b = false;
     }
   }
 
   //Prototypes
   for(int i = 0; i < nds.size(); i++){
+
     class_ clase = (class_)nds.get(i);
     str.println(CgenSupport.WORD + "-1");
     str.print(clase.name + CgenSupport.PROTOBJ_SUFFIX + CgenSupport.LABEL);
-		Vector<attr> atributos;
-		atributos = attrhs.get(clase.name);
+    int ncantattr = cantattr.get(clase.name);
 		str.print(CgenSupport.WORD + i + "\n");
-		str.print(CgenSupport.WORD + (CgenSupport.DEFAULT_OBJFIELDS + atributos.size()) + "\n");
+		str.print(CgenSupport.WORD + (CgenSupport.DEFAULT_OBJFIELDS + ncantattr) + "\n");
 		str.print(CgenSupport.WORD + clase.name + CgenSupport.DISPTAB_SUFFIX + "\n");
-		for(int j = 0; j < atributos.size(); j++){
-			System.out.println(atributos.get(j).type_decl + "---" + clase.name);
-			if(atributos.get(j).type_decl.equals(TreeConstants.Int)){
-				IntSymbol numero;
-				numero = (IntSymbol)AbstractTable.inttable.lookup("0");
-				str.print(CgenSupport.WORD); numero.codeRef(str);	str.println();
-			}
-			else if(atributos.get(j).type_decl.equals(TreeConstants.Str)){
-				StringSymbol palabra;
-				palabra = (StringSymbol)AbstractTable.stringtable.lookup("");
-				str.print(CgenSupport.WORD); palabra.codeRef(str); str.println();
-			}
-			else{
-				str.println(CgenSupport.WORD + "0");
-			}
-		}
-  }
 
-	//                 Add your code to emit
-	//                   - prototype objects
-	//                   - class_nameTab
-	//                   - dispatch tables
+    Vector<AbstractSymbol> clases;
+    clases = (Vector<AbstractSymbol>)inhtotal.get(clase.name).clone();
+    clases.add(0,clase.name);
+		for(int j = clases.size() - 1; j >= 0; j--){
+      Vector<attr> atributos = attrhs.get(clases.get(j));
+
+      for(int k = 0; k < atributos.size(); k++){
+        AbstractSymbol tipo = atributos.get(k).type_decl;
+
+        if(tipo.equals(TreeConstants.Int)){
+  				IntSymbol numero;
+  				numero = (IntSymbol)AbstractTable.inttable.lookup("0");
+  				str.print(CgenSupport.WORD); numero.codeRef(str);	str.println();
+  			}
+
+        else if(tipo.equals(TreeConstants.Str)){
+  				StringSymbol palabra;
+  				palabra = (StringSymbol)AbstractTable.stringtable.lookup("");
+  				str.print(CgenSupport.WORD); palabra.codeRef(str); str.println();
+  			}
+
+        else if(tipo.equals(TreeConstants.Bool))
+          str.println(CgenSupport.WORD + CgenSupport.BOOLCONST_PREFIX + "0");
+
+        else
+  				str.println(CgenSupport.WORD + "0");
+      }
+		}
+
+  }
 
 	if (Flags.cgen_debug) System.out.println("coding global text");
 	codeGlobalText();
 
-  //objects inits
+  //Objects inits
   for(int i = 0; i < nds.size(); i++){
+
     class_ clase = (class_)nds.get(i);
     str.print(clase.name + CgenSupport.CLASSINIT_SUFFIX + CgenSupport.LABEL);
     CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -12, str);
-    CgenSupport.emitStore(CgenSupport.FP, 12, CgenSupport.SP, str);
-    CgenSupport.emitStore(CgenSupport.SELF, 8, CgenSupport.SP, str);
-    CgenSupport.emitStore(CgenSupport.RA, 4, CgenSupport.SP, str);
+    CgenSupport.emitStore(CgenSupport.FP, 3, CgenSupport.SP, str);
+    CgenSupport.emitStore(CgenSupport.SELF, 2, CgenSupport.SP, str);
+    CgenSupport.emitStore(CgenSupport.RA, 1, CgenSupport.SP, str);
     CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
     CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
+
     if(!clase.name.equals(TreeConstants.Object_))
       CgenSupport.emitJal(inh.get(clase.name) + CgenSupport.CLASSINIT_SUFFIX, str);
+
+		//Lo que cambia XD -----------------------------------
+		Vector<attr> atributos = attrhs.get(clase.name);
+		for(int j = 0; j < atributos.size(); j++){
+			attr atributo = (attr)atributos.get(j);
+			AbstractSymbol tipo = atributo.init.get_type();
+			if(tipo != null){
+        Expression e = (Expression) atributo.init;
+        e.code(str,clase);
+
+        int ncantattr = cantattr.get(clase.name);
+				int n = ncantattr + CgenSupport.DEFAULT_OBJFIELDS - atributos.size() + j;
+        CgenSupport.emitStore(CgenSupport.ACC,n,CgenSupport.SELF,str);
+			}
+		}
+		//----------------------------------------------------
+
     CgenSupport.emitMove(CgenSupport.ACC, CgenSupport.SELF, str);
-    CgenSupport.emitLoad(CgenSupport.FP, 12, CgenSupport.SP, str);
-    CgenSupport.emitLoad(CgenSupport.SELF, 8, CgenSupport.SP, str);
-    CgenSupport.emitLoad(CgenSupport.RA, 4, CgenSupport.SP, str);
+    CgenSupport.emitLoad(CgenSupport.FP, 3, CgenSupport.SP, str);
+    CgenSupport.emitLoad(CgenSupport.SELF, 2, CgenSupport.SP, str);
+    CgenSupport.emitLoad(CgenSupport.RA, 1, CgenSupport.SP, str);
     CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 12, str);
     str.println(CgenSupport.RET);
   }
 
+  Vector<class_> c_ordenadas = new Vector<class_>();
+  Aux.ids_let = new Vector<AbstractSymbol>();
+  for(int i= 5; i < nds.size(); i++){
+    class_ clase = (class_) nds.get(i);
+    for(int j = 0; j < clase.features.getLength(); j++){
+      Feature f = (Feature)clase.features.getNth(j);
+      if(f instanceof method){
+        method m = (method) f;
+        m.expr.contador(0);
+        int cant_frms = m.formals.getLength();
+        Vector<AbstractSymbol> frms = new Vector<AbstractSymbol>();
+        for(int k = cant_frms - 1; k >= 0; k--){
+          formal frm = (formal) m.formals.getNth(k);
+          frms.add(frm.name);
+        }
+        Aux.firmas = frms;
+
+        str.print(clase.name + "." + m.name + CgenSupport.LABEL);
+        CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -(12+(Aux.MAX * 4)), str);
+        CgenSupport.emitStore(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
+        CgenSupport.emitStore(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
+        CgenSupport.emitStore(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
+        CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
+        CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
+        m.expr.code(str, clase);
+
+        CgenSupport.emitLoad(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
+        CgenSupport.emitLoad(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
+        CgenSupport.emitLoad(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
+
+        int coso = 12+(Aux.MAX * 4) + (cant_frms*4);
+        CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, coso, str);
+        str.println(CgenSupport.RET);
+        Aux.firmas = new Vector<AbstractSymbol>();
+        Aux.MAX = 0;
+      }
+    }
+  }
+  //Ordenar clases
+
+
 	//                 Add your code to emit
-	//                   - object initializer
-  /*addiu	$sp $sp -12
-  sw	$fp 12($sp)
-  sw	$s0 8($sp)
-  sw	$ra 4($sp)
-  addiu	$fp $sp 4
-  move	$s0 $a0
-  jal padre_init
-  move	$a0 $s0
-  lw	$fp 12($sp)
-  lw	$s0 8($sp)
-  lw	$ra 4($sp)
-  addiu	$sp $sp 12
-  jr	$ra	*/
 	//                   - the class methods
 	//                   - etc...
     }
+
 
     /** Gets the root of the inheritance tree */
     public CgenNode root() {

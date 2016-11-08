@@ -1,4 +1,4 @@
-// -*- mode: java -*- 
+// -*- mode: java -*-
 //
 // file: cool-tree.m4
 //
@@ -10,8 +10,17 @@
 
 import java.util.Enumeration;
 import java.io.PrintStream;
+import java.util.Hashtable;
 import java.util.Vector;
 
+class Aux{
+  public static int etiqueta = 0;
+  public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hs_metodos;
+  public static Vector<AbstractSymbol> ids_let = new Vector<AbstractSymbol>();
+  public static Vector<AbstractSymbol> firmas;
+  public static int let_act = 0;
+  public static int MAX = 0;
+}
 
 /** Defines simple phylum Program */
 abstract class Program extends TreeNode {
@@ -72,7 +81,6 @@ abstract class Feature extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
-
 }
 
 
@@ -142,12 +150,13 @@ class Formals extends ListNode {
 
 /** Defines simple phylum Expression */
 abstract class Expression extends TreeNode {
+    int actual;
     protected Expression(int lineNumber) {
         super(lineNumber);
     }
-    private AbstractSymbol type = null;                                 
-    public AbstractSymbol get_type() { return type; }           
-    public Expression set_type(AbstractSymbol s) { type = s; return this; } 
+    private AbstractSymbol type = null;
+    public AbstractSymbol get_type() { return type; }
+    public Expression set_type(AbstractSymbol s) { type = s; return this; }
     public abstract void dump_with_types(PrintStream out, int n);
     public void dump_type(PrintStream out, int n) {
         if (type != null)
@@ -155,7 +164,8 @@ abstract class Expression extends TreeNode {
         else
             { out.println(Utilities.pad(n) + ": _no_type"); }
     }
-    public abstract void code(PrintStream s);
+    public abstract void code(PrintStream s, class_ clase);
+    public abstract void contador(int nanterior);
 
 }
 
@@ -229,7 +239,7 @@ class Cases extends ListNode {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class program extends Program {
     public Classes classes;
-    /** Creates "program" AST node. 
+    /** Creates "program" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for classes
@@ -246,7 +256,7 @@ class program extends Program {
         classes.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_program");
@@ -272,7 +282,7 @@ class program extends Program {
     public void semant() {
 	/* ClassTable constructor may do some semantic analysis */
 	ClassTable classTable = new ClassTable(classes);
-	
+
 	/* some semantic analysis code may go here */
 
 	if (classTable.errors()) {
@@ -282,10 +292,10 @@ class program extends Program {
     }
     /** This method is the entry point to the code generator.  All of the work
       * of the code generator takes place within CgenClassTable constructor.
-      * @param s the output stream 
+      * @param s the output stream
       * @see CgenClassTable
       * */
-    public void cgen(PrintStream s) 
+    public void cgen(PrintStream s)
     {
         // spim wants comments to start with '#'
         s.print("# start of generated code\n");
@@ -306,7 +316,7 @@ class class_ extends Class_ {
     public AbstractSymbol parent;
     public Features features;
     public AbstractSymbol filename;
-    /** Creates "class_" AST node. 
+    /** Creates "class_" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -332,7 +342,7 @@ class class_ extends Class_ {
         dump_AbstractSymbol(out, n+2, filename);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_class");
@@ -362,7 +372,7 @@ class method extends Feature {
     public Formals formals;
     public AbstractSymbol return_type;
     public Expression expr;
-    /** Creates "method" AST node. 
+    /** Creates "method" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -388,7 +398,6 @@ class method extends Feature {
         expr.dump(out, n+2);
     }
 
-    
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_method");
@@ -410,7 +419,7 @@ class attr extends Feature {
     public AbstractSymbol name;
     public AbstractSymbol type_decl;
     public Expression init;
-    /** Creates "attr" AST node. 
+    /** Creates "attr" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -433,7 +442,6 @@ class attr extends Feature {
         init.dump(out, n+2);
     }
 
-    
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_attr");
@@ -451,7 +459,7 @@ class attr extends Feature {
 class formal extends Formal {
     public AbstractSymbol name;
     public AbstractSymbol type_decl;
-    /** Creates "formal" AST node. 
+    /** Creates "formal" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -471,7 +479,7 @@ class formal extends Formal {
         dump_AbstractSymbol(out, n+2, type_decl);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_formal");
@@ -489,7 +497,7 @@ class branch extends Case {
     public AbstractSymbol name;
     public AbstractSymbol type_decl;
     public Expression expr;
-    /** Creates "branch" AST node. 
+    /** Creates "branch" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -512,7 +520,7 @@ class branch extends Case {
         expr.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_branch");
@@ -530,7 +538,7 @@ class branch extends Case {
 class assign extends Expression {
     public AbstractSymbol name;
     public Expression expr;
-    /** Creates "assign" AST node. 
+    /** Creates "assign" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -550,7 +558,7 @@ class assign extends Expression {
         expr.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_assign");
@@ -558,14 +566,56 @@ class assign extends Expression {
 	expr.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      expr.code(s, clase);
+
+      Boolean bandera = true;
+
+      /*if(name.equals(TreeConstants.self)){
+
+      }*/
+
+      if(bandera)
+        if(!Aux.ids_let.isEmpty())
+          if(Aux.ids_let.contains(name)){
+            int n = Aux.ids_let.indexOf(name);
+            CgenSupport.emitStore(CgenSupport.ACC, n, CgenSupport.FP, s);
+            bandera = false;
+          }
+
+      if(bandera)
+        if(!Aux.firmas.isEmpty())
+          if(Aux.firmas.contains(name)){
+            int n = Aux.firmas.indexOf(name);
+            CgenSupport.emitStore(CgenSupport.ACC, 3 + Aux.MAX + n, CgenSupport.FP, s);
+            bandera = false;
+          }
+
+      if(bandera){
+        Features fl = clase.features;
+        int cont = 0;
+        for(int i = 0; i < fl.getLength(); i++){
+          Feature f = (Feature) fl.getNth(i);
+          if(f instanceof attr){
+            attr a = (attr) f;
+            if(name.equals(a.name)){
+              cont = i;
+              i = fl.getLength();
+            }
+          }
+        }
+        CgenSupport.emitStore(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
+      }
     }
 
+    public void contador(int nanterior){
+      expr.contador(nanterior);
+    }
 
 }
 
@@ -578,7 +628,7 @@ class static_dispatch extends Expression {
     public AbstractSymbol type_name;
     public AbstractSymbol name;
     public Expressions actual;
-    /** Creates "static_dispatch" AST node. 
+    /** Creates "static_dispatch" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for expr
@@ -604,7 +654,7 @@ class static_dispatch extends Expression {
         actual.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_static_dispatch");
@@ -618,14 +668,39 @@ class static_dispatch extends Expression {
         out.println(Utilities.pad(n + 2) + ")");
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      for(int i = 0; i < actual.getLength(); i++){
+        Expression e = (Expression) actual.getNth(i);
+        e.code(s, clase);
+        CgenSupport.emitPush(CgenSupport.ACC, s);
+      }
+
+      expr.code(s, clase);
+      CgenSupport.emitBne(CgenSupport.ACC, CgenSupport.ZERO, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.STRCONST_PREFIX + "0", s);
+      CgenSupport.emitLoadImm(CgenSupport.T1, expr.lineNumber, s);
+      CgenSupport.emitJal("_dispatch_abort", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+      Aux.etiqueta++;
+      CgenSupport.emitLoadAddress(CgenSupport.T1, type_name + CgenSupport.DISPTAB_SUFFIX, s);
+      Vector<AbstractSymbol> v_metodos = Aux.hs_metodos.get(expr.get_type());
+      int posm = v_metodos.size() - v_metodos.indexOf(name) - 1;
+      CgenSupport.emitLoad(CgenSupport.T1, posm, CgenSupport.T1, s);
+      CgenSupport.emitJalr(CgenSupport.T1, s);
     }
 
+    public void contador(int nanterior){
+      expr.contador(nanterior);
+      for(int i = 0; i < actual.getLength(); i++){
+        Expression e = (Expression)actual.getNth(i);
+        e.contador(nanterior);
+      }
+    }
 
 }
 
@@ -637,7 +712,7 @@ class dispatch extends Expression {
     public Expression expr;
     public AbstractSymbol name;
     public Expressions actual;
-    /** Creates "dispatch" AST node. 
+    /** Creates "dispatch" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for expr
@@ -660,7 +735,7 @@ class dispatch extends Expression {
         actual.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_dispatch");
@@ -673,14 +748,56 @@ class dispatch extends Expression {
         out.println(Utilities.pad(n + 2) + ")");
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      for(int i = 0; i < actual.getLength(); i++){
+        Expression e = (Expression) actual.getNth(i);
+        e.code(s, clase);
+        CgenSupport.emitPush(CgenSupport.ACC, s);
+      }
+
+      expr.code(s, clase);
+      CgenSupport.emitBne(CgenSupport.ACC, CgenSupport.ZERO, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.STRCONST_PREFIX + "0", s);
+      CgenSupport.emitLoadImm(CgenSupport.T1, expr.lineNumber, s);
+      CgenSupport.emitJal("_dispatch_abort", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+      Aux.etiqueta++;
+      CgenSupport.emitLoad(CgenSupport.T1, 2, CgenSupport.ACC, s);
+
+      AbstractSymbol tipo_self = expr.get_type();
+      Vector<AbstractSymbol> v_metodos;
+      if(TreeConstants.SELF_TYPE.equals(tipo_self)){
+        v_metodos = Aux.hs_metodos.get(clase.name);
+      }
+      else{
+        v_metodos = Aux.hs_metodos.get(tipo_self);
+      }
+      int posm = v_metodos.size() - v_metodos.indexOf(name) - 1;
+      CgenSupport.emitLoad(CgenSupport.T1, posm, CgenSupport.T1, s);
+      CgenSupport.emitJalr(CgenSupport.T1, s);
+
+      /*bne	$a0 $zero label0
+      la	$a0 str_const0
+    	li	$t1 1
+    	jal	_dispatch_abort
+    label0:
+    	lw	$t1 8($a0)
+    	lw	$t1 12($t1)
+    	jalr		$t1*/
     }
 
+    public void contador(int nanterior){
+      expr.contador(nanterior);
+      for(int i = 0; i  < actual.getLength(); i++){
+        Expression e = (Expression)actual.getNth(i);
+        e.contador(nanterior);
+      }
+    }
 
 }
 
@@ -692,7 +809,7 @@ class cond extends Expression {
     public Expression pred;
     public Expression then_exp;
     public Expression else_exp;
-    /** Creates "cond" AST node. 
+    /** Creates "cond" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for pred
@@ -715,7 +832,7 @@ class cond extends Expression {
         else_exp.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_cond");
@@ -724,14 +841,33 @@ class cond extends Expression {
 	else_exp.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      pred.code(s,clase);
+
+      int falso = Aux.etiqueta;
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.ACC, s);
+      CgenSupport.emitBeqz(CgenSupport.T1, falso, s);
+      Aux.etiqueta++;
+      then_exp.code(s,clase);
+
+      int fin_cond = Aux.etiqueta;
+      CgenSupport.emitBranch(fin_cond, s);
+      s.print("label" + falso + CgenSupport.LABEL);
+      Aux.etiqueta++;
+      else_exp.code(s,clase);
+      s.print("label" + fin_cond + CgenSupport.LABEL);
     }
 
+    public void contador(int nanterior){
+      pred.contador(nanterior);
+      then_exp.contador(nanterior);
+      else_exp.contador(nanterior);
+    }
 
 }
 
@@ -742,7 +878,7 @@ class cond extends Expression {
 class loop extends Expression {
     public Expression pred;
     public Expression body;
-    /** Creates "loop" AST node. 
+    /** Creates "loop" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for pred
@@ -762,7 +898,7 @@ class loop extends Expression {
         body.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_loop");
@@ -770,14 +906,32 @@ class loop extends Expression {
 	body.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      int et_cond = Aux.etiqueta;
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+      Aux.etiqueta++;
+      pred.code(s,clase);
+
+      int et_fin = Aux.etiqueta;
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.ACC, s);
+      CgenSupport.emitBeq(CgenSupport.T1, CgenSupport.ZERO, et_fin, s);
+      Aux.etiqueta++;
+      body.code(s,clase);
+
+      CgenSupport.emitBranch(et_cond, s);
+      s.print("label" + et_fin + CgenSupport.LABEL);
+      CgenSupport.emitMove(CgenSupport.ACC, CgenSupport.ZERO, s);
     }
 
+    public void contador(int nanterior){
+      pred.contador(nanterior);
+      body.contador(nanterior);
+    }
 
 }
 
@@ -788,7 +942,7 @@ class loop extends Expression {
 class typcase extends Expression {
     public Expression expr;
     public Cases cases;
-    /** Creates "typcase" AST node. 
+    /** Creates "typcase" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for expr
@@ -808,7 +962,7 @@ class typcase extends Expression {
         cases.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_typcase");
@@ -818,14 +972,18 @@ class typcase extends Expression {
         }
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      expr.code(s,clase);
     }
 
+    public void contador(int nanterior){
+      expr.contador(nanterior);
+    }
 
 }
 
@@ -835,7 +993,7 @@ class typcase extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class block extends Expression {
     public Expressions body;
-    /** Creates "block" AST node. 
+    /** Creates "block" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for body
@@ -852,7 +1010,7 @@ class block extends Expression {
         body.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_block");
@@ -861,15 +1019,24 @@ class block extends Expression {
         }
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      for(int i = 0; i < body.getLength(); i++){
+        Expression ex = (Expression) body.getNth(i);
+        ex.code(s,clase);
+      }
     }
 
-
+    public void contador(int nanterior){
+      for(int i = 0; i < body.getLength(); i++){
+        Expression ex = (Expression) body.getNth(i);
+        ex.contador(nanterior);
+      }
+    }
 }
 
 
@@ -881,7 +1048,7 @@ class let extends Expression {
     public AbstractSymbol type_decl;
     public Expression init;
     public Expression body;
-    /** Creates "let" AST node. 
+    /** Creates "let" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for identifier
@@ -907,7 +1074,7 @@ class let extends Expression {
         body.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_let");
@@ -917,14 +1084,45 @@ class let extends Expression {
 	body.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      init.code(s,clase);
+      if(init.get_type() == null){
+        if(type_decl.equals(TreeConstants.Str)){
+					StringSymbol ss = (StringSymbol)AbstractTable.stringtable.lookup("");
+					s.print("\tla $a0 "); ss.codeRef(s); s.println();
+				}
+
+				else if(type_decl.equals(TreeConstants.Int)){
+					IntSymbol is = (IntSymbol)AbstractTable.inttable.lookup("0");
+					s.print("\tla $a0 "); is.codeRef(s); s.println();
+				}
+
+				else if(type_decl.equals(TreeConstants.Bool))
+					s.println("\tla $a0 " + CgenSupport.BOOLCONST_PREFIX + "0");
+
+        else
+          CgenSupport.emitMove(CgenSupport.ACC, CgenSupport.ZERO, s);
+
+      }
+      Aux.ids_let.add(identifier);
+      CgenSupport.emitStore(CgenSupport.ACC, Aux.let_act,CgenSupport.FP, s);
+      Aux.let_act++;
+      body.code(s,clase);
+      Aux.let_act = 0;
+      Aux.ids_let.clear();
     }
 
+    public void contador(int nanterior){
+      nanterior++;
+      Aux.MAX = nanterior;
+      init.contador(nanterior);
+      body.contador(nanterior);
+    }
 
 }
 
@@ -935,7 +1133,7 @@ class let extends Expression {
 class plus extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "plus" AST node. 
+    /** Creates "plus" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -955,7 +1153,7 @@ class plus extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_plus");
@@ -963,14 +1161,28 @@ class plus extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC,s);
+      e2.code(s, clase);
+      CgenSupport.emitJal("Object.copy",s);
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP,s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2,3,CgenSupport.ACC,s);
+      CgenSupport.emitAdd(CgenSupport.T1, CgenSupport.T1, CgenSupport.T2, s);
+      CgenSupport.emitStore(CgenSupport.T1,3,CgenSupport.ACC,s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP,4,s);
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -981,7 +1193,7 @@ class plus extends Expression {
 class sub extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "sub" AST node. 
+    /** Creates "sub" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1001,7 +1213,7 @@ class sub extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_sub");
@@ -1009,14 +1221,28 @@ class sub extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC,s);
+      e2.code(s, clase);
+      CgenSupport.emitJal("Object.copy",s);
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP,s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2,3,CgenSupport.ACC,s);
+      CgenSupport.emitSub(CgenSupport.T1, CgenSupport.T1, CgenSupport.T2, s);
+      CgenSupport.emitStore(CgenSupport.T1,3,CgenSupport.ACC,s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP,4,s);
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1027,7 +1253,7 @@ class sub extends Expression {
 class mul extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "mul" AST node. 
+    /** Creates "mul" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1047,7 +1273,7 @@ class mul extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_mul");
@@ -1055,14 +1281,28 @@ class mul extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC,s);
+      e2.code(s, clase);
+      CgenSupport.emitJal("Object.copy",s);
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP,s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2,3,CgenSupport.ACC,s);
+      CgenSupport.emitMul(CgenSupport.T1, CgenSupport.T1, CgenSupport.T2, s);
+      CgenSupport.emitStore(CgenSupport.T1,3,CgenSupport.ACC,s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP,4,s);
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1073,7 +1313,7 @@ class mul extends Expression {
 class divide extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "divide" AST node. 
+    /** Creates "divide" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1093,7 +1333,7 @@ class divide extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_divide");
@@ -1101,14 +1341,28 @@ class divide extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC,s);
+      e2.code(s, clase);
+      CgenSupport.emitJal("Object.copy",s);
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP,s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2,3,CgenSupport.ACC,s);
+      CgenSupport.emitDiv(CgenSupport.T1, CgenSupport.T1, CgenSupport.T2, s);
+      CgenSupport.emitStore(CgenSupport.T1,3,CgenSupport.ACC,s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP,4,s);
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1118,7 +1372,7 @@ class divide extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class neg extends Expression {
     public Expression e1;
-    /** Creates "neg" AST node. 
+    /** Creates "neg" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1135,22 +1389,31 @@ class neg extends Expression {
         e1.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_neg");
 	e1.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+
+      CgenSupport.emitJal("Object.copy", s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.ACC, s);
+      CgenSupport.emitNeg(CgenSupport.T1, CgenSupport.T1, s);
+      CgenSupport.emitStore(CgenSupport.T1, 3, CgenSupport.ACC, s);
+
     }
 
-
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+    }
 }
 
 
@@ -1160,7 +1423,7 @@ class neg extends Expression {
 class lt extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "lt" AST node. 
+    /** Creates "lt" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1180,7 +1443,7 @@ class lt extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_lt");
@@ -1188,14 +1451,32 @@ class lt extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC, s);
+      e2.code(s,clase);
+
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 4, s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2, 3, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBlt(CgenSupport.T1, CgenSupport.T2, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+
+      Aux.etiqueta++;
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1206,7 +1487,7 @@ class lt extends Expression {
 class eq extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "eq" AST node. 
+    /** Creates "eq" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1226,7 +1507,7 @@ class eq extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_eq");
@@ -1234,14 +1515,32 @@ class eq extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC, s);
+      e2.code(s,clase);
+
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 4, s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2, 3, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBeq(CgenSupport.T1, CgenSupport.T2, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+
+      Aux.etiqueta++;
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1252,7 +1551,7 @@ class eq extends Expression {
 class leq extends Expression {
     public Expression e1;
     public Expression e2;
-    /** Creates "leq" AST node. 
+    /** Creates "leq" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1272,7 +1571,7 @@ class leq extends Expression {
         e2.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_leq");
@@ -1280,14 +1579,32 @@ class leq extends Expression {
 	e2.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitPush(CgenSupport.ACC, s);
+      e2.code(s,clase);
+
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 4, s);
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
+      CgenSupport.emitLoad(CgenSupport.T2, 3, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBleq(CgenSupport.T1, CgenSupport.T2, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+
+      Aux.etiqueta++;
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+      e2.contador(nanterior);
+    }
 
 }
 
@@ -1297,7 +1614,7 @@ class leq extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class comp extends Expression {
     public Expression e1;
-    /** Creates "comp" AST node. 
+    /** Creates "comp" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1314,21 +1631,32 @@ class comp extends Expression {
         e1.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_comp");
 	e1.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s, clase);
+
+      CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBeqz(CgenSupport.T1, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+      Aux.etiqueta++;
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+    }
 
 }
 
@@ -1338,7 +1666,7 @@ class comp extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class int_const extends Expression {
     public AbstractSymbol token;
-    /** Creates "int_const" AST node. 
+    /** Creates "int_const" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for token
@@ -1355,7 +1683,7 @@ class int_const extends Expression {
         dump_AbstractSymbol(out, n+2, token);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_int");
@@ -1364,11 +1692,15 @@ class int_const extends Expression {
     }
     /** Generates code for this expression.  This method method is provided
       * to you as an example of code generation.
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
 	CgenSupport.emitLoadInt(CgenSupport.ACC,
                                 (IntSymbol)AbstractTable.inttable.lookup(token.getString()), s);
+    }
+
+    public void contador(int nanterior){
+
     }
 
 }
@@ -1379,7 +1711,7 @@ class int_const extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class bool_const extends Expression {
     public Boolean val;
-    /** Creates "bool_const" AST node. 
+    /** Creates "bool_const" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for val
@@ -1396,7 +1728,7 @@ class bool_const extends Expression {
         dump_Boolean(out, n+2, val);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_bool");
@@ -1405,12 +1737,15 @@ class bool_const extends Expression {
     }
     /** Generates code for this expression.  This method method is provided
       * to you as an example of code generation.
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
 	CgenSupport.emitLoadBool(CgenSupport.ACC, new BoolConst(val), s);
     }
 
+    public void contador(int nanterior){
+
+    }
 }
 
 
@@ -1419,7 +1754,7 @@ class bool_const extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class string_const extends Expression {
     public AbstractSymbol token;
-    /** Creates "string_const" AST node. 
+    /** Creates "string_const" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for token
@@ -1436,7 +1771,7 @@ class string_const extends Expression {
         dump_AbstractSymbol(out, n+2, token);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_string");
@@ -1447,11 +1782,15 @@ class string_const extends Expression {
     }
     /** Generates code for this expression.  This method method is provided
       * to you as an example of code generation.
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
 	CgenSupport.emitLoadString(CgenSupport.ACC,
                                    (StringSymbol)AbstractTable.stringtable.lookup(token.getString()), s);
+    }
+
+    public void contador(int nanterior){
+
     }
 
 }
@@ -1462,7 +1801,7 @@ class string_const extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class new_ extends Expression {
     public AbstractSymbol type_name;
-    /** Creates "new_" AST node. 
+    /** Creates "new_" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for type_name
@@ -1479,21 +1818,28 @@ class new_ extends Expression {
         dump_AbstractSymbol(out, n+2, type_name);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_new");
 	dump_AbstractSymbol(out, n + 2, type_name);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, type_name + CgenSupport.PROTOBJ_SUFFIX, s);
+      CgenSupport.emitJal("Object.copy", s);
+      CgenSupport.emitJal(type_name + CgenSupport.CLASSINIT_SUFFIX, s);
+
     }
 
+    public void contador(int nanterior){
+
+    }
 
 }
 
@@ -1503,7 +1849,7 @@ class new_ extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class isvoid extends Expression {
     public Expression e1;
-    /** Creates "isvoid" AST node. 
+    /** Creates "isvoid" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for e1
@@ -1520,21 +1866,31 @@ class isvoid extends Expression {
         e1.dump(out, n+2);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_isvoid");
 	e1.dump_with_types(out, n + 2);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      e1.code(s,clase);
+      CgenSupport.emitMove(CgenSupport.T1, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBeqz(CgenSupport.T1, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+      Aux.etiqueta++;
     }
 
+    public void contador(int nanterior){
+      e1.contador(nanterior);
+    }
 
 }
 
@@ -1543,7 +1899,7 @@ class isvoid extends Expression {
     <p>
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class no_expr extends Expression {
-    /** Creates "no_expr" AST node. 
+    /** Creates "no_expr" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       */
@@ -1557,20 +1913,24 @@ class no_expr extends Expression {
         out.print(Utilities.pad(n) + "no_expr\n");
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_no_expr");
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+
     }
 
+    public void contador(int nanterior){
+
+    }
 
 }
 
@@ -1580,7 +1940,7 @@ class no_expr extends Expression {
     See <a href="TreeNode.html">TreeNode</a> for full documentation. */
 class object extends Expression {
     public AbstractSymbol name;
-    /** Creates "object" AST node. 
+    /** Creates "object" AST node.
       *
       * @param lineNumber the line in the source file from which this node came.
       * @param a0 initial value for name
@@ -1597,22 +1957,62 @@ class object extends Expression {
         dump_AbstractSymbol(out, n+2, name);
     }
 
-    
+
     public void dump_with_types(PrintStream out, int n) {
         dump_line(out, n);
         out.println(Utilities.pad(n) + "_object");
 	dump_AbstractSymbol(out, n + 2, name);
 	dump_type(out, n);
     }
-    /** Generates code for this expression.  This method is to be completed 
+    /** Generates code for this expression.  This method is to be completed
       * in programming assignment 5.  (You may add or remove parameters as
       * you wish.)
-      * @param s the output stream 
+      * @param s the output stream
       * */
-    public void code(PrintStream s) {
+    public void code(PrintStream s, class_ clase) {
+      Boolean bandera = true;
+
+      if(name.equals(TreeConstants.self)){
+        CgenSupport.emitMove(CgenSupport.ACC, CgenSupport.SELF, s);
+        bandera = false;
+      }
+
+      if(bandera)
+        if(!Aux.ids_let.isEmpty())
+          if(Aux.ids_let.contains(name)){
+            int n = Aux.ids_let.indexOf(name);
+            CgenSupport.emitLoad(CgenSupport.ACC, n, CgenSupport.FP, s);
+            bandera = false;
+          }
+
+      if(bandera)
+        if(Aux.firmas != null)
+          if(!Aux.firmas.isEmpty())
+            if(Aux.firmas.contains(name)){
+              int n = Aux.firmas.indexOf(name);
+              CgenSupport.emitLoad(CgenSupport.ACC, 3 + Aux.MAX + n, CgenSupport.FP, s);
+              bandera = false;
+            }
+
+      if(bandera){
+        Features fl = clase.features;
+        int cont = 0;
+        for(int i = 0; i < fl.getLength(); i++){
+          Feature f = (Feature) fl.getNth(i);
+          if(f instanceof attr){
+            attr a = (attr) f;
+            if(name.equals(a.name)){
+              cont = i;
+              i = fl.getLength();
+            }
+          }
+        }
+        CgenSupport.emitLoad(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
+      }
     }
 
+    public void contador(int nanterior){
+
+    }
 
 }
-
-
