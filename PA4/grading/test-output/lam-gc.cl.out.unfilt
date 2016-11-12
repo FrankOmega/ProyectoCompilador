@@ -534,5 +534,5 @@ get_x();}};
 
 ------------------cut here------------------
 COOL program successfully executed
-Stats -- #instructions : 97498
-         #reads : 25942  #writes 16531  #branches 17303  #other 37722
+Stats -- #instructions : 97503
+         #reads : 25942  #writes 16531  #branches 17308  #other 37722

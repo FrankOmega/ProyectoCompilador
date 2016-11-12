@@ -444,6 +444,9 @@ class CgenClassTable extends SymbolTable {
 	Hashtable<AbstractSymbol,Vector<attr>> attrhs;
 	attrhs = new Hashtable<AbstractSymbol,Vector<attr>>();
 
+	Hashtable<AbstractSymbol,Vector<AbstractSymbol>> allattr;
+	allattr = new Hashtable<AbstractSymbol,Vector<AbstractSymbol>>();
+
   //<clase, numero de atributos>
   Hashtable<AbstractSymbol,Integer> cantattr;
   cantattr = new Hashtable<AbstractSymbol,Integer>();
@@ -525,14 +528,22 @@ class CgenClassTable extends SymbolTable {
     class_ clase = (class_)nds.get(i);
     int ncantattr = 0;
     asAux = clase.name;
+		Vector<AbstractSymbol> attraux = new Vector<AbstractSymbol>();
     while(!asAux.equals(TreeConstants.Object_)){
       AbstractSymbol padre = inh.get(asAux);
       Vector atributos = attrhs.get(asAux);
       ncantattr = ncantattr + atributos.size();
+			for(int j = atributos.size() - 1; j >= 0; j--){
+				attr a  = (attr) atributos.get(j);
+				attraux.add(a.name);
+			}
       asAux = padre;
     }
     cantattr.put(clase.name, ncantattr);
+		allattr.put(clase.name, attraux);
   }
+	Aux.cant_attr = cantattr;
+	Aux.all_attr = allattr;
 
 
   //-------------------------------------------------------------------
@@ -562,6 +573,7 @@ class CgenClassTable extends SymbolTable {
     }
   }
 
+	
   //Prototypes
   for(int i = 0; i < nds.size(); i++){
 

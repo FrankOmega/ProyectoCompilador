@@ -414,6 +414,11 @@ Main.main:
 	move	$a0 $s0
 	sw	$a0 0($fp)
 	lw	$a0 0($fp)
+	bne	$a0 $zero label0
+	la	$a0 str_const0
+	li	$t1 1
+	jal	_case_abort2
+label0:
 	lw	$fp 16($sp)
 	lw	$s0 12($sp)
 	lw	$ra 8($sp)

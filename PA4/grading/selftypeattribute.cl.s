@@ -480,9 +480,15 @@ A.init:
 	sw	$ra 4($sp)
 	addiu	$fp $sp 4
 	move	$s0 $a0
-	la	$a0 SELF_TYPE_protObj
+	la	$t1 class_objTab
+	lw	$t2 0($s0)
+	sll	$t2 $t2 3
+	addu	$t1 $t1 $t2
+	move	$t3 $t1
+	lw	$a0 0($t1)
 	jal	Object.copy
-	jal	SELF_TYPE_init
+	lw	$t1 4($t3)
+	jalr	$t1
 	sw	$a0 12($s0)
 	lw	$fp 12($sp)
 	lw	$s0 8($sp)

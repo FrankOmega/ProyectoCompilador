@@ -16,10 +16,13 @@ import java.util.Vector;
 class Aux{
   public static int etiqueta = 0;
   public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hs_metodos;
+	public static Hashtable<AbstractSymbol,Integer> cant_attr;
+	public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> all_attr;
   public static Vector<AbstractSymbol> ids_let = new Vector<AbstractSymbol>();
   public static Vector<AbstractSymbol> firmas;
   public static int let_act = 0;
   public static int MAX = 0;
+	public static boolean b_case = false;
 }
 
 /** Defines simple phylum Program */
@@ -203,6 +206,8 @@ abstract class Case extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
+		public abstract void code(PrintStream s, class_ clase);
+    public abstract void contador(int nanterior);
 
 }
 
@@ -529,6 +534,30 @@ class branch extends Case {
 	expr.dump_with_types(out, n + 2);
     }
 
+		public void code(PrintStream s, class_ clase){
+			System.out.println(name + "-" + type_decl + "-");
+			/*
+			lw	$t2 0($a0)
+			blt	$t2 4 label2
+			bgt	$t2 4 label2
+			move	$s1 $a0
+			la	$a0 int_const1
+			b	label0
+		label2:
+			blt	$t2 3 label3
+			bgt	$t2 3 label3
+			move	$s1 $a0
+			la	$a0 int_const0
+			b	label0
+		label3:
+			jal	_case_abort
+		label0:*/
+		}
+
+    public void contador(int nanterior){
+			expr.contador(nanterior);
+		}
+
 }
 
 
@@ -574,8 +603,7 @@ class assign extends Expression {
     public void code(PrintStream s, class_ clase) {
       expr.code(s, clase);
 
-      Boolean bandera = true;
-
+			Boolean bandera = true;
       /*if(name.equals(TreeConstants.self)){
 
       }*/
@@ -583,34 +611,27 @@ class assign extends Expression {
       if(bandera)
         if(!Aux.ids_let.isEmpty())
           if(Aux.ids_let.contains(name)){
-            int n = Aux.ids_let.indexOf(name);
+            int n = Aux.ids_let.lastIndexOf(name);
             CgenSupport.emitStore(CgenSupport.ACC, n, CgenSupport.FP, s);
             bandera = false;
           }
 
       if(bandera)
-        if(!Aux.firmas.isEmpty())
-          if(Aux.firmas.contains(name)){
-            int n = Aux.firmas.indexOf(name);
-            CgenSupport.emitStore(CgenSupport.ACC, 3 + Aux.MAX + n, CgenSupport.FP, s);
-            bandera = false;
-          }
+				if(Aux.firmas != null)
+	        if(!Aux.firmas.isEmpty())
+	          if(Aux.firmas.contains(name)){
+	            int n = Aux.firmas.indexOf(name);
+	            CgenSupport.emitStore(CgenSupport.ACC, 3 + Aux.MAX + n, CgenSupport.FP, s);
+	            bandera = false;
+	          }
 
-      if(bandera){
-        Features fl = clase.features;
-        int cont = 0;
-        for(int i = 0; i < fl.getLength(); i++){
-          Feature f = (Feature) fl.getNth(i);
-          if(f instanceof attr){
-            attr a = (attr) f;
-            if(name.equals(a.name)){
-              cont = i;
-              i = fl.getLength();
-            }
-          }
-        }
-        CgenSupport.emitStore(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
-      }
+			if(bandera){
+			  	if(!Aux.all_attr.get(clase.name).isEmpty()){
+					Vector coso = Aux.all_attr.get(clase.name);
+					int cont = coso.size() - (coso.indexOf(name) + 1);
+					CgenSupport.emitStore(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
+				}
+			}
     }
 
     public void contador(int nanterior){
@@ -688,7 +709,12 @@ class static_dispatch extends Expression {
       s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
       Aux.etiqueta++;
       CgenSupport.emitLoadAddress(CgenSupport.T1, type_name + CgenSupport.DISPTAB_SUFFIX, s);
-      Vector<AbstractSymbol> v_metodos = Aux.hs_metodos.get(expr.get_type());
+			AbstractSymbol as;
+			if(expr.get_type().equals(TreeConstants.SELF_TYPE))
+				as = clase.name;
+			else
+				as = expr.get_type();
+      Vector<AbstractSymbol> v_metodos = Aux.hs_metodos.get(as);
       int posm = v_metodos.size() - v_metodos.indexOf(name) - 1;
       CgenSupport.emitLoad(CgenSupport.T1, posm, CgenSupport.T1, s);
       CgenSupport.emitJalr(CgenSupport.T1, s);
@@ -979,10 +1005,47 @@ class typcase extends Expression {
       * */
     public void code(PrintStream s, class_ clase) {
       expr.code(s,clase);
+			CgenSupport.emitBne(CgenSupport.ACC, CgenSupport.ZERO, Aux.etiqueta,s);
+			CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.STRCONST_PREFIX + "0",s);
+			CgenSupport.emitLoadImm(CgenSupport.T1, 1,s);
+			CgenSupport.emitJal("_case_abort2", s);
+			s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
+			Aux.etiqueta++;
+			for(int i = 0; i < cases.getLength(); i++){
+				branch br = (branch) cases.getNth(i);
+				br.code(s, clase);
+				System.out.println(get_type());
+			}
+
+			/*lw	$a0 12($s0)
+			bne	$a0 $zero label1
+			la	$a0 str_const0
+			li	$t1 1
+			jal	_case_abort2
+		label1:
+			lw	$t2 0($a0)
+			blt	$t2 4 label2
+			bgt	$t2 4 label2
+			move	$s1 $a0
+			la	$a0 int_const1
+			b	label0
+		label2:
+			blt	$t2 3 label3
+			bgt	$t2 3 label3
+			move	$s1 $a0
+			la	$a0 int_const0
+			b	label0
+		label3:
+			jal	_case_abort
+		label0:*/
     }
 
     public void contador(int nanterior){
       expr.contador(nanterior);
+			for(int i = 0; i < cases.getLength(); i++){
+				branch br = (branch) cases.getNth(i);
+				br.contador(nanterior);
+			}
     }
 
 }
@@ -1831,9 +1894,23 @@ class new_ extends Expression {
       * @param s the output stream
       * */
     public void code(PrintStream s, class_ clase) {
-      CgenSupport.emitLoadAddress(CgenSupport.ACC, type_name + CgenSupport.PROTOBJ_SUFFIX, s);
-      CgenSupport.emitJal("Object.copy", s);
-      CgenSupport.emitJal(type_name + CgenSupport.CLASSINIT_SUFFIX, s);
+			if(type_name.equals(TreeConstants.SELF_TYPE)){
+				CgenSupport.emitLoadAddress(CgenSupport.T1, CgenSupport.CLASSOBJTAB, s);
+				CgenSupport.emitLoad(CgenSupport.T2, 0, CgenSupport.SELF, s);
+				CgenSupport.emitSll(CgenSupport.T2, CgenSupport.T2, 3, s);
+				CgenSupport.emitAddu(CgenSupport.T1, CgenSupport.T1, CgenSupport.T2, s);
+				CgenSupport.emitMove(CgenSupport.T3, CgenSupport.T1, s);
+				CgenSupport.emitLoad(CgenSupport.ACC, 0, CgenSupport.T1, s);
+				CgenSupport.emitJal("Object.copy", s);
+				CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.T3, s);
+				CgenSupport.emitJalr(CgenSupport.T1, s);
+			}
+
+			else{
+      	CgenSupport.emitLoadAddress(CgenSupport.ACC, type_name + CgenSupport.PROTOBJ_SUFFIX, s);
+      	CgenSupport.emitJal("Object.copy", s);
+      	CgenSupport.emitJal(type_name + CgenSupport.CLASSINIT_SUFFIX, s);
+			}
 
     }
 
@@ -1977,10 +2054,16 @@ class object extends Expression {
         bandera = false;
       }
 
+			if(bandera){
+				if(Aux.b_case){
+					CgenSupport.emitMove(CgenSupport.ACC, "$s1", s);
+				}
+			}
+
       if(bandera)
         if(!Aux.ids_let.isEmpty())
           if(Aux.ids_let.contains(name)){
-            int n = Aux.ids_let.indexOf(name);
+            int n = Aux.ids_let.lastIndexOf(name);
             CgenSupport.emitLoad(CgenSupport.ACC, n, CgenSupport.FP, s);
             bandera = false;
           }
@@ -1995,19 +2078,11 @@ class object extends Expression {
             }
 
       if(bandera){
-        Features fl = clase.features;
-        int cont = 0;
-        for(int i = 0; i < fl.getLength(); i++){
-          Feature f = (Feature) fl.getNth(i);
-          if(f instanceof attr){
-            attr a = (attr) f;
-            if(name.equals(a.name)){
-              cont = i;
-              i = fl.getLength();
-            }
-          }
-        }
-        CgenSupport.emitLoad(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
+        if(!Aux.all_attr.get(clase.name).isEmpty()){
+					Vector coso = Aux.all_attr.get(clase.name);
+					int cont = coso.size() - (coso.indexOf(name) + 1);
+					CgenSupport.emitLoad(CgenSupport.ACC, 3 + cont, CgenSupport.SELF, s);
+				}
       }
     }
 

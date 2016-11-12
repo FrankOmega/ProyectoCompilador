@@ -455,7 +455,7 @@ Main.main:
 	sw	$a0 4($fp)
 	la $a0 bool_const0
 	sw	$a0 8($fp)
-	lw	$a0 0($fp)
+	lw	$a0 8($fp)
 	lw	$t1 12($a0)
 	la	$a0 bool_const1
 	beqz	$t1 label2
@@ -465,7 +465,7 @@ label2:
 	beqz	$t1 label3
 	la $a0 int_const2
 	sw	$a0 12($fp)
-	lw	$a0 0($fp)
+	lw	$a0 12($fp)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	la	$a0 int_const1

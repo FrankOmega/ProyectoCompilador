@@ -424,7 +424,7 @@ Main.main:
 	sw	$a0 0($fp)
 	la	$a0 str_const2
 	sw	$a0 4($fp)
-	lw	$a0 0($fp)
+	lw	$a0 4($fp)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	move	$a0 $s0

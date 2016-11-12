@@ -1,9 +1,0 @@
-6,7c6,10
-< 2
-< COOL program successfully executed
----
-> The following symbols are undefined:
-> SELF_TYPE_init
-> SELF_TYPE_protObj
-> Instruction references undefined symbol at 0x00401408
-> [0x00401408]	0x3c010000  lui $1, 0 [SELF_TYPE_protObj]   ; 483: la	$a0 SELF_TYPE_protObj

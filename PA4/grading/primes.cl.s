@@ -453,7 +453,7 @@ label0:
 	jalr	$t1
 	la	$a0 int_const1
 	sw	$a0 12($s0)
-	lw	$a0 16($s0)
+	lw	$a0 12($s0)
 	sw	$a0 16($s0)
 	la	$a0 int_const2
 	sw	$a0 24($s0)
@@ -461,6 +461,100 @@ label1:
 	la	$a0 bool_const1
 	lw	$t1 12($a0)
 	beq	$t1 $zero label2
+	lw	$a0 16($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	la	$a0 int_const3
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	add	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	sw	$a0 16($s0)
+	la	$a0 int_const1
+	sw	$a0 20($s0)
+label3:
+	lw	$a0 16($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	mul	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	lw	$t1 4($sp)
+	addiu	$sp $sp 4
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	la	$a0 bool_const1
+	blt	$t1 $t2 label4
+	la	$a0 bool_const0
+label4:
+	lw	$t1 12($a0)
+	beqz	$t1 label5
+	la	$a0 bool_const0
+	b	label6
+label5:
+	lw	$a0 16($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 16($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	div	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	mul	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	sub	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	la	$a0 int_const0
+	lw	$t1 4($sp)
+	addiu	$sp $sp 4
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	la	$a0 bool_const1
+	beq	$t1 $t2 label7
+	la	$a0 bool_const0
+label7:
+	lw	$t1 12($a0)
+	beqz	$t1 label8
+	la	$a0 bool_const0
+	b	label9
+label8:
+	la	$a0 bool_const1
+label9:
+label6:
+	lw	$t1 12($a0)
+	beq	$t1 $zero label10
 	lw	$a0 20($s0)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
@@ -472,3 +566,113 @@ label1:
 	add	$t1 $t1 $t2
 	sw	$t1 12($a0)
 	addiu	$sp $sp 4
+	sw	$a0 20($s0)
+	b	label3
+label10:
+	move	$a0 $zero
+	lw	$a0 16($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 20($s0)
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	mul	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	lw	$t1 4($sp)
+	addiu	$sp $sp 4
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	la	$a0 bool_const1
+	blt	$t1 $t2 label11
+	la	$a0 bool_const0
+label11:
+	lw	$t1 12($a0)
+	beqz	$t1 label12
+	lw	$a0 16($s0)
+	sw	$a0 12($s0)
+	lw	$a0 12($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	move	$a0 $s0
+	bne	$a0 $zero label13
+	la	$a0 str_const0
+	li	$t1 1
+	jal	_dispatch_abort
+label13:
+	lw	$t1 8($a0)
+	lw	$t1 16($t1)
+	jalr	$t1
+	la	$a0 str_const2
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	move	$a0 $s0
+	bne	$a0 $zero label14
+	la	$a0 str_const0
+	li	$t1 1
+	jal	_dispatch_abort
+label14:
+	lw	$t1 8($a0)
+	lw	$t1 12($t1)
+	jalr	$t1
+	b	label15
+label12:
+	la	$a0 int_const0
+label15:
+	lw	$a0 24($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	lw	$a0 16($s0)
+	lw	$t1 4($sp)
+	addiu	$sp $sp 4
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	la	$a0 bool_const1
+	ble	$t1 $t2 label16
+	la	$a0 bool_const0
+label16:
+	lw	$t1 12($a0)
+	beqz	$t1 label17
+	la	$a0 str_const3
+	bne	$a0 $zero label18
+	la	$a0 str_const0
+	li	$t1 1
+	jal	_dispatch_abort
+label18:
+	lw	$t1 8($a0)
+	lw	$t1 0($t1)
+	jalr	$t1
+	b	label19
+label17:
+	la	$a0 str_const4
+label19:
+	b	label1
+label2:
+	move	$a0 $zero
+	sw	$a0 28($s0)
+	move	$a0 $s0
+	lw	$fp 12($sp)
+	lw	$s0 8($sp)
+	lw	$ra 4($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+Main.main:
+	addiu	$sp $sp -12
+	sw	$fp 12($sp)
+	sw	$s0 8($sp)
+	sw	$ra 4($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	la	$a0 int_const0
+	lw	$fp 12($sp)
+	lw	$s0 8($sp)
+	lw	$ra 4($sp)
+	addiu	$sp $sp 12
+	jr	$ra	
+
+# end of generated code

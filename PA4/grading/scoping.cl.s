@@ -476,7 +476,7 @@ Main.jack:
 	lw	$a0 16($fp)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
-	lw	$a0 12($s0)
+	lw	$a0 16($s0)
 	jal	Object.copy
 	lw	$t1 4($sp)
 	lw	$t1 12($t1)
@@ -497,7 +497,7 @@ label0:
 	lw	$t1 8($a0)
 	lw	$t1 32($t1)
 	jalr	$t1
-	lw	$a0 12($s0)
+	lw	$a0 16($s0)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	la	$a0 int_const0
@@ -508,11 +508,11 @@ label0:
 	add	$t1 $t1 $t2
 	sw	$t1 12($a0)
 	addiu	$sp $sp 4
-	sw	$a0 12($s0)
+	sw	$a0 16($s0)
 	lw	$a0 16($fp)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
-	lw	$a0 12($s0)
+	lw	$a0 16($s0)
 	jal	Object.copy
 	lw	$t1 4($sp)
 	lw	$t1 12($t1)
@@ -582,7 +582,7 @@ Main.main:
 	sw	$ra 8($sp)
 	addiu	$fp $sp 4
 	move	$s0 $a0
-	lw	$a0 12($s0)
+	lw	$a0 20($s0)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	move	$a0 $s0
@@ -597,7 +597,7 @@ label4:
 	la	$a0 int_const2
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
-	lw	$a0 12($s0)
+	lw	$a0 20($s0)
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	la	$a0 int_const3
