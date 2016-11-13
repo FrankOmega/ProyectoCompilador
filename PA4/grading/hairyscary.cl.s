@@ -495,7 +495,7 @@ label1:
 	b	label0
 label2:
 	blt	$t4 4 label3
-	bgt	$t4 4 label3
+	bgt	$t4 5 label3
 	move	$s1 $a0
 	la	$a0 Bar_protObj
 	jal	Object.copy
@@ -503,7 +503,7 @@ label2:
 	b	label0
 label3:
 	blt	$t4 3 label4
-	bgt	$t4 3 label4
+	bgt	$t4 5 label4
 	move	$s1 $a0
 	la	$a0 Razz_protObj
 	jal	Object.copy
@@ -511,7 +511,7 @@ label3:
 	b	label0
 label4:
 	blt	$t4 2 label5
-	bgt	$t4 2 label5
+	bgt	$t4 5 label5
 	move	$s1 $a0
 	la	$a0 Foo_protObj
 	jal	Object.copy
@@ -559,7 +559,7 @@ label8:
 	b	label7
 label9:
 	blt	$t4 4 label10
-	bgt	$t4 4 label10
+	bgt	$t4 5 label10
 	move	$s1 $a0
 	la	$a0 Bar_protObj
 	jal	Object.copy
@@ -567,7 +567,7 @@ label9:
 	b	label7
 label10:
 	blt	$t4 3 label11
-	bgt	$t4 3 label11
+	bgt	$t4 5 label11
 	move	$s1 $a0
 	la	$a0 Razz_protObj
 	jal	Object.copy
@@ -669,7 +669,7 @@ label17:
 	b	label16
 label18:
 	blt	$t4 4 label19
-	bgt	$t4 4 label19
+	bgt	$t4 5 label19
 	move	$s1 $a0
 	la	$a0 Bar_protObj
 	jal	Object.copy
@@ -873,33 +873,6 @@ Main_init:
 	lw	$ra 4($sp)
 	addiu	$sp $sp 12
 	jr	$ra	
-Foo.doh:
-	addiu	$sp $sp -16
-	sw	$fp 16($sp)
-	sw	$s0 12($sp)
-	sw	$ra 8($sp)
-	addiu	$fp $sp 4
-	move	$s0 $a0
-	lw	$a0 12($s0)
-	sw	$a0 0($fp)
-	lw	$a0 12($s0)
-	sw	$a0 0($sp)
-	addiu	$sp $sp -4
-	la	$a0 int_const0
-	jal	Object.copy
-	lw	$t1 4($sp)
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
-	add	$t1 $t1 $t2
-	sw	$t1 12($a0)
-	addiu	$sp $sp 4
-	sw	$a0 12($s0)
-	lw	$a0 0($fp)
-	lw	$fp 16($sp)
-	lw	$s0 12($sp)
-	lw	$ra 8($sp)
-	addiu	$sp $sp 16
-	jr	$ra	
 Bazz.printh:
 	addiu	$sp $sp -12
 	sw	$fp 12($sp)
@@ -938,6 +911,33 @@ Bazz.doh:
 	sw	$a0 0($sp)
 	addiu	$sp $sp -4
 	la	$a0 int_const1
+	jal	Object.copy
+	lw	$t1 4($sp)
+	lw	$t1 12($t1)
+	lw	$t2 12($a0)
+	add	$t1 $t1 $t2
+	sw	$t1 12($a0)
+	addiu	$sp $sp 4
+	sw	$a0 12($s0)
+	lw	$a0 0($fp)
+	lw	$fp 16($sp)
+	lw	$s0 12($sp)
+	lw	$ra 8($sp)
+	addiu	$sp $sp 16
+	jr	$ra	
+Foo.doh:
+	addiu	$sp $sp -16
+	sw	$fp 16($sp)
+	sw	$s0 12($sp)
+	sw	$ra 8($sp)
+	addiu	$fp $sp 4
+	move	$s0 $a0
+	lw	$a0 12($s0)
+	sw	$a0 0($fp)
+	lw	$a0 12($s0)
+	sw	$a0 0($sp)
+	addiu	$sp $sp -4
+	la	$a0 int_const0
 	jal	Object.copy
 	lw	$t1 4($sp)
 	lw	$t1 12($t1)

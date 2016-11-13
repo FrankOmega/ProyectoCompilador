@@ -444,7 +444,7 @@ label3:
 	b	label0
 label2:
 	blt	$t4 0 label4
-	bgt	$t4 0 label4
+	bgt	$t4 5 label4
 	move	$s1 $a0
 	la	$a0 str_const1
 	sw	$a0 0($sp)

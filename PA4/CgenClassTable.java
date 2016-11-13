@@ -42,6 +42,7 @@ class CgenClassTable extends SymbolTable {
     private int boolclasstag;
 
     Vector<AbstractSymbol> tagv = new Vector<AbstractSymbol>();
+    Hashtable<AbstractSymbol,Integer> canthijos = new Hashtable<AbstractSymbol,Integer>();
 
 
     // The following methods emit code for constants and global
@@ -395,6 +396,7 @@ class CgenClassTable extends SymbolTable {
   CgenNode nodo = (CgenNode)cl;
   poner_tags(nodo);
   Aux.tag_v = tagv;
+  Aux.cant_hijos = canthijos;
 
   stringclasstag = tagv.indexOf(TreeConstants.Str); /* Change to your String class tag here */;
   intclasstag =    tagv.indexOf(TreeConstants.Int); /* Change to your Int class tag here */;
@@ -677,45 +679,51 @@ class CgenClassTable extends SymbolTable {
   }
 
 
-  //++++++++++++++++ METODOS +++++++++++++++++++++ 
+  //++++++++++++++++ METODOS +++++++++++++++++++++
   Vector<class_> c_ordenadas = new Vector<class_>();
   Aux.ids_let = new Vector<AbstractSymbol>();
-  for(int i= 5; i < nds.size(); i++){
-    class_ clase = (class_) nds.get(i);
-    for(int j = 0; j < clase.features.getLength(); j++){
-      Feature f = (Feature)clase.features.getNth(j);
-      if(f instanceof method){
-        method m = (method) f;
-        m.expr.contador(0);
-        int cant_frms = m.formals.getLength();
-        Vector<AbstractSymbol> frms = new Vector<AbstractSymbol>();
-        for(int k = cant_frms - 1; k >= 0; k--){
-          formal frm = (formal) m.formals.getNth(k);
-          frms.add(frm.name);
+  for(int i= 0; i < tagv.size(); i++){
+    AbstractSymbol nombre = tagv.get(i);
+    class_ clase = (class_) clasclas.get(nombre);
+    if(!nombre.equals(TreeConstants.Bool) && !nombre.equals(TreeConstants.IO)
+      && !nombre.equals(TreeConstants.Int) && !nombre.equals(TreeConstants.Str)
+      && !nombre.equals(TreeConstants.Object_)) {
+      for(int j = 0; j < clase.features.getLength(); j++){
+        Feature f = (Feature)clase.features.getNth(j);
+        if(f instanceof method){
+          method m = (method) f;
+          m.expr.contador(0);
+          int cant_frms = m.formals.getLength();
+          Vector<AbstractSymbol> frms = new Vector<AbstractSymbol>();
+          for(int k = cant_frms - 1; k >= 0; k--){
+            formal frm = (formal) m.formals.getNth(k);
+            frms.add(frm.name);
+          }
+          Aux.firmas = frms;
+
+          str.print(clase.name + "." + m.name + CgenSupport.LABEL);
+          CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -(12+(Aux.MAX * 4)), str);
+          CgenSupport.emitStore(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
+          CgenSupport.emitStore(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
+          CgenSupport.emitStore(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
+          CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
+          CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
+          m.expr.code(str, clase);
+
+          CgenSupport.emitLoad(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
+          CgenSupport.emitLoad(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
+          CgenSupport.emitLoad(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
+
+          int coso = 12+(Aux.MAX * 4) + (cant_frms*4);
+          CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, coso, str);
+          str.println(CgenSupport.RET);
+          Aux.firmas = new Vector<AbstractSymbol>();
+          Aux.MAX = 0;
         }
-        Aux.firmas = frms;
-
-        str.print(clase.name + "." + m.name + CgenSupport.LABEL);
-        CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -(12+(Aux.MAX * 4)), str);
-        CgenSupport.emitStore(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
-        CgenSupport.emitStore(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
-        CgenSupport.emitStore(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
-        CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
-        CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
-        m.expr.code(str, clase);
-
-        CgenSupport.emitLoad(CgenSupport.FP, 3 + Aux.MAX, CgenSupport.SP, str);
-        CgenSupport.emitLoad(CgenSupport.SELF, 2 + Aux.MAX, CgenSupport.SP, str);
-        CgenSupport.emitLoad(CgenSupport.RA, 1 + Aux.MAX, CgenSupport.SP, str);
-
-        int coso = 12+(Aux.MAX * 4) + (cant_frms*4);
-        CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, coso, str);
-        str.println(CgenSupport.RET);
-        Aux.firmas = new Vector<AbstractSymbol>();
-        Aux.MAX = 0;
       }
     }
   }
+
   //Ordenar clases
 
 	//                 Add your code to emit
@@ -724,13 +732,18 @@ class CgenClassTable extends SymbolTable {
     }
 
     //Guardar en tagv las clases en el orden segun debe ir su tag
-    public void poner_tags(CgenNode cgn){
+    public int poner_tags(CgenNode cgn){
+      int n = 0;
       for(Enumeration niños = cgn.getChildren(); niños.hasMoreElements();){
         class_ cl = (class_) niños.nextElement();
         CgenNode nodo = (CgenNode) cl;
         tagv.add(cl.name);
-        poner_tags(nodo);
+        int u = poner_tags(nodo);
+        n = n + 1 + u;
       }
+      class_ clase = (class_) cgn;
+      canthijos.put(clase.name, n);
+      return n;
     }
 
 

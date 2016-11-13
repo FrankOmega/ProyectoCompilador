@@ -18,6 +18,7 @@ class Aux{
 
   public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hs_metodos;
 	public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> all_attr;
+  public static Hashtable<AbstractSymbol,Integer> cant_hijos;
   public static Hashtable<AbstractSymbol,Integer> cant_attr;
 
   public static Vector<AbstractSymbol> ids_let = new Vector<AbstractSymbol>();
@@ -547,7 +548,8 @@ class branch extends Case {
       Aux.let_ultimo = false;
       int etact = Aux.etiqueta;
       CgenSupport.emitBlti("$t4", actual, etact, s);
-      CgenSupport.emitBgti("$t4", actual, etact, s);
+      int nglt =  actual + Aux.cant_hijos.get(Aux.tag_v.get(actual));
+      CgenSupport.emitBgti("$t4", nglt, etact, s);
       CgenSupport.emitMove("$s1", CgenSupport.ACC,s);
       Aux.b_case = true;
       Aux.as_case = name;
@@ -627,20 +629,40 @@ class assign extends Expression {
       /*if(name.equals(TreeConstants.self)){
 
       }*/
-      if(bandera)
-				if(Aux.b_case)
-          if(name.equals(Aux.as_case)){
-            CgenSupport.emitMove("$s1", CgenSupport.ACC, s);
-            bandera = false;
-          }
 
-      if(bandera)
-        if(!Aux.ids_let.isEmpty())
-          if(Aux.ids_let.contains(name)){
-            int n = Aux.ids_let.lastIndexOf(name);
-            CgenSupport.emitStore(CgenSupport.ACC, n, CgenSupport.FP, s);
-            bandera = false;
-          }
+      if(Aux.let_ultimo){
+        if(bandera)
+          if(!Aux.ids_let.isEmpty())
+            if(Aux.ids_let.contains(name)){
+              int n = Aux.ids_let.lastIndexOf(name);
+              CgenSupport.emitStore(CgenSupport.ACC, n, CgenSupport.FP, s);
+              bandera = false;
+            }
+
+        if(bandera)
+  				if(Aux.b_case)
+            if(name.equals(Aux.as_case)){
+              CgenSupport.emitMove("$s1", CgenSupport.ACC, s);
+              bandera = false;
+            }
+      }
+
+      else{
+        if(bandera)
+  				if(Aux.b_case)
+            if(name.equals(Aux.as_case)){
+              CgenSupport.emitMove("$s1", CgenSupport.ACC, s);
+              bandera = false;
+            }
+        if(bandera)
+          if(!Aux.ids_let.isEmpty())
+            if(Aux.ids_let.contains(name)){
+              int n = Aux.ids_let.lastIndexOf(name);
+              CgenSupport.emitStore(CgenSupport.ACC, n, CgenSupport.FP, s);
+              bandera = false;
+            }
+      }
+
 
       if(bandera)
 				if(Aux.firmas != null)
@@ -2115,7 +2137,7 @@ class object extends Expression {
         bandera = false;
       }
 
-      if(Aux.let_ultimo)
+      if(Aux.let_ultimo){
         if(bandera)
           if(!Aux.ids_let.isEmpty())
             if(Aux.ids_let.contains(name)){
@@ -2130,6 +2152,7 @@ class object extends Expression {
               CgenSupport.emitMove(CgenSupport.ACC, "$s1", s);
               bandera = false;
             }
+      }
 
       else{
         if(bandera)
