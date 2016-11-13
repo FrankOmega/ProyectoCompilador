@@ -379,10 +379,19 @@ Main.main:
 	addiu	$fp $sp 4
 	move	$s0 $a0
 	lw	$a0 12($s0)
-	bne	$a0 $zero label0
+	bne	$a0 $zero label1
 	la	$a0 str_const0
 	li	$t1 1
 	jal	_case_abort2
+label1:
+	lw	$t4 0($a0)
+	blt	$t4 5 label2
+	bgt	$t4 5 label2
+	move	$s1 $a0
+	la	$a0 int_const0
+	b	label0
+label2:
+	jal	_case_abort
 label0:
 	lw	$fp 12($sp)
 	lw	$s0 8($sp)

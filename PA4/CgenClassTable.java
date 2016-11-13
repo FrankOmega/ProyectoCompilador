@@ -41,6 +41,8 @@ class CgenClassTable extends SymbolTable {
     private int intclasstag;
     private int boolclasstag;
 
+    Vector<AbstractSymbol> tagv = new Vector<AbstractSymbol>();
+
 
     // The following methods emit code for constants and global
     // declarations.
@@ -379,9 +381,7 @@ class CgenClassTable extends SymbolTable {
 
 	this.str = str;
 
-	stringclasstag = 4 /* Change to your String class tag here */;
-	intclasstag =    2 /* Change to your Int class tag here */;
-	boolclasstag =   3 /* Change to your Bool class tag here */;
+
 
 	enterScope();
 	if (Flags.cgen_debug) System.out.println("Building CgenClassTable");
@@ -389,6 +389,16 @@ class CgenClassTable extends SymbolTable {
 	installBasicClasses();
 	installClasses(cls);
 	buildInheritanceTree();
+
+  class_ cl = (class_) nds.get(0);
+  tagv.add(cl.name);
+  CgenNode nodo = (CgenNode)cl;
+  poner_tags(nodo);
+  Aux.tag_v = tagv;
+
+  stringclasstag = tagv.indexOf(TreeConstants.Str); /* Change to your String class tag here */;
+  intclasstag =    tagv.indexOf(TreeConstants.Int); /* Change to your Int class tag here */;
+  boolclasstag =   tagv.indexOf(TreeConstants.Bool); /* Change to your Bool class tag here */;
 
 	code();
 
@@ -409,21 +419,25 @@ class CgenClassTable extends SymbolTable {
 
   //class_nameTab
   str.print(CgenSupport.CLASSNAMETAB + CgenSupport.LABEL);
-  for(int i = 0; i < nds.size(); i++){
-    class_ clase = (class_)nds.get(i);
-    StringSymbol coso = (StringSymbol)AbstractTable.stringtable.lookup(clase.name.toString());
+  for(int i = 0; i < tagv.size(); i++){
+    AbstractSymbol nombre = (AbstractSymbol)tagv.get(i);
+    StringSymbol coso = (StringSymbol)AbstractTable.stringtable.lookup(nombre.toString());
     str.print(CgenSupport.WORD); coso.codeRef(str); str.println();
   }
 
   //class_objTab
   str.print(CgenSupport.CLASSOBJTAB + CgenSupport.LABEL);
-  for(int i = 0; i < nds.size(); i++){
-    class_ clase = (class_)nds.get(i);
-    str.println(CgenSupport.WORD + clase.name + CgenSupport.PROTOBJ_SUFFIX);
-    str.println(CgenSupport.WORD + clase.name + CgenSupport.CLASSINIT_SUFFIX);
+  for(int i = 0; i < tagv.size(); i++){
+    AbstractSymbol nombre = (AbstractSymbol) tagv.get(i);
+    str.println(CgenSupport.WORD + nombre + CgenSupport.PROTOBJ_SUFFIX);
+    str.println(CgenSupport.WORD + nombre + CgenSupport.CLASSINIT_SUFFIX);
   }
 
   //-------------------DATOS IMPORTANTES-----------------------
+  //<nombre clase, clase>
+  Hashtable<AbstractSymbol,class_> clasclas;
+  clasclas = new Hashtable<AbstractSymbol,class_>();
+
   //<clase,padre>
   Hashtable<AbstractSymbol,AbstractSymbol> inh;
   inh = new Hashtable<AbstractSymbol,AbstractSymbol>();
@@ -457,6 +471,7 @@ class CgenClassTable extends SymbolTable {
   for(int i = 0; i < nds.size(); i++){
     class_ clase = (class_)nds.get(i);
     inh.put(clase.name, clase.parent);
+    clasclas.put(clase.name, clase);
   }
 
   //Llenar padres de herencia
@@ -550,17 +565,17 @@ class CgenClassTable extends SymbolTable {
 
   Boolean b = false;
   //Imprimir los dipTab
-  for(int i = 0; i < nds.size(); i++){
-    class_ clase = (class_)nds.get(i);
-    str.print(clase.name + CgenSupport.DISPTAB_SUFFIX + CgenSupport.LABEL);
-    Vector<AbstractSymbol> vm = hstotal.get(clase.name);
-    Vector<AbstractSymbol> vc = inhtotal.get(clase.name);
+  for(int i = 0; i < tagv.size(); i++){
+    AbstractSymbol nombre = (AbstractSymbol)tagv.get(i);
+    str.print(nombre + CgenSupport.DISPTAB_SUFFIX + CgenSupport.LABEL);
+    Vector<AbstractSymbol> vm = hstotal.get(nombre);
+    Vector<AbstractSymbol> vc = inhtotal.get(nombre);
     for(int j = vm.size() - 1; j >= 0; j--){
       AbstractSymbol m = vm.get(j);
       for(int k = -1; !b && k < vc.size(); k++){
         AbstractSymbol c;
         if(k == -1)
-          c = clase.name;
+          c = nombre;
         else
           c = vc.get(k);
         Vector<AbstractSymbol> actuales = hs.get(c);
@@ -573,21 +588,24 @@ class CgenClassTable extends SymbolTable {
     }
   }
 
-	
-  //Prototypes
-  for(int i = 0; i < nds.size(); i++){
 
-    class_ clase = (class_)nds.get(i);
+  //Prototypes
+  for(int i = 0; i < tagv.size(); i++){
+
+    AbstractSymbol nombre = (AbstractSymbol)tagv.get(i);
     str.println(CgenSupport.WORD + "-1");
-    str.print(clase.name + CgenSupport.PROTOBJ_SUFFIX + CgenSupport.LABEL);
-    int ncantattr = cantattr.get(clase.name);
-		str.print(CgenSupport.WORD + i + "\n");
+    str.print(nombre + CgenSupport.PROTOBJ_SUFFIX + CgenSupport.LABEL);
+    int ncantattr = cantattr.get(nombre);
+    //if(i > 5)
+      str.print(CgenSupport.WORD + (tagv.indexOf(nombre)) + "\n");
+    //else
+		  //str.print(CgenSupport.WORD + i + "\n");
 		str.print(CgenSupport.WORD + (CgenSupport.DEFAULT_OBJFIELDS + ncantattr) + "\n");
-		str.print(CgenSupport.WORD + clase.name + CgenSupport.DISPTAB_SUFFIX + "\n");
+		str.print(CgenSupport.WORD + nombre + CgenSupport.DISPTAB_SUFFIX + "\n");
 
     Vector<AbstractSymbol> clases;
-    clases = (Vector<AbstractSymbol>)inhtotal.get(clase.name).clone();
-    clases.add(0,clase.name);
+    clases = (Vector<AbstractSymbol>)inhtotal.get(nombre).clone();
+    clases.add(0,nombre);
 		for(int j = clases.size() - 1; j >= 0; j--){
       Vector<attr> atributos = attrhs.get(clases.get(j));
 
@@ -620,10 +638,10 @@ class CgenClassTable extends SymbolTable {
 	codeGlobalText();
 
   //Objects inits
-  for(int i = 0; i < nds.size(); i++){
+  for(int i = 0; i < tagv.size(); i++){
 
-    class_ clase = (class_)nds.get(i);
-    str.print(clase.name + CgenSupport.CLASSINIT_SUFFIX + CgenSupport.LABEL);
+    AbstractSymbol nombre = (AbstractSymbol) tagv.get(i);
+    str.print(nombre + CgenSupport.CLASSINIT_SUFFIX + CgenSupport.LABEL);
     CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, -12, str);
     CgenSupport.emitStore(CgenSupport.FP, 3, CgenSupport.SP, str);
     CgenSupport.emitStore(CgenSupport.SELF, 2, CgenSupport.SP, str);
@@ -631,19 +649,19 @@ class CgenClassTable extends SymbolTable {
     CgenSupport.emitAddiu(CgenSupport.FP, CgenSupport.SP, 4, str);
     CgenSupport.emitMove(CgenSupport.SELF, CgenSupport.ACC, str);
 
-    if(!clase.name.equals(TreeConstants.Object_))
-      CgenSupport.emitJal(inh.get(clase.name) + CgenSupport.CLASSINIT_SUFFIX, str);
+    if(!nombre.equals(TreeConstants.Object_))
+      CgenSupport.emitJal(inh.get(nombre) + CgenSupport.CLASSINIT_SUFFIX, str);
 
 		//Lo que cambia XD -----------------------------------
-		Vector<attr> atributos = attrhs.get(clase.name);
+		Vector<attr> atributos = attrhs.get(nombre);
 		for(int j = 0; j < atributos.size(); j++){
 			attr atributo = (attr)atributos.get(j);
 			AbstractSymbol tipo = atributo.init.get_type();
 			if(tipo != null){
         Expression e = (Expression) atributo.init;
-        e.code(str,clase);
+        e.code(str,clasclas.get(nombre));
 
-        int ncantattr = cantattr.get(clase.name);
+        int ncantattr = cantattr.get(nombre);
 				int n = ncantattr + CgenSupport.DEFAULT_OBJFIELDS - atributos.size() + j;
         CgenSupport.emitStore(CgenSupport.ACC,n,CgenSupport.SELF,str);
 			}
@@ -658,6 +676,8 @@ class CgenClassTable extends SymbolTable {
     str.println(CgenSupport.RET);
   }
 
+
+  //++++++++++++++++ METODOS +++++++++++++++++++++ 
   Vector<class_> c_ordenadas = new Vector<class_>();
   Aux.ids_let = new Vector<AbstractSymbol>();
   for(int i= 5; i < nds.size(); i++){
@@ -698,10 +718,19 @@ class CgenClassTable extends SymbolTable {
   }
   //Ordenar clases
 
-
 	//                 Add your code to emit
 	//                   - the class methods
 	//                   - etc...
+    }
+
+    //Guardar en tagv las clases en el orden segun debe ir su tag
+    public void poner_tags(CgenNode cgn){
+      for(Enumeration niños = cgn.getChildren(); niños.hasMoreElements();){
+        class_ cl = (class_) niños.nextElement();
+        CgenNode nodo = (CgenNode) cl;
+        tagv.add(cl.name);
+        poner_tags(nodo);
+      }
     }
 
 

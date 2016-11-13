@@ -475,11 +475,11 @@ label12:
 label13:
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label14
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label14:
 	lw	$a0 4($fp)
 	sw	$a0 0($sp)
@@ -542,11 +542,11 @@ label24:
 label25:
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label26
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label26:
 	lw	$a0 4($fp)
 	sw	$a0 0($sp)
@@ -609,11 +609,11 @@ label36:
 label37:
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label38
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label38:
 	lw	$a0 4($fp)
 	sw	$a0 0($sp)
@@ -676,11 +676,11 @@ label48:
 label49:
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label50
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label50:
 	lw	$a0 4($fp)
 	sw	$a0 0($sp)
@@ -743,11 +743,11 @@ label60:
 label61:
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label62
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label62:
 	lw	$a0 0($fp)
 	sw	$a0 0($sp)

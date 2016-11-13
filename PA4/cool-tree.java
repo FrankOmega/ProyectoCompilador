@@ -12,17 +12,26 @@ import java.util.Enumeration;
 import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.Arrays;
 
 class Aux{
-  public static int etiqueta = 0;
+
   public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> hs_metodos;
-	public static Hashtable<AbstractSymbol,Integer> cant_attr;
 	public static Hashtable<AbstractSymbol,Vector<AbstractSymbol>> all_attr;
+  public static Hashtable<AbstractSymbol,Integer> cant_attr;
+
   public static Vector<AbstractSymbol> ids_let = new Vector<AbstractSymbol>();
   public static Vector<AbstractSymbol> firmas;
+  public static Vector<AbstractSymbol> tag_v;
+
+  public static int etiqueta = 0;
   public static int let_act = 0;
   public static int MAX = 0;
+
+  public static boolean let_ultimo = false;
 	public static boolean b_case = false;
+
+  public static AbstractSymbol as_case;
 }
 
 /** Defines simple phylum Program */
@@ -206,7 +215,7 @@ abstract class Case extends TreeNode {
         super(lineNumber);
     }
     public abstract void dump_with_types(PrintStream out, int n);
-		public abstract void code(PrintStream s, class_ clase);
+		public abstract void code(PrintStream s, class_ clase, int actual, int et);
     public abstract void contador(int nanterior);
 
 }
@@ -534,8 +543,19 @@ class branch extends Case {
 	expr.dump_with_types(out, n + 2);
     }
 
-		public void code(PrintStream s, class_ clase){
-			System.out.println(name + "-" + type_decl + "-");
+		public void code(PrintStream s, class_ clase, int actual, int et){
+      Aux.let_ultimo = false;
+      int etact = Aux.etiqueta;
+      CgenSupport.emitBlti("$t4", actual, etact, s);
+      CgenSupport.emitBgti("$t4", actual, etact, s);
+      CgenSupport.emitMove("$s1", CgenSupport.ACC,s);
+      Aux.b_case = true;
+      Aux.as_case = name;
+      Aux.etiqueta++;
+      expr.code(s, clase);
+      Aux.b_case = false;
+      CgenSupport.emitBranch(et,s);
+      s.print("label" + etact + CgenSupport.LABEL);
 			/*
 			lw	$t2 0($a0)
 			blt	$t2 4 label2
@@ -607,6 +627,12 @@ class assign extends Expression {
       /*if(name.equals(TreeConstants.self)){
 
       }*/
+      if(bandera)
+				if(Aux.b_case)
+          if(name.equals(Aux.as_case)){
+            CgenSupport.emitMove("$s1", CgenSupport.ACC, s);
+            bandera = false;
+          }
 
       if(bandera)
         if(!Aux.ids_let.isEmpty())
@@ -1004,19 +1030,35 @@ class typcase extends Expression {
       * @param s the output stream
       * */
     public void code(PrintStream s, class_ clase) {
+      int salida = Aux.etiqueta;
+      Aux.etiqueta++;
       expr.code(s,clase);
+
 			CgenSupport.emitBne(CgenSupport.ACC, CgenSupport.ZERO, Aux.etiqueta,s);
 			CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.STRCONST_PREFIX + "0",s);
 			CgenSupport.emitLoadImm(CgenSupport.T1, 1,s);
 			CgenSupport.emitJal("_case_abort2", s);
 			s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
 			Aux.etiqueta++;
+
+      int[] arreglo = new int[cases.getLength()];
 			for(int i = 0; i < cases.getLength(); i++){
 				branch br = (branch) cases.getNth(i);
-				br.code(s, clase);
-				System.out.println(get_type());
+				arreglo[i] = Aux.tag_v.indexOf(br.type_decl);
 			}
 
+      CgenSupport.emitLoad("$t4", 0, CgenSupport.ACC,s);
+      Arrays.sort(arreglo);
+      for(int i = arreglo.length - 1; i >= 0; i--){
+        for(int j = 0; j < cases.getLength(); j++){
+          branch br = (branch) cases.getNth(j);
+          if(arreglo[i] == Aux.tag_v.indexOf(br.type_decl))
+            br.code(s, clase, arreglo[i], salida);
+        }
+      }
+
+      CgenSupport.emitJal("_case_abort",s);
+      s.print("label" + salida + CgenSupport.LABEL);
 			/*lw	$a0 12($s0)
 			bne	$a0 $zero label1
 			la	$a0 str_const0
@@ -1175,6 +1217,7 @@ class let extends Expression {
       Aux.ids_let.add(identifier);
       CgenSupport.emitStore(CgenSupport.ACC, Aux.let_act,CgenSupport.FP, s);
       Aux.let_act++;
+      Aux.let_ultimo = true;
       body.code(s,clase);
       Aux.let_act = 0;
       Aux.ids_let.clear();
@@ -1588,16 +1631,34 @@ class eq extends Expression {
       CgenSupport.emitPush(CgenSupport.ACC, s);
       e2.code(s,clase);
 
-      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
+      /*CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
       CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 4, s);
       CgenSupport.emitLoad(CgenSupport.T1, 3, CgenSupport.T1, s);
       CgenSupport.emitLoad(CgenSupport.T2, 3, CgenSupport.ACC, s);
       CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
       CgenSupport.emitBeq(CgenSupport.T1, CgenSupport.T2, Aux.etiqueta, s);
       CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      s.print("label" + Aux.etiqueta + CgenSupport.LABEL);*/
+
+
+      CgenSupport.emitLoad(CgenSupport.T1, 1, CgenSupport.SP, s);
+      CgenSupport.emitAddiu(CgenSupport.SP, CgenSupport.SP, 4, s);
+      CgenSupport.emitMove(CgenSupport.T2, CgenSupport.ACC, s);
+      CgenSupport.emitLoadAddress(CgenSupport.ACC, CgenSupport.BOOLCONST_PREFIX + "1", s);
+      CgenSupport.emitBeq(CgenSupport.T1, CgenSupport.T2, Aux.etiqueta, s);
+      CgenSupport.emitLoadAddress(CgenSupport.A1, CgenSupport.BOOLCONST_PREFIX + "0", s);
+      CgenSupport.emitJal("equality_test",s);
       s.print("label" + Aux.etiqueta + CgenSupport.LABEL);
 
       Aux.etiqueta++;
+      /*	la	$s1 int_const0
+      	la	$t2 int_const0
+      	move	$t1 $s1
+      	la	$a0 bool_const1
+      	beq	$t1 $t2 label0
+      	la	$a1 bool_const0
+      	jal	equality_test*/
+
     }
 
     public void contador(int nanterior){
@@ -2054,19 +2115,38 @@ class object extends Expression {
         bandera = false;
       }
 
-			if(bandera){
-				if(Aux.b_case){
-					CgenSupport.emitMove(CgenSupport.ACC, "$s1", s);
-				}
-			}
+      if(Aux.let_ultimo)
+        if(bandera)
+          if(!Aux.ids_let.isEmpty())
+            if(Aux.ids_let.contains(name)){
+              int n = Aux.ids_let.lastIndexOf(name);
+              CgenSupport.emitLoad(CgenSupport.ACC, n, CgenSupport.FP, s);
+              bandera = false;
+            }
 
-      if(bandera)
-        if(!Aux.ids_let.isEmpty())
-          if(Aux.ids_let.contains(name)){
-            int n = Aux.ids_let.lastIndexOf(name);
-            CgenSupport.emitLoad(CgenSupport.ACC, n, CgenSupport.FP, s);
-            bandera = false;
-          }
+  			if(bandera)
+  				if(Aux.b_case)
+            if(name.equals(Aux.as_case)){
+              CgenSupport.emitMove(CgenSupport.ACC, "$s1", s);
+              bandera = false;
+            }
+
+      else{
+        if(bandera)
+  				if(Aux.b_case)
+            if(name.equals(Aux.as_case)){
+              CgenSupport.emitMove(CgenSupport.ACC, "$s1", s);
+              bandera = false;
+            }
+
+        if(bandera)
+          if(!Aux.ids_let.isEmpty())
+            if(Aux.ids_let.contains(name)){
+              int n = Aux.ids_let.lastIndexOf(name);
+              CgenSupport.emitLoad(CgenSupport.ACC, n, CgenSupport.FP, s);
+              bandera = false;
+            }
+      }
 
       if(bandera)
         if(Aux.firmas != null)

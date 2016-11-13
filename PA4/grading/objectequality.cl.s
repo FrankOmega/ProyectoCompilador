@@ -496,11 +496,11 @@ Main.main:
 	lw	$a0 0($fp)
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label0
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label0:
 	lw	$t1 12($a0)
 	beqz	$t1 label1
@@ -525,11 +525,11 @@ label2:
 	jal	B_init
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label4
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label4:
 	lw	$t1 12($a0)
 	beqz	$t1 label5
@@ -556,11 +556,11 @@ label7:
 	jal	A_init
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label8
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label8:
 	lw	$t1 12($a0)
 	beqz	$t1 label9
@@ -585,11 +585,11 @@ label11:
 	lw	$a0 0($fp)
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label12
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label12:
 	lw	$t1 12($a0)
 	beqz	$t1 label13
@@ -623,11 +623,11 @@ label16:
 	lw	$a0 0($fp)
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label17
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label17:
 	lw	$t1 12($a0)
 	beqz	$t1 label18
@@ -654,11 +654,11 @@ label19:
 	lw	$a0 4($fp)
 	lw	$t1 4($sp)
 	addiu	$sp $sp 4
-	lw	$t1 12($t1)
-	lw	$t2 12($a0)
+	move	$t2 $a0
 	la	$a0 bool_const1
 	beq	$t1 $t2 label21
-	la	$a0 bool_const0
+	la	$a1 bool_const0
+	jal	equality_test
 label21:
 	lw	$t1 12($a0)
 	beqz	$t1 label22
