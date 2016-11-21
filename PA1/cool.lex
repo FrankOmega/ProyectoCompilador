@@ -94,6 +94,7 @@ import java_cup.runtime.Symbol;
 		yybegin(YYINITIAL);
 		return new Symbol(TokenConstants.ERROR, "EOF in comment");
 
+
 	/* If necessary, add code for other states here, e.g:
 	   case COMMENT:
 	   ...
@@ -139,13 +140,12 @@ RAROS2 = ((\x15)|(\x16)|(\x27)|(\x18)|(\x19)|(\x1A)|(\x1B)|(\x1C)|(\x1E))
 %state STR_LEX1
 %state STR_NULL
 %state COMMENTS
-%state TERMINAR
+
 %state COMMENTS2
 %cup
 
 %%
 
-<TERMINAR>.|\n 					{ }
 
 <YYINITIAL>"*)"						{ return new Symbol(TokenConstants.ERROR, "Unmatched *)");}
 
@@ -209,9 +209,9 @@ RAROS2 = ((\x15)|(\x16)|(\x27)|(\x18)|(\x19)|(\x1A)|(\x1B)|(\x1C)|(\x1E))
 												 		else count_comm--;	}
 
 <YYINITIAL>"--"						{ yybegin(COMMENTS2); }
-<COMMENTS2>.							{ }
-<COMMENTS2>\n							{	curr_lineno++;
-														yybegin(YYINITIAL); }
+<COMMENTS2>\n							{	yybegin(YYINITIAL); curr_lineno++; }
+<COMMENTS2>.|{NOTHING}							{ }
+
 
 <YYINITIAL>"*"						{ return new Symbol(TokenConstants.MULT); }
 <YYINITIAL> {INH_LEX}			{	return new Symbol(TokenConstants.INHERITS); }

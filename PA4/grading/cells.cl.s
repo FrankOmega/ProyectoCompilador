@@ -507,7 +507,7 @@ CellularAutomaton.print:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label0
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 17
 	jal	_dispatch_abort
 label0:
 	lw	$t1 8($a0)
@@ -518,7 +518,7 @@ label0:
 	move	$a0 $s0
 	bne	$a0 $zero label1
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 17
 	jal	_dispatch_abort
 label1:
 	lw	$t1 8($a0)
@@ -540,7 +540,7 @@ CellularAutomaton.num_cells:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label2
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 23
 	jal	_dispatch_abort
 label2:
 	lw	$t1 8($a0)
@@ -567,7 +567,7 @@ CellularAutomaton.cell:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label3
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 27
 	jal	_dispatch_abort
 label3:
 	lw	$t1 8($a0)
@@ -602,7 +602,7 @@ label4:
 	move	$a0 $s0
 	bne	$a0 $zero label6
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 32
 	jal	_dispatch_abort
 label6:
 	lw	$t1 8($a0)
@@ -623,7 +623,7 @@ label6:
 	move	$a0 $s0
 	bne	$a0 $zero label7
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 33
 	jal	_dispatch_abort
 label7:
 	lw	$t1 8($a0)
@@ -647,7 +647,7 @@ label5:
 	move	$a0 $s0
 	bne	$a0 $zero label9
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 35
 	jal	_dispatch_abort
 label9:
 	lw	$t1 8($a0)
@@ -672,7 +672,7 @@ CellularAutomaton.cell_right_neighbor:
 	move	$a0 $s0
 	bne	$a0 $zero label10
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 39
 	jal	_dispatch_abort
 label10:
 	lw	$t1 8($a0)
@@ -704,7 +704,7 @@ label11:
 	move	$a0 $s0
 	bne	$a0 $zero label13
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 41
 	jal	_dispatch_abort
 label13:
 	lw	$t1 8($a0)
@@ -728,7 +728,7 @@ label12:
 	move	$a0 $s0
 	bne	$a0 $zero label15
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 43
 	jal	_dispatch_abort
 label15:
 	lw	$t1 8($a0)
@@ -753,7 +753,7 @@ CellularAutomaton.cell_at_next_evolution:
 	move	$a0 $s0
 	bne	$a0 $zero label16
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 49
 	jal	_dispatch_abort
 label16:
 	lw	$t1 8($a0)
@@ -785,7 +785,7 @@ label19:
 	move	$a0 $s0
 	bne	$a0 $zero label20
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 50
 	jal	_dispatch_abort
 label20:
 	lw	$t1 8($a0)
@@ -824,7 +824,7 @@ label23:
 	move	$a0 $s0
 	bne	$a0 $zero label24
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 51
 	jal	_dispatch_abort
 label24:
 	lw	$t1 8($a0)
@@ -890,7 +890,7 @@ CellularAutomaton.evolve:
 	move	$a0 $s0
 	bne	$a0 $zero label31
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 62
 	jal	_dispatch_abort
 label31:
 	lw	$t1 8($a0)
@@ -920,7 +920,7 @@ label33:
 	move	$a0 $s0
 	bne	$a0 $zero label35
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 67
 	jal	_dispatch_abort
 label35:
 	lw	$t1 8($a0)
@@ -931,7 +931,7 @@ label35:
 	lw	$a0 8($fp)
 	bne	$a0 $zero label36
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 67
 	jal	_dispatch_abort
 label36:
 	lw	$t1 8($a0)
@@ -976,7 +976,7 @@ Main.main:
 	jal	CellularAutomaton_init
 	bne	$a0 $zero label37
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 83
 	jal	_dispatch_abort
 label37:
 	lw	$t1 8($a0)
@@ -986,7 +986,7 @@ label37:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label38
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 84
 	jal	_dispatch_abort
 label38:
 	lw	$t1 8($a0)
@@ -1012,7 +1012,7 @@ label40:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label42
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 88
 	jal	_dispatch_abort
 label42:
 	lw	$t1 8($a0)
@@ -1021,7 +1021,7 @@ label42:
 	lw	$a0 12($s0)
 	bne	$a0 $zero label43
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 89
 	jal	_dispatch_abort
 label43:
 	lw	$t1 8($a0)

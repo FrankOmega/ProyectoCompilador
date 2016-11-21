@@ -410,6 +410,10 @@ class programc extends Program {
         OMC.M.get(cl).put(cp.name,cp);
       }
 
+      for(int i = 0; i < OMC.vmeth.get(TreeConstants.Object_).size(); i++){
+        OMC.vmeth.get(TreeConstants.IO).add(OMC.vmeth.get(TreeConstants.Object_).get(i));
+      }
+
       //---------Agregar los metodos de todas las clases------------
       for(int i = 1; i < OMC.cT.vAS.size(); i++){
         class_c clase = (class_c) clord.get(i);
@@ -542,6 +546,7 @@ class class_c extends Class_ {
           }
           if(OMC.O.get(clase.name).probe(atributo.name) != null)
             SemantErrors.attrOfAnInheritedClass(atributo.name,OMC.cT.semantError(clase));
+          OMC.O.get(clase.name).addId(atributo.name,atributo.type_decl);
         }
 
         else{
@@ -680,14 +685,25 @@ class method extends Feature {
 
       AbstractSymbol rt  = return_type;
 			AbstractSymbol t = expr.get_type();
-      if(TreeConstants.SELF_TYPE.equals(rt) && TreeConstants.SELF_TYPE.equals(t))
-          t = rt = clase.name;
+      //System.out.println("rt: " + rt + "--- t: " + t + " en el metodo:" + name + " en la clase: " + clase.name);
+
+
+      
+      if(TreeConstants.SELF_TYPE.equals(t) && TreeConstants.SELF_TYPE.equals(rt))
+        t = rt = clase.name;
 
       if(!TreeConstants.SELF_TYPE.equals(rt) && TreeConstants.SELF_TYPE.equals(t))
           t = rt;
 
-      if(!rt.equals(t) && !TreeConstants.Object_.equals(rt))
-				SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
+        //System.out.println(OMC.cT.pertenece(rt,t,OMC.C));
+      if(t != null){
+        if(rt.equals(TreeConstants.SELF_TYPE))
+          rt = clase.name;
+        if(!OMC.cT.pertenece(rt,t,OMC.C) && !TreeConstants.Object_.equals(rt)){
+          
+          SemantErrors.diffReturnType(t,name,return_type,OMC.cT.semantError(clase));
+        }
+      }
     }
 }
 
@@ -730,7 +746,7 @@ class attr extends Feature {
     }
 
     public void semant(class_c clase){
-      OMC.O.get(clase.name).addId(name,type_decl);
+      //OMC.O.get(clase.name).addId(name,type_decl);
       init.semant(clase);
       AbstractSymbol t = init.get_type();
 			if(TreeConstants.SELF_TYPE.equals(t))
@@ -921,13 +937,14 @@ class static_dispatch extends Expression {
     }
 
     public void semant(class_c clase){
+      
       expr.semant(clase);
       AbstractSymbol type_noexpr = expr.get_type();
 
       if(TreeConstants.SELF_TYPE.equals(type_noexpr))
         type_noexpr = clase.name;
 
-      if(!OMC.cT.pertenece(type_name,type_noexpr,OMC.C))
+      if(!OMC.cT.pertenece(type_name, type_noexpr, OMC.C))
         SemantErrors.exprNotConformToDeclaredSDType(expr.get_type(),
                               type_name,OMC.cT.semantError(clase));
 
@@ -946,7 +963,7 @@ class static_dispatch extends Expression {
 
       AbstractSymbol retorno = OMC.M.get(type_name).get(name).return_type;
       if(TreeConstants.SELF_TYPE.equals(retorno))
-        set_type(clase.name);
+        set_type(expr.get_type());
       else
         set_type(retorno);
     }
@@ -997,6 +1014,7 @@ class dispatch extends Expression {
     }
 
     public void semant(class_c clase){
+      
       expr.semant(clase);
       AbstractSymbol type_noexpr = expr.get_type();
       AbstractSymbol retorno = TreeConstants.No_type;
@@ -1097,7 +1115,7 @@ class cond extends Expression {
       AbstractSymbol t2 = else_exp.get_type();
       if(TreeConstants.SELF_TYPE.equals(t1))
         t1 = clase.name;
-        if(TreeConstants.SELF_TYPE.equals(t1))
+        if(TreeConstants.SELF_TYPE.equals(t2))
         t2 = clase.name;
       set_type(OMC.cT.union(t1,t2,t2,OMC.C));
     }

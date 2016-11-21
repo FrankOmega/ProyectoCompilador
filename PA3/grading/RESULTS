@@ -1,1 +1,1 @@
-	(our tests)	Passed all tests -- congratulations!
+	-1 (selftypebadreturn)	 Non-conforming return type when SELF_TYPE is declared return type

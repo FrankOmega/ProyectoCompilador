@@ -380,7 +380,7 @@ Main.main:
 	move	$a0 $s0
 	bne	$a0 $zero label0
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 2
 	jal	_dispatch_abort
 label0:
 	lw	$t1 8($a0)

@@ -448,7 +448,7 @@ Base_init:
 	move	$a0 $s0
 	bne	$a0 $zero label0
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 7
 	jal	_dispatch_abort
 label0:
 	lw	$t1 8($a0)
@@ -476,7 +476,7 @@ Derived_init:
 	move	$a0 $s0
 	bne	$a0 $zero label1
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 27
 	jal	_dispatch_abort
 label1:
 	lw	$t1 8($a0)
@@ -559,7 +559,7 @@ Base.report:
 	move	$a0 $s0
 	bne	$a0 $zero label2
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 12
 	jal	_dispatch_abort
 label2:
 	lw	$t1 8($a0)
@@ -571,7 +571,7 @@ label2:
 	move	$a0 $s0
 	bne	$a0 $zero label3
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 13
 	jal	_dispatch_abort
 label3:
 	lw	$t1 8($a0)
@@ -617,7 +617,7 @@ Derived.report:
 	move	$a0 $s0
 	bne	$a0 $zero label4
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 32
 	jal	_dispatch_abort
 label4:
 	lw	$t1 8($a0)
@@ -629,7 +629,7 @@ label4:
 	move	$a0 $s0
 	bne	$a0 $zero label5
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 33
 	jal	_dispatch_abort
 label5:
 	lw	$t1 8($a0)
@@ -641,7 +641,7 @@ label5:
 	move	$a0 $s0
 	bne	$a0 $zero label6
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 34
 	jal	_dispatch_abort
 label6:
 	lw	$t1 8($a0)
@@ -655,7 +655,7 @@ label6:
 	move	$a0 $s0
 	bne	$a0 $zero label7
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 36
 	jal	_dispatch_abort
 label7:
 	la	$t1 Base_dispTab
@@ -684,7 +684,7 @@ Main.main:
 	jal	Derived_init
 	bne	$a0 $zero label8
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 46
 	jal	_dispatch_abort
 label8:
 	lw	$t1 8($a0)
@@ -692,7 +692,7 @@ label8:
 	jalr	$t1
 	bne	$a0 $zero label9
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 47
 	jal	_dispatch_abort
 label9:
 	lw	$t1 8($a0)
@@ -700,7 +700,7 @@ label9:
 	jalr	$t1
 	bne	$a0 $zero label10
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 47
 	jal	_dispatch_abort
 label10:
 	lw	$t1 8($a0)

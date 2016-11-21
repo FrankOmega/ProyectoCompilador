@@ -217,9 +217,10 @@ class ClassTable {
 
      public boolean pertenece(AbstractSymbol var_type, AbstractSymbol type,
                             Hashtable<AbstractSymbol,AbstractSymbol> hsh){
+     	//System.out.println(hsh + " " + var_type + " " + type);
         if(var_type.equals(type))
           return true;
-        else if (type.equals(TreeConstants.Object_))
+        else if ( type.equals(TreeConstants.No_type))
           return false;
         else
           return pertenece(var_type, hsh.get(type), hsh);
@@ -240,7 +241,7 @@ class ClassTable {
           }
         }
       }*/
-      if(TreeConstants.Object_.equals(a1)){
+      if(TreeConstants.No_type.equals(a1) || TreeConstants.Object_.equals(a1)){
         return TreeConstants.Object_;
       }
       else if(pertenece(a1,a2,hsh))

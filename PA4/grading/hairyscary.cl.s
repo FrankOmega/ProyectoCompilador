@@ -524,7 +524,7 @@ label0:
 	move	$a0 $s0
 	bne	$a0 $zero label6
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 46
 	jal	_dispatch_abort
 label6:
 	lw	$t1 8($a0)
@@ -580,7 +580,7 @@ label7:
 	lw	$a0 24($s0)
 	bne	$a0 $zero label12
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 10
 	jal	_dispatch_abort
 label12:
 	lw	$t1 8($a0)
@@ -591,7 +591,7 @@ label12:
 	lw	$a0 16($s0)
 	bne	$a0 $zero label13
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 10
 	jal	_dispatch_abort
 label13:
 	lw	$t1 8($a0)
@@ -609,7 +609,7 @@ label13:
 	move	$a0 $s0
 	bne	$a0 $zero label14
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 10
 	jal	_dispatch_abort
 label14:
 	lw	$t1 8($a0)
@@ -627,7 +627,7 @@ label14:
 	move	$a0 $s0
 	bne	$a0 $zero label15
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 10
 	jal	_dispatch_abort
 label15:
 	lw	$t1 8($a0)
@@ -682,7 +682,7 @@ label16:
 	lw	$a0 24($s0)
 	bne	$a0 $zero label20
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 31
 	jal	_dispatch_abort
 label20:
 	la	$t1 Bazz_dispTab
@@ -693,7 +693,7 @@ label20:
 	lw	$a0 16($s0)
 	bne	$a0 $zero label21
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 31
 	jal	_dispatch_abort
 label21:
 	lw	$t1 8($a0)
@@ -711,7 +711,7 @@ label21:
 	lw	$a0 32($s0)
 	bne	$a0 $zero label22
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 31
 	jal	_dispatch_abort
 label22:
 	lw	$t1 8($a0)
@@ -729,7 +729,7 @@ label22:
 	move	$a0 $s0
 	bne	$a0 $zero label23
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 31
 	jal	_dispatch_abort
 label23:
 	lw	$t1 8($a0)
@@ -747,7 +747,7 @@ label23:
 	move	$a0 $s0
 	bne	$a0 $zero label24
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 31
 	jal	_dispatch_abort
 label24:
 	lw	$t1 8($a0)
@@ -778,7 +778,7 @@ Bar_init:
 	move	$a0 $s0
 	bne	$a0 $zero label25
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 18
 	jal	_dispatch_abort
 label25:
 	lw	$t1 8($a0)
@@ -788,7 +788,7 @@ label25:
 	move	$a0 $s0
 	bne	$a0 $zero label26
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 20
 	jal	_dispatch_abort
 label26:
 	lw	$t1 8($a0)
@@ -886,7 +886,7 @@ Bazz.printh:
 	move	$a0 $s0
 	bne	$a0 $zero label27
 	la	$a0 str_const0
-	li	$t1 1
+	li	$t1 48
 	jal	_dispatch_abort
 label27:
 	lw	$t1 8($a0)
